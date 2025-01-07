@@ -1,0 +1,24 @@
+{
+  "models": [
+    {
+      "id": "gemini-pro",
+      "created": 1702425600,
+      "owned_by": "google",
+      "type": "Chat Completion",
+      "status": "Active",
+      "context_length": 32768,
+      "training_data": "Up to 2023"
+    },
+    {
+      "id": "gemini-pro-vision",
+      "created": 1702425600,
+      "owned_by": "google",
+      "type": "Chat Completion",
+      "status": "Active",
+      "context_length": 32768,
+      "training_data": "Up to 2023"
+    }
+  ],
+  "lastUpdated": "2025-01-06T21:35:30.627Z",
+  "count": 2
+}

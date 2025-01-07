@@ -1,0 +1,136 @@
+[
+  {
+    "transcriptCategories": [
+      {
+        "name": "Meetings",
+        "color": "#1976D2",
+        "icon": "groups",
+        "transcriptTypes": [
+          {
+            "type": "Team Meeting",
+            "description": "Department Updates, Project Planning, Team Collaboration, Sprint Planning, Retrospectives"
+          },
+          {
+            "type": "One-on-One Meeting",
+            "description": "Performance Review, Career Development, Weekly Check-in, Mentoring Session, Goal Setting"
+          },
+          {
+            "type": "Sales Call",
+            "description": "Product Demo, Discovery Call, Negotiation, Follow-up Meeting, Client Onboarding"
+          },
+          {
+            "type": "Stand-up Meeting",
+            "description": "Daily Scrum, Progress Updates, Blockers Discussion, Team Sync, Quick Updates"
+          },
+          {
+            "type": "Board Meeting",
+            "description": "Strategic Planning, Financial Review, Governance Meeting, Shareholder Meeting, Executive Session"
+          },
+          {
+            "type": "Client Meeting",
+            "description": "Project Update, Requirements Gathering, Feedback Session, Strategy Discussion, Issue Resolution"
+          }
+        ]
+      },
+      {
+        "name": "Webinars & Events",
+        "color": "#6741D9",
+        "icon": "cast",
+        "transcriptTypes": [
+          {
+            "type": "Educational Webinar",
+            "description": "Product Training, Industry Workshop, Best Practices, Technical Deep Dive, Certification Course"
+          },
+          {
+            "type": "Product Demo",
+            "description": "Feature Overview, Technical Walkthrough, Use Case Demonstration, Integration Setup, Platform Tour"
+          },
+          {
+            "type": "Conference Talk",
+            "description": "Keynote Speech, Technical Session, Panel Discussion, Industry Trends, Case Study Presentation"
+          },
+          {
+            "type": "Workshop",
+            "description": "Hands-on Training, Interactive Session, Group Exercise, Skill Building, Practical Application"
+          }
+        ]
+      },
+      {
+        "name": "Media & Entertainment",
+        "color": "#E91E63",
+        "icon": "movie",
+        "transcriptTypes": [
+          {
+            "type": "Podcast Episode",
+            "description": "Interview Show, Solo Episode, Panel Discussion, News Roundup, Expert Commentary"
+          },
+          {
+            "type": "Video Content",
+            "description": "Tutorial, Product Review, Vlog Entry, Educational Content, Entertainment Show"
+          },
+          {
+            "type": "Documentary",
+            "description": "Feature Length, Mini-Series Episode, Behind the Scenes, Making Of, Historical Record"
+          }
+        ]
+      },
+      {
+        "name": "Corporate",
+        "color": "#0288D1",
+        "icon": "business",
+        "transcriptTypes": [
+          {
+            "type": "All-Hands Meeting",
+            "description": "Company Update, Quarterly Review, Town Hall, Strategy Announcement, Team Recognition"
+          },
+          {
+            "type": "Training Session",
+            "description": "New Employee Onboarding, Compliance Training, Skills Development, Process Training, Safety Briefing"
+          },
+          {
+            "type": "Strategy Meeting",
+            "description": "Annual Planning, Quarterly Review, Market Analysis, Product Strategy, Growth Planning"
+          }
+        ]
+      },
+      {
+        "name": "Medical/Health",
+        "color": "#F44336",
+        "icon": "local_hospital",
+        "transcriptTypes": [
+          {
+            "type": "Medical Consultation",
+            "description": "Initial Assessment, Follow-up Visit, Specialist Consultation, Treatment Planning, Patient Review"
+          },
+          {
+            "type": "Therapy Session",
+            "description": "Individual Therapy, Group Session, Family Counseling, Assessment Session, Treatment Review"
+          },
+          {
+            "type": "Medical Conference",
+            "description": "Case Presentation, Research Findings, Clinical Update, Treatment Protocol, Medical Review"
+          }
+        ]
+      },
+      {
+        "name": "Legal",
+        "color": "#9C27B0",
+        "icon": "gavel",
+        "transcriptTypes": [
+          {
+            "type": "Court Proceeding",
+            "description": "Trial Hearing, Motion Hearing, Sentencing, Jury Selection, Evidence Presentation"
+          },
+          {
+            "type": "Deposition",
+            "description": "Witness Testimony, Expert Witness, Discovery Deposition, Cross Examination, Evidence Review"
+          },
+          {
+            "type": "Client Consultation",
+            "description": "Initial Consultation, Case Review, Strategy Session, Settlement Discussion, Legal Advisory"
+          }
+        ]
+      }
+    ]
+  }
+] 

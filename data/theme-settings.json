@@ -1,0 +1,42 @@
+{
+  "spacing": {
+    "contentGap": 0,
+    "cardPadding": 2,
+    "headerSpacing": 2,
+    "sectionSpacing": 3,
+    "navHeight": 72,
+    "navToHeaderGap": 1,
+    "headerToToolbarGap": 0,
+    "toolbarToContentGap": 0
+  },
+  "header": {
+    "titleSize": {
+      "xs": "1.75rem",
+      "md": "2rem"
+    },
+    "titleWeight": 700,
+    "titleLineHeight": 1.2,
+    "subtitleSize": {
+      "xs": "0.95rem",
+      "md": "1rem"
+    },
+    "subtitleWeight": 500,
+    "subtitleLineHeight": 1.4,
+    "underlineWidth": "40%",
+    "underlineOpacity": 0.3,
+    "maxWidth": "600px",
+    "borderRadius": 19,
+    "padding": 3,
+    "boxShadow": "0 2px 8px rgba(0, 0, 0, 0.35)",
+    "borderColor": "rgba(0, 0, 0, 0.35)"
+  },
+  "content": {
+    "borderRadius": 14,
+    "padding": 2,
+    "maxWidth": "100%"
+  },
+  "navigation": {
+    "height": 72,
+    "borderRadius": 0
+  }
+}

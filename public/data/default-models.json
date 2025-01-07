@@ -1,0 +1,27 @@
+{
+  "Chat Completion": {
+    "provider": "anthropic",
+    "modelId": "claude-3-opus-20240229"
+  },
+  "Image Generation": {
+    "modelId": "dall-e-2",
+    "provider": "openai"
+  },
+  "Text Embedding": {
+    "modelId": "text-embedding-3-small",
+    "provider": "openai"
+  },
+  "Text to Speech": {
+    "modelId": "tts-1",
+    "provider": "openai"
+  },
+  "Speech to Text": {
+    "modelId": "whisper-1",
+    "provider": "openai"
+  },
+  "Moderation": {
+    "modelId": "omni-moderation-latest",
+    "provider": "openai"
+  },
+  "lastUpdated": "2024-12-19T01:19:34.669Z"
+}

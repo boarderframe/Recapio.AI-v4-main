@@ -1,7 +1,7 @@
 {
   "Chat Completion": {
     "provider": "anthropic",
-    "modelId": "claude-3-opus-20240229"
+    "modelId": "claude-3-sonnet-20240229"
   },
   "Image Generation": {
     "modelId": "dall-e-2",
@@ -23,5 +23,5 @@
     "modelId": "omni-moderation-latest",
     "provider": "openai"
   },
-  "lastUpdated": "2024-12-19T01:19:34.669Z"
+  "lastUpdated": "2025-01-08T04:23:56.866Z"
 }

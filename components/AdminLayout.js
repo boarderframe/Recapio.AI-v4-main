@@ -12,17 +12,16 @@ import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import TimelineIcon from '@mui/icons-material/Timeline';
 import PaletteIcon from '@mui/icons-material/Palette';
 import PeopleIcon from '@mui/icons-material/People';
+import DescriptionIcon from '@mui/icons-material/Description';
 import { Tabs, Tab } from '@mui/material';
 import { useThemeSettings } from '@/context/ThemeContext';
 
 const adminTabs = [
     { label: 'Overview', path: '/admin', icon: <DashboardIcon sx={{ mr: 1, color: 'primary.main' }} /> },
+    { label: 'Transcript Types', path: '/admin/transcript-types', icon: <DescriptionIcon sx={{ mr: 1, color: 'primary.main' }} /> },
     { label: 'AI Models', path: '/admin/ai-models', icon: <SmartToyIcon sx={{ mr: 1, color: 'primary.main' }} /> },
-    { label: 'Billing', path: '/admin/billing', icon: <PaymentsIcon sx={{ mr: 1, color: 'primary.main' }} /> },
-    { label: 'Profit', path: '/admin/profit', icon: <TrendingUpIcon sx={{ mr: 1, color: 'primary.main' }} /> },
-    { label: 'Traffic', path: '/admin/traffic', icon: <TimelineIcon sx={{ mr: 1, color: 'primary.main' }} /> },
-    { label: 'Theme', path: '/admin/theme', icon: <PaletteIcon sx={{ mr: 1, color: 'primary.main' }} /> },
     { label: 'Users', path: '/admin/users', icon: <PeopleIcon sx={{ mr: 1, color: 'primary.main' }} /> },
+    { label: 'Theme', path: '/admin/theme', icon: <PaletteIcon sx={{ mr: 1, color: 'primary.main' }} /> }
 ];
 
 function AdminToolbar({ currentTab, onTabChange }) {

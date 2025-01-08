@@ -1,11 +1,12 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Typography, Box, Paper, TextField, Grid, Card, Button, IconButton,
     Dialog, DialogContent, DialogTitle, Select, MenuItem, FormControl,
     InputLabel, Switch, FormControlLabel, Divider, Chip, LinearProgress,
     IconButton as MuiIconButton, List, ListItemButton, ListItemIcon, ListItemText,
-    Tabs, Tab, FormHelperText, Slider
+    Tabs, Tab, FormHelperText, Slider, Table, TableBody, TableCell, 
+    TableContainer, TableHead, TableRow, Snackbar, Alert
 } from '@mui/material';
 import PageLayout from '@/components/PageLayout';
 import ContentCard from '@/components/ContentCard';
@@ -17,7 +18,72 @@ import { TextFields, Description, Mic, Upload, CheckCircle,
 } from '@mui/icons-material';
 import { useRouter } from 'next/navigation';
 import { useTranscriptConfig } from '../../src/hooks/useTranscriptConfig';
-import transcriptData from '../../data/transcriptTypes.json';
+import { createClient } from '@supabase/supabase-js';
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+console.log('Supabase Config:', { 
+    url: supabaseUrl, 
+    key: supabaseKey?.substring(0, 10) + '...' 
+});
+const supabase = createClient(supabaseUrl, supabaseKey);
+
+// Add test query
+(async () => {
+    const { data, error } = await supabase
+        .from('transcript_types')
+        .select('*');
+    console.log('Initial test query:', { data, error });
+})();
+
+const fetchTranscriptData = async () => {
+  const { data, error } = await supabase
+    .from('transcript_types')
+    .select('*');
+
+  if (error) {
+    console.error('Error fetching data:', error);
+    return [];
+  }
+
+  return data;
+};
+
+const insertTranscriptData = async (data) => {
+  try {
+    // First, let's clear existing data to avoid duplicates
+    const { error: deleteError } = await supabase
+      .from('transcript_types')
+      .delete()
+      .neq('id', 0); // This will delete all records
+
+    if (deleteError) {
+      console.error('Error clearing existing data:', deleteError);
+      return;
+    }
+
+    // Now insert the new data
+    for (const category of data[0].transcriptCategories) {
+      for (const type of category.transcriptTypes) {
+        const { error } = await supabase
+          .from('transcript_types')
+          .insert({
+            category: category.name,
+            type: type.type,
+            subType: type.description,
+            color: category.color,
+            icon: category.icon
+          });
+
+        if (error) {
+          console.error('Error inserting data:', error);
+        }
+      }
+    }
+  } catch (err) {
+    console.error('Error in database operation:', err);
+  }
+};
 
 const iconMap = {
     Group,
@@ -105,40 +171,110 @@ export default function NewTranscriptPage() {
     const [uploadedDocument, setUploadedDocument] = useState(null);
     const [isRecording, setIsRecording] = useState(false);
     const [isProcessingModalOpen, setIsProcessingModalOpen] = useState(false);
+    const [showSuccessNotification, setShowSuccessNotification] = useState(false);
     const [language, setLanguage] = useState('en');
     const [speakerDetection, setSpeakerDetection] = useState(true);
     const [aiModel, setAiModel] = useState('balanced');
     const [isPlaying, setIsPlaying] = useState(false);
-    const [selectedType, setSelectedType] = useState('meeting');
+    const [selectedType, setSelectedType] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('');
     const [selectedSubType, setSelectedSubType] = useState('');
+    const [errors, setErrors] = useState({ 
+        category: false, 
+        type: false, 
+        subType: false,
+        title: false 
+    });
+    const [transcriptData, setTranscriptData] = useState([]);
+    const [requestedOutputs, setRequestedOutputs] = useState([]);
+    const [title, setTitle] = useState('');
+    const [snackbarMessage, setSnackbarMessage] = useState({ 
+        text: 'Transcript saved successfully!', 
+        severity: 'success' 
+    });
+
+    // Derived state
+    const processedCategories = useMemo(() => {
+        const categories = [...new Set(transcriptData.map(item => item.category))];
+        return categories.sort();
+    }, [transcriptData]);
+
+    const availableTypes = useMemo(() => {
+        if (!selectedCategory) return [];
+        return [...new Set(transcriptData
+            .filter(item => item.category === selectedCategory)
+            .map(item => item.type))]
+            .sort();
+    }, [selectedCategory, transcriptData]);
+
+    const availableSubTypes = useMemo(() => {
+        if (!selectedType || !selectedCategory) return [];
+        return [...new Set(transcriptData
+            .filter(item => 
+                item.category === selectedCategory && 
+                item.type === selectedType
+            )
+            .map(item => item.sub_type))]
+            .sort();
+    }, [selectedType, selectedCategory, transcriptData]);
+
+    useEffect(() => {
+        const fetchTranscriptTypes = async () => {
+            try {
+                console.log('Fetching transcript types...');
+                const { data, error } = await supabase
+                    .from('transcript_types')
+                    .select('*')
+                    .order('category')
+                    .order('type')
+                    .order('sub_type');
+
+                if (error) {
+                    console.error('Error fetching transcript types:', error);
+                    return;
+                }
+
+                console.log('Fetched data:', data);
+                setTranscriptData(data || []);
+            } catch (error) {
+                console.error('Error in fetchTranscriptTypes:', error);
+            }
+        };
+
+        fetchTranscriptTypes();
+    }, []);
+
+    useEffect(() => {
+        if (selectedType) {
+            // Find the matching sub-types for the selected type
+            const typeData = transcriptData.find(
+                item => item.category === selectedCategory && item.type === selectedType
+            );
+            if (typeData) {
+                setSelectedSubType(''); // Reset sub-type when type changes
+            }
+        } else {
+            setSelectedSubType('');
+        }
+    }, [selectedType, selectedCategory, transcriptData]);
 
     const handleCategoryChange = (event) => {
         setSelectedCategory(event.target.value);
-        setSelectedType(''); // Reset type when category changes
-        setSelectedSubType(''); // Reset subtype when category changes
+        setSelectedType('');
+        setSelectedSubType('');
+        setErrors({ ...errors, category: false });
     };
 
     const handleTypeChange = (event) => {
         setSelectedType(event.target.value);
-        setSelectedSubType(''); // Reset subtype when type changes
+        setSelectedSubType('');
+        setErrors({ ...errors, type: false });
     };
 
     const handleSubTypeChange = (event) => {
         setSelectedSubType(event.target.value);
+        setErrors({ ...errors, subType: false });
     };
-
-    const categories = transcriptData[0]?.transcriptCategories || [];
-    const types = selectedCategory ? categories.find(cat => cat.name === selectedCategory)?.transcriptTypes || [] : [];
-    const subTypes = selectedType ? (types.find(type => type.type === selectedType)?.description.split(', ') || []) : [];
-
-    const sortedCategories = categories.length ? [...categories].sort((a, b) => a.name.localeCompare(b.name)) : [];
-    const sortedTypes = types.length ? [...types].sort((a, b) => a.type.localeCompare(b.type)) : [];
-    const sortedSubTypes = subTypes.length ? [...subTypes].sort() : [];
-
-    console.log('Categories:', sortedCategories);
-    console.log('Types:', sortedTypes);
-    console.log('SubTypes:', sortedSubTypes);
 
     const PreviewContent = () => {
         const activeMethodData = methods.find(m => m.id === activeMethod);
@@ -462,21 +598,33 @@ export default function NewTranscriptPage() {
             frequencyPenalty: 0,
             presencePenalty: 0,
             stopSequences: '',
+            // Output types
             insightsStream: false,
             tinderSwipers: false,
             recapioBytes: false,
             recapioAnchor: false,
-            onePager: false
+            onePager: false,
+            recapioSlides: false
         });
 
         // Add color definitions for each output type
         const outputColors = {
             insightsStream: '#1E88E5',    // Strong Blue
-            tinderSwipers: '#009688',     // Teal (keeping this one)
+            tinderSwipers: '#009688',     // Teal
             onePager: '#D81B60',          // Raspberry
             recapioSlides: '#5C6BC0',     // Indigo
             recapioBytes: '#7B1FA2',      // Deep Purple
             recapioAnchor: '#F57C00'      // Dark Orange
+        };
+
+        // Add display names for each output type
+        const outputDisplayNames = {
+            insightsStream: 'Insights Stream',
+            tinderSwipers: 'Tinder Swipers',
+            onePager: 'One Pager',
+            recapioSlides: 'Recapio Slides',
+            recapioBytes: 'Recapio Bytes',
+            recapioAnchor: 'Recapio Anchor'
         };
 
         const getMethodSpecificSteps = () => {
@@ -650,156 +798,10 @@ export default function NewTranscriptPage() {
                             </Box>
                         </Grid>
                     )
-                },
-                {
-                    title: 'Settings',
-                    icon: <Psychology />,
-                    component: (
-                        <Grid container spacing={3}>
-                            <Grid item xs={12}>
-                                <FormControl fullWidth>
-                                    <InputLabel>Model</InputLabel>
-                                    <Select
-                                        value={processingOptions.aiModel || 'gpt-4'}
-                                        label="Model"
-                                        onChange={(e) => setProcessingOptions({...processingOptions, aiModel: e.target.value})}
-                                    >
-                                        <MenuItem value="gpt-4">GPT-4 (Most Capable)</MenuItem>
-                                        <MenuItem value="gpt-3.5-turbo">GPT-3.5 Turbo (Faster)</MenuItem>
-                                    </Select>
-                                    <FormHelperText>Select the AI model to use for processing</FormHelperText>
-                                </FormControl>
-                            </Grid>
-                            <Grid item xs={12}>
-                                <TextField
-                                    fullWidth
-                                    multiline
-                                    rows={3}
-                                    label="Custom Prompt"
-                                    value={processingOptions.customPrompt || ''}
-                                    onChange={(e) => setProcessingOptions({...processingOptions, customPrompt: e.target.value})}
-                                    placeholder="Enter custom instructions for the AI model..."
-                                    helperText="Customize how the AI processes your content"
-                                />
-                            </Grid>
-                            <Grid item xs={12} md={6}>
-                                <Typography variant="subtitle2" gutterBottom>
-                                    Maximum Tokens
-                                </Typography>
-                                <Slider
-                                    value={processingOptions.maxTokens || 150}
-                                    onChange={(e, newValue) => setProcessingOptions({...processingOptions, maxTokens: newValue})}
-                                    min={1}
-                                    max={2048}
-                                    step={1}
-                                    marks={[
-                                        { value: 1, label: '1' },
-                                        { value: 2048, label: '2048' }
-                                    ]}
-                                    valueLabelDisplay="auto"
-                                />
-                                <FormHelperText>Maximum length of the output</FormHelperText>
-                            </Grid>
-                            <Grid item xs={12} md={6}>
-                                <Typography variant="subtitle2" gutterBottom>
-                                    Temperature
-                                </Typography>
-                                <Slider
-                                    value={processingOptions.temperature || 0.7}
-                                    onChange={(e, newValue) => setProcessingOptions({...processingOptions, temperature: newValue})}
-                                    min={0}
-                                    max={1}
-                                    step={0.01}
-                                    marks={[
-                                        { value: 0, label: '0' },
-                                        { value: 1, label: '1' }
-                                    ]}
-                                    valueLabelDisplay="auto"
-                                />
-                                <FormHelperText>Controls output randomness (0 = focused, 1 = creative)</FormHelperText>
-                            </Grid>
-                            <Grid item xs={12} md={6}>
-                                <Typography variant="subtitle2" gutterBottom>
-                                    Top P
-                                </Typography>
-                                <Slider
-                                    value={processingOptions.topP || 0.9}
-                                    onChange={(e, newValue) => setProcessingOptions({...processingOptions, topP: newValue})}
-                                    min={0}
-                                    max={1}
-                                    step={0.01}
-                                    marks={[
-                                        { value: 0, label: '0' },
-                                        { value: 1, label: '1' }
-                                    ]}
-                                    valueLabelDisplay="auto"
-                                />
-                                <FormHelperText>Controls output diversity</FormHelperText>
-                            </Grid>
-                            <Grid item xs={12} md={6}>
-                                <Typography variant="subtitle2" gutterBottom>
-                                    Frequency Penalty
-                                </Typography>
-                                <Slider
-                                    value={processingOptions.frequencyPenalty || 0}
-                                    onChange={(e, newValue) => setProcessingOptions({...processingOptions, frequencyPenalty: newValue})}
-                                    min={-2}
-                                    max={2}
-                                    step={0.1}
-                                    marks={[
-                                        { value: -2, label: '-2' },
-                                        { value: 2, label: '2' }
-                                    ]}
-                                    valueLabelDisplay="auto"
-                                />
-                                <FormHelperText>Prevents repetition (-2 to 2)</FormHelperText>
-                            </Grid>
-                            <Grid item xs={12} md={6}>
-                                <Typography variant="subtitle2" gutterBottom>
-                                    Presence Penalty
-                                </Typography>
-                                <Slider
-                                    value={processingOptions.presencePenalty || 0}
-                                    onChange={(e, newValue) => setProcessingOptions({...processingOptions, presencePenalty: newValue})}
-                                    min={-2}
-                                    max={2}
-                                    step={0.1}
-                                    marks={[
-                                        { value: -2, label: '-2' },
-                                        { value: 2, label: '2' }
-                                    ]}
-                                    valueLabelDisplay="auto"
-                                />
-                                <FormHelperText>Encourages new topics (-2 to 2)</FormHelperText>
-                            </Grid>
-                            <Grid item xs={12}>
-                                <TextField
-                                    fullWidth
-                                    label="Stop Sequences"
-                                    value={processingOptions.stopSequences || ''}
-                                    onChange={(e) => setProcessingOptions({...processingOptions, stopSequences: e.target.value})}
-                                    placeholder="Enter comma-separated sequences"
-                                    helperText="Sequences where the AI should stop generating (comma-separated)"
-                                />
-                            </Grid>
-                        </Grid>
-                    )
                 }
             ];
 
-            // Return different steps based on the active method
-            switch (activeMethod) {
-                case 'text':
-                    return commonSteps;
-                case 'upload':
-                    return commonSteps;
-                case 'document':
-                    return commonSteps;
-                case 'live':
-                    return commonSteps;
-                default:
-                    return commonSteps;
-            }
+            return commonSteps;
         };
 
         const steps = getMethodSpecificSteps();
@@ -947,12 +949,12 @@ export default function NewTranscriptPage() {
                                 fontSize: '1.5rem'
                             }}>
                                 {Object.entries({
-                                    insightsStream: 1500,
-                                    onePager: 1000,
-                                    tinderSwipers: 500,
-                                    recapioBytes: 2000,
-                                    recapioAnchor: 4000,
-                                    recapioSlides: 1500
+                                    'insights_stream': 1500,
+                                    'one_pager': 1000,
+                                    'tinder_swipers': 500,
+                                    'recapio_bytes': 2000,
+                                    'recapio_anchor': 4000,
+                                    'recapio_slides': 1500
                                 }).reduce((total, [key, tokens]) => 
                                     total + (processingOptions[key] ? tokens : 0)
                                 , 0).toLocaleString()}
@@ -968,12 +970,12 @@ export default function NewTranscriptPage() {
                                 fontSize: '1.5rem'
                             }}>
                                 ${Object.entries({
-                                    insightsStream: 0.75,
-                                    onePager: 0.50,
-                                    tinderSwipers: 0.25,
-                                    recapioBytes: 1.00,
-                                    recapioAnchor: 2.00,
-                                    recapioSlides: 0.75
+                                    'insights_stream': 0.75,
+                                    'one_pager': 0.50,
+                                    'tinder_swipers': 0.25,
+                                    'recapio_bytes': 1.00,
+                                    'recapio_anchor': 2.00,
+                                    'recapio_slides': 0.75
                                 }).reduce((total, [key, price]) => 
                                     total + (processingOptions[key] ? price : 0)
                                 , 0).toFixed(2)}
@@ -1011,28 +1013,196 @@ export default function NewTranscriptPage() {
                         )}
                         <Button
                             variant="contained"
-                            onClick={() => {
+                            onClick={async () => {
                                 if (activeStep < steps.length - 1) {
                                     setActiveStep(activeStep + 1);
                                 } else {
-                                    // Start processing
+                                    // Check if any outputs are selected
+                                    const hasSelectedOutputs = Object.values(processingOptions).some(value => value === true);
+                                    if (!hasSelectedOutputs) {
+                                        // TODO: Show error message to user
+                                        console.error('Please select at least one output type');
+                                        return;
+                                    }
+                                    await handleSaveTranscript(processingOptions);
                                 }
                             }}
-                            endIcon={activeStep < steps.length - 1 ? <ChevronRight /> : null}
-                            sx={{ 
+                            endIcon={activeStep === steps.length - 1 ? <Psychology /> : <ChevronRight />}
+                            sx={{
                                 bgcolor: activeMethodData?.color,
                                 '&:hover': {
-                                    bgcolor: activeMethodData?.color
+                                    bgcolor: `${activeMethodData?.color}E0`
                                 }
                             }}
                         >
-                            {activeStep < steps.length - 1 ? 'Next' : 'Start Processing'}
+                            {activeStep === steps.length - 1 ? 'Start Processing' : 'Next'}
                         </Button>
                     </Box>
                 </Box>
             </Dialog>
         );
     };
+
+    const handleSaveTranscript = async (processingOptions) => {
+        console.log('Starting save transcript process...');
+        console.log('Processing options:', processingOptions);
+        
+        // Validate required fields
+        const newErrors = {
+            category: !selectedCategory,
+            type: !selectedType,
+            subType: !selectedSubType,
+            title: !title.trim()
+        };
+        setErrors(newErrors);
+
+        if (Object.values(newErrors).some(error => error)) {
+            console.log('Validation failed:', newErrors);
+            return;
+        }
+
+        try {
+            console.log('Creating transcript record...');
+            // 1. Insert transcript record
+            const { data: transcript, error: transcriptError } = await supabase
+                .from('transcripts')
+                .insert({
+                    title: title.trim(),
+                    category: selectedCategory,
+                    type: selectedType,
+                    sub_type: selectedSubType,
+                    source_type: 'text',
+                    language,
+                    status: 'draft',
+                    tenant_id: '00000000-0000-0000-0000-000000000000', // Default tenant ID
+                    user_id: (await supabase.auth.getUser()).data.user?.id
+                })
+                .select()
+                .single();
+
+            if (transcriptError) {
+                console.error('Error creating transcript:', transcriptError);
+                throw transcriptError;
+            }
+
+            console.log('Transcript created:', transcript);
+
+            console.log('Saving transcript content...');
+            // 2. Insert transcript content
+            const { error: contentError } = await supabase
+                .from('transcript_contents')
+                .insert({
+                    transcript_id: transcript.id,
+                    original_content: textContent,
+                    word_count: textContent.split(/\s+/).length,
+                    token_count: Math.ceil(textContent.length / 4) // Rough estimate
+                });
+
+            if (contentError) {
+                console.error('Error saving content:', contentError);
+                throw contentError;
+            }
+
+            console.log('Content saved successfully');
+
+            // 3. Insert output requests
+            const outputRequests = Object.entries({
+                'insights_stream': { tokens: 1500, cost: 0.75 },
+                'one_pager': { tokens: 1000, cost: 0.50 },
+                'tinder_swipers': { tokens: 500, cost: 0.25 },
+                'recapio_bytes': { tokens: 2000, cost: 1.00 },
+                'recapio_anchor': { tokens: 4000, cost: 2.00 },
+                'recapio_slides': { tokens: 1500, cost: 0.75 }
+            })
+            .filter(([key]) => {
+                // Convert snake_case database keys to camelCase for checking processingOptions
+                const camelKey = key.replace(/_([a-z])/g, g => g[1].toUpperCase());
+                return processingOptions[camelKey];
+            })
+            .map(([key, { tokens, cost }]) => ({
+                transcript_id: transcript.id,
+                output_type: key,
+                estimated_input_tokens: Math.ceil(textContent.length / 4),
+                estimated_output_tokens: tokens,
+                estimated_cost: cost,
+                model_id: processingOptions.aiModel || 'gpt-4',
+                status: 'pending'
+            }));
+
+            console.log('Saving output requests:', outputRequests);
+
+            if (outputRequests.length > 0) {
+                const { error: requestsError } = await supabase
+                    .from('transcript_output_requests')
+                    .insert(outputRequests);
+
+                if (requestsError) {
+                    console.error('Error saving output requests:', requestsError);
+                    throw requestsError;
+                }
+            }
+
+            console.log('Save process completed successfully');
+            // Success - show notification, close modal, and redirect
+            setShowSuccessNotification(true);
+            setIsProcessingModalOpen(false);
+            
+            // Wait longer before redirecting to ensure notification is seen
+            setTimeout(() => {
+                router.push('/');
+            }, 3000); // Increased to 3 seconds
+
+        } catch (error) {
+            console.error('Error saving transcript:', error);
+            // Show error notification
+            setSnackbarMessage({ 
+                text: 'Error saving transcript. Please try again.', 
+                severity: 'error' 
+            });
+            setShowSuccessNotification(true);
+        }
+    };
+
+    // Add title field to the UI
+    const renderTitleField = () => (
+        <TextField
+            fullWidth
+            label="Title"
+            value={title}
+            onChange={(e) => {
+                setTitle(e.target.value);
+                setErrors({ ...errors, title: false });
+            }}
+            error={errors.title}
+            helperText={errors.title ? 'Title is required' : ''}
+            sx={{ mb: 2 }}
+        />
+    );
+
+    // Add language selection to the UI
+    const renderLanguageSelect = () => (
+        <FormControl fullWidth sx={{ mb: 2 }}>
+            <InputLabel>Language</InputLabel>
+            <Select
+                value={language}
+                label="Language"
+                onChange={(e) => setLanguage(e.target.value)}
+            >
+                <MenuItem value="en">English</MenuItem>
+                <MenuItem value="es">Spanish</MenuItem>
+                <MenuItem value="fr">French</MenuItem>
+                <MenuItem value="de">German</MenuItem>
+                <MenuItem value="it">Italian</MenuItem>
+                <MenuItem value="pt">Portuguese</MenuItem>
+                <MenuItem value="nl">Dutch</MenuItem>
+                <MenuItem value="pl">Polish</MenuItem>
+                <MenuItem value="ru">Russian</MenuItem>
+                <MenuItem value="ja">Japanese</MenuItem>
+                <MenuItem value="ko">Korean</MenuItem>
+                <MenuItem value="zh">Chinese</MenuItem>
+            </Select>
+        </FormControl>
+    );
 
     return (
         <PageLayout
@@ -1041,8 +1211,10 @@ export default function NewTranscriptPage() {
         >
             <ContentCard>
                 <Box sx={{ p: 3 }}>
+                    {renderTitleField()}
+                    {renderLanguageSelect()}
                     <Box sx={{ display: 'flex', gap: 2, mb: 4, alignItems: 'center', height: 56 }}>
-                        <FormControl fullWidth variant="outlined" sx={{ height: '100%' }}>
+                        <FormControl fullWidth variant="outlined" error={errors.category} sx={{ height: '100%' }}>
                             <InputLabel
                                 shrink={true}
                                 sx={{
@@ -1062,14 +1234,22 @@ export default function NewTranscriptPage() {
                                 notched
                                 sx={{ height: '100%' }}
                             >
-                                {(sortedCategories || []).map((category) => (
-                                    <MenuItem key={category.name} value={category.name}>
-                                        {category.name}
+                                {processedCategories.map((category) => (
+                                    <MenuItem key={category} value={category}>
+                                        {category}
                                     </MenuItem>
                                 ))}
                             </Select>
+                            {errors.category && <FormHelperText>Please select a category</FormHelperText>}
                         </FormControl>
-                        <FormControl fullWidth variant="outlined" disabled={!selectedCategory} sx={{ height: '100%' }}>
+
+                        <FormControl 
+                            fullWidth 
+                            variant="outlined" 
+                            disabled={!selectedCategory}
+                            error={errors.type}
+                            sx={{ height: '100%' }}
+                        >
                             <InputLabel
                                 shrink={true}
                                 sx={{
@@ -1089,14 +1269,22 @@ export default function NewTranscriptPage() {
                                 notched
                                 sx={{ height: '100%' }}
                             >
-                                {(selectedCategory && sortedTypes || []).map((type) => (
-                                    <MenuItem key={type.type} value={type.type}>
-                                        {type.type}
+                                {availableTypes.map((type) => (
+                                    <MenuItem key={type} value={type}>
+                                        {type}
                                     </MenuItem>
                                 ))}
                             </Select>
+                            {errors.type && <FormHelperText>Please select a type</FormHelperText>}
                         </FormControl>
-                        <FormControl fullWidth variant="outlined" disabled={!selectedCategory || !selectedType} sx={{ height: '100%' }}>
+
+                        <FormControl 
+                            fullWidth 
+                            variant="outlined" 
+                            disabled={!selectedType}
+                            error={errors.subType}
+                            sx={{ height: '100%' }}
+                        >
                             <InputLabel
                                 shrink={true}
                                 sx={{
@@ -1116,22 +1304,25 @@ export default function NewTranscriptPage() {
                                 notched
                                 sx={{ height: '100%' }}
                             >
-                                {(selectedType && sortedSubTypes || []).map((subType) => (
+                                {availableSubTypes.map((subType) => (
                                     <MenuItem key={subType} value={subType}>
                                         {subType}
                                     </MenuItem>
                                 ))}
                             </Select>
+                            {errors.subType && <FormHelperText>Please select a sub type</FormHelperText>}
                         </FormControl>
+
                         <IconButton
                             onClick={() => {
                                 setSelectedCategory('');
                                 setSelectedType('');
                                 setSelectedSubType('');
+                                setErrors({ category: false, type: false, subType: false });
                             }}
                             sx={{
                                 color: 'text.secondary',
-                                height: 40, // Set consistent height
+                                height: 40,
                                 width: 40
                             }}
                         >
@@ -1151,7 +1342,12 @@ export default function NewTranscriptPage() {
                         {methods.map((method) => (
                             <Grid item xs={12} sm={6} key={method.id}>
                                 <Card
-                                    onClick={() => handleMethodChange(method.id)}
+                                    onClick={() => {
+                                        handleMethodChange(method.id);
+                                        if (method.id === 'text') {
+                                            setIsProcessingModalOpen(true);
+                                        }
+                                    }}
                                     sx={{
                                         p: 3,
                                         height: '100%',
@@ -1215,7 +1411,7 @@ export default function NewTranscriptPage() {
                                     <Box 
                                         sx={{ 
                                             width: '100%',
-                                            display: 'flex',
+                                        display: 'flex',
                                             alignItems: 'flex-start',
                                             gap: 2.5,
                                             pb: 2.5,
@@ -1284,19 +1480,19 @@ export default function NewTranscriptPage() {
                                                     cursor: 'text'
                                                 }}
                                             >
-                                                <TextField
-                                                    fullWidth
-                                                    multiline
+                            <TextField
+                                fullWidth
+                                multiline
                                                     placeholder="Paste your text content here..."
                                                     variant="standard"
-                                                    value={textContent}
-                                                    onChange={(e) => setTextContent(e.target.value)}
+                                value={textContent}
+                                onChange={(e) => setTextContent(e.target.value)}
                                                     onFocus={() => handleMethodChange(method.id)}
                                                     onClick={() => handleMethodChange(method.id)}
                                                     InputProps={{
                                                         disableUnderline: true
                                                     }}
-                                                    sx={{
+                                sx={{
                                                         '& .MuiInputBase-root': {
                                                             height: '100%',
                                                             alignItems: 'flex-start'
@@ -1308,10 +1504,10 @@ export default function NewTranscriptPage() {
                                                         '& .MuiInputBase-input::placeholder': {
                                                             color: 'text.primary',
                                                             opacity: 0.8
-                                                        }
-                                                    }}
-                                                />
-                                            </Box>
+                                    }
+                                }}
+                            />
+                        </Box>
                                         </>
                                     )}
 
@@ -1514,6 +1710,31 @@ export default function NewTranscriptPage() {
                 </Box>
             </ContentCard>
             <ProcessingModal />
+            <Snackbar
+                open={showSuccessNotification}
+                autoHideDuration={3000}
+                onClose={() => setShowSuccessNotification(false)}
+                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+            >
+                <Alert 
+                    onClose={() => setShowSuccessNotification(false)} 
+                    severity={snackbarMessage.severity}
+                    variant="filled"
+                    sx={{ 
+                        width: '100%',
+                        boxShadow: theme.shadows[3],
+                        '& .MuiAlert-icon': {
+                            fontSize: '24px'
+                        },
+                        '& .MuiAlert-message': {
+                            fontSize: '1rem',
+                            fontWeight: 500
+                        }
+                    }}
+                >
+                    {snackbarMessage.text}
+                </Alert>
+            </Snackbar>
         </PageLayout>
     );
 } 

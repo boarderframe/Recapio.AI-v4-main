@@ -1,0 +1,663 @@
+[
+    {
+      "category": "Corporate",
+      "type": "All-Hands Meeting",
+      "sub_type": "Company Update",
+      "ai_prompt": "Provide a summary of this company update all-hands meeting. Focus on key announcements, updates, and any next steps. Format the response as JSON with the following structure: { \"summary\": \"...\", \"key_announcements\": [\"...\"], \"updates\": [\"...\"], \"next_steps\": [\"...\"] }"
+    },
+    {
+      "category": "Corporate",
+      "type": "Training Session",
+      "sub_type": "Skills Development",
+      "ai_prompt": "Summarize the skills development training session, highlighting the skills covered, learning objectives achieved, and practical applications discussed. Format the response as JSON with the following structure: { \"summary\": \"...\", \"skills_covered\": [\"...\"], \"learning_objectives\": [\"...\"], \"practical_applications\": [\"...\"] }"
+    },
+    {
+      "category": "Corporate",
+      "type": "All-Hands Meeting",
+      "sub_type": "Quarterly Review",
+      "ai_prompt": "Provide a summary of the quarterly review from this all-hands meeting. Highlight performance metrics, achievements, and challenges. Format the response as JSON with the following structure: { \"summary\": \"...\", \"performance_metrics\": [\"...\"], \"achievements\": [\"...\"], \"challenges\": [\"...\"] }"
+    },
+    {
+      "category": "Corporate",
+      "type": "All-Hands Meeting",
+      "sub_type": "Strategy Announcement",
+      "ai_prompt": "Summarize the strategy announcement made during this all-hands meeting. Include key goals, timelines, and responsibilities. Format the response as JSON with the following structure: { \"summary\": \"...\", \"goals\": [\"...\"], \"timelines\": [\"...\"], \"responsibilities\": [\"...\"] }"
+    },
+    {
+      "category": "Corporate",
+      "type": "All-Hands Meeting",
+      "sub_type": "Team Recognition",
+      "ai_prompt": "Summarize the team recognition segment of this all-hands meeting. Note individuals or teams highlighted and their accomplishments. Format the response as JSON with the following structure: { \"summary\": \"...\", \"recognized_teams\": [\"...\"], \"recognized_individuals\": [\"...\"], \"accomplishments\": [\"...\"] }"
+    },
+    {
+      "category": "Corporate",
+      "type": "All-Hands Meeting",
+      "sub_type": "Town Hall",
+      "ai_prompt": "Summarize the town hall discussion, including key questions raised, responses provided, and any actionable outcomes. Format the response as JSON with the following structure: { \"summary\": \"...\", \"questions\": [\"...\"], \"responses\": [\"...\"], \"actionable_outcomes\": [\"...\"] }"
+    },
+    {
+      "category": "Corporate",
+      "type": "Strategy Meeting",
+      "sub_type": "Annual Planning",
+      "ai_prompt": "Summarize the annual planning strategy meeting, focusing on key objectives, strategies, and plans for the upcoming year. Format the response as JSON with the following structure: { \"summary\": \"...\", \"objectives\": [\"...\"], \"strategies\": [\"...\"], \"plans\": [\"...\"] }"
+    },
+    {
+      "category": "Corporate",
+      "type": "Strategy Meeting",
+      "sub_type": "Growth Planning",
+      "ai_prompt": "Summarize the growth planning strategy meeting, emphasizing proposed growth initiatives, goals, and potential challenges. Format the response as JSON with the following structure: { \"summary\": \"...\", \"growth_initiatives\": [\"...\"], \"goals\": [\"...\"], \"challenges\": [\"...\"] }"
+    },
+    {
+      "category": "Corporate",
+      "type": "Strategy Meeting",
+      "sub_type": "Market Analysis",
+      "ai_prompt": "Summarize the market analysis strategy meeting, including key market trends, opportunities identified, and strategic recommendations. Format the response as JSON with the following structure: { \"summary\": \"...\", \"market_trends\": [\"...\"], \"opportunities\": [\"...\"], \"recommendations\": [\"...\"] }"
+    },
+    {
+      "category": "Corporate",
+      "type": "Strategy Meeting",
+      "sub_type": "Product Strategy",
+      "ai_prompt": "Summarize the product strategy meeting, highlighting product roadmaps, development priorities, and market positioning. Format the response as JSON with the following structure: { \"summary\": \"...\", \"roadmaps\": [\"...\"], \"priorities\": [\"...\"], \"market_positioning\": [\"...\"] }"
+    },
+    {
+      "category": "Corporate",
+      "type": "Strategy Meeting",
+      "sub_type": "Quarterly Review",
+      "ai_prompt": "Summarize the quarterly review strategy meeting, focusing on performance evaluation, learnings, and action plans. Format the response as JSON with the following structure: { \"summary\": \"...\", \"performance_evaluation\": [\"...\"], \"learnings\": [\"...\"], \"action_plans\": [\"...\"] }"
+    },
+    {
+      "category": "Corporate",
+      "type": "Training Session",
+      "sub_type": "Compliance Training",
+      "ai_prompt": "Summarize the compliance training session, emphasizing key topics covered, regulations highlighted, and compliance reminders. Format the response as JSON with the following structure: { \"summary\": \"...\", \"topics_covered\": [\"...\"], \"regulations_highlighted\": [\"...\"], \"reminders\": [\"...\"] }"
+    },
+    {
+      "category": "Corporate",
+      "type": "Training Session",
+      "sub_type": "New Employee Onboarding",
+      "ai_prompt": "Summarize the new employee onboarding session, focusing on orientation topics, policies introduced, and resources provided. Format the response as JSON with the following structure: { \"summary\": \"...\", \"orientation_topics\": [\"...\"], \"policies_introduced\": [\"...\"], \"resources_provided\": [\"...\"] }"
+    },
+    {
+      "category": "Corporate",
+      "type": "Training Session",
+      "sub_type": "Process Training",
+      "ai_prompt": "Summarize the process training session, highlighting the processes discussed, best practices, and implementation steps. Format the response as JSON with the following structure: { \"summary\": \"...\", \"processes_discussed\": [\"...\"], \"best_practices\": [\"...\"], \"implementation_steps\": [\"...\"] }"
+    },
+    {
+      "category": "Corporate",
+      "type": "Training Session",
+      "sub_type": "Safety Briefing",
+      "ai_prompt": "Summarize the safety briefing session, focusing on safety protocols, guidelines emphasized, and any action items for attendees. Format the response as JSON with the following structure: { \"summary\": \"...\", \"safety_protocols\": [\"...\"], \"guidelines_emphasized\": [\"...\"], \"action_items\": [\"...\"] }"
+    },
+    {
+      "category": "Legal",
+      "type": "Client Consultation",
+      "sub_type": "Case Review",
+      "ai_prompt": "Summarize the client consultation focused on case review. Highlight the case details, client concerns, and recommendations provided. Format the response as JSON with the following structure: { \"summary\": \"...\", \"case_details\": [\"...\"], \"client_concerns\": [\"...\"], \"recommendations\": [\"...\"] }"
+    },
+    {
+      "category": "Legal",
+      "type": "Client Consultation",
+      "sub_type": "Initial Consultation",
+      "ai_prompt": "Summarize the initial consultation, emphasizing the client's objectives, legal issues discussed, and next steps. Format the response as JSON with the following structure: { \"summary\": \"...\", \"client_objectives\": [\"...\"], \"legal_issues\": [\"...\"], \"next_steps\": [\"...\"] }"
+    },
+    {
+      "category": "Legal",
+      "type": "Client Consultation",
+      "sub_type": "Legal Advisory",
+      "ai_prompt": "Summarize the legal advisory session, focusing on the advice provided, applicable laws, and potential outcomes. Format the response as JSON with the following structure: { \"summary\": \"...\", \"advice_provided\": [\"...\"], \"applicable_laws\": [\"...\"], \"potential_outcomes\": [\"...\"] }"
+    },
+    {
+      "category": "Legal",
+      "type": "Client Consultation",
+      "sub_type": "Settlement Discussion",
+      "ai_prompt": "Summarize the settlement discussion, including settlement terms, negotiation points, and client decisions. Format the response as JSON with the following structure: { \"summary\": \"...\", \"settlement_terms\": [\"...\"], \"negotiation_points\": [\"...\"], \"client_decisions\": [\"...\"] }"
+    },
+    {
+      "category": "Legal",
+      "type": "Client Consultation",
+      "sub_type": "Strategy Session",
+      "ai_prompt": "Summarize the strategy session, detailing the strategies discussed, objectives outlined, and actionable steps. Format the response as JSON with the following structure: { \"summary\": \"...\", \"strategies_discussed\": [\"...\"], \"objectives_outlined\": [\"...\"], \"actionable_steps\": [\"...\"] }"
+    },
+    {
+      "category": "Legal",
+      "type": "Court Proceeding",
+      "sub_type": "Evidence Presentation",
+      "ai_prompt": "Summarize the court proceeding focused on evidence presentation. Highlight the evidence types, arguments made, and reactions from the judge or jury. Format the response as JSON with the following structure: { \"summary\": \"...\", \"evidence_types\": [\"...\"], \"arguments_made\": [\"...\"], \"judge_or_jury_reactions\": [\"...\"] }"
+    },
+    {
+      "category": "Legal",
+      "type": "Court Proceeding",
+      "sub_type": "Jury Selection",
+      "ai_prompt": "Summarize the jury selection process, including key considerations, objections raised, and final juror decisions. Format the response as JSON with the following structure: { \"summary\": \"...\", \"considerations\": [\"...\"], \"objections\": [\"...\"], \"final_decisions\": [\"...\"] }"
+    },
+    {
+      "category": "Legal",
+      "type": "Court Proceeding",
+      "sub_type": "Motion Hearing",
+      "ai_prompt": "Summarize the motion hearing, focusing on the motions filed, arguments presented, and rulings issued. Format the response as JSON with the following structure: { \"summary\": \"...\", \"motions_filed\": [\"...\"], \"arguments_presented\": [\"...\"], \"rulings_issued\": [\"...\"] }"
+    },
+    {
+      "category": "Legal",
+      "type": "Court Proceeding",
+      "sub_type": "Sentencing",
+      "ai_prompt": "Summarize the sentencing process, noting the charges, arguments for sentencing, and the final verdict. Format the response as JSON with the following structure: { \"summary\": \"...\", \"charges\": [\"...\"], \"arguments_for_sentencing\": [\"...\"], \"final_verdict\": [\"...\"] }"
+    },
+    {
+      "category": "Legal",
+      "type": "Court Proceeding",
+      "sub_type": "Trial Hearing",
+      "ai_prompt": "Summarize the trial hearing, detailing the case presented, witness testimonies, and legal arguments. Format the response as JSON with the following structure: { \"summary\": \"...\", \"case_presented\": [\"...\"], \"witness_testimonies\": [\"...\"], \"legal_arguments\": [\"...\"] }"
+    },
+    {
+      "category": "Legal",
+      "type": "Deposition",
+      "sub_type": "Cross Examination",
+      "ai_prompt": "Summarize the deposition focused on cross-examination. Highlight key questions asked, responses provided, and their implications. Format the response as JSON with the following structure: { \"summary\": \"...\", \"key_questions\": [\"...\"], \"responses\": [\"...\"], \"implications\": [\"...\"] }"
+    },
+    {
+      "category": "Legal",
+      "type": "Deposition",
+      "sub_type": "Discovery Deposition",
+      "ai_prompt": "Summarize the discovery deposition, focusing on information gathered, relevance to the case, and any objections raised. Format the response as JSON with the following structure: { \"summary\": \"...\", \"information_gathered\": [\"...\"], \"relevance\": [\"...\"], \"objections\": [\"...\"] }"
+    },
+    {
+      "category": "Legal",
+      "type": "Deposition",
+      "sub_type": "Evidence Review",
+      "ai_prompt": "Summarize the deposition focusing on evidence review. Include evidence discussed, its significance, and questions raised. Format the response as JSON with the following structure: { \"summary\": \"...\", \"evidence_discussed\": [\"...\"], \"significance\": [\"...\"], \"questions_raised\": [\"...\"] }"
+    },
+    {
+      "category": "Legal",
+      "type": "Deposition",
+      "sub_type": "Expert Witness",
+      "ai_prompt": "Summarize the expert witness deposition, highlighting the expertise presented, key statements made, and cross-examination points. Format the response as JSON with the following structure: { \"summary\": \"...\", \"expertise_presented\": [\"...\"], \"key_statements\": [\"...\"], \"cross_examination_points\": [\"...\"] }"
+    },
+    {
+      "category": "Legal",
+      "type": "Deposition",
+      "sub_type": "Witness Testimony",
+      "ai_prompt": "Summarize the deposition of the witness testimony. Include key events described, relevance to the case, and any contradictions identified. Format the response as JSON with the following structure: { \"summary\": \"...\", \"key_events\": [\"...\"], \"relevance\": [\"...\"], \"contradictions\": [\"...\"] }"
+    },
+    {
+      "category": "Media & Entertainment",
+      "type": "Documentary",
+      "sub_type": "Behind the Scenes",
+      "ai_prompt": "Summarize the content of this behind-the-scenes documentary. Highlight the creative processes, challenges faced, and insights shared. Format the response as JSON with the following structure: { \"summary\": \"...\", \"creative_processes\": [\"...\"], \"challenges_faced\": [\"...\"], \"insights_shared\": [\"...\"] }"
+    },
+    {
+      "category": "Media & Entertainment",
+      "type": "Documentary",
+      "sub_type": "Feature Length",
+      "ai_prompt": "Summarize the content of this feature-length documentary. Include key themes, major events, and conclusions drawn. Format the response as JSON with the following structure: { \"summary\": \"...\", \"key_themes\": [\"...\"], \"major_events\": [\"...\"], \"conclusions_drawn\": [\"...\"] }"
+    },
+    {
+      "category": "Media & Entertainment",
+      "type": "Documentary",
+      "sub_type": "Historical Record",
+      "ai_prompt": "Summarize this historical record documentary. Focus on the historical context, significant events, and their implications. Format the response as JSON with the following structure: { \"summary\": \"...\", \"historical_context\": [\"...\"], \"significant_events\": [\"...\"], \"implications\": [\"...\"] }"
+    },
+    {
+      "category": "Media & Entertainment",
+      "type": "Documentary",
+      "sub_type": "Making Of",
+      "ai_prompt": "Summarize this making-of documentary. Highlight the production journey, technical challenges, and creative decisions. Format the response as JSON with the following structure: { \"summary\": \"...\", \"production_journey\": [\"...\"], \"technical_challenges\": [\"...\"], \"creative_decisions\": [\"...\"] }"
+    },
+    {
+      "category": "Media & Entertainment",
+      "type": "Documentary",
+      "sub_type": "Mini-Series Episode",
+      "ai_prompt": "Summarize this mini-series documentary episode. Include the main topics covered, narratives explored, and any conclusions presented. Format the response as JSON with the following structure: { \"summary\": \"...\", \"main_topics\": [\"...\"], \"narratives_explored\": [\"...\"], \"conclusions_presented\": [\"...\"] }"
+    },
+    {
+      "category": "Media & Entertainment",
+      "type": "Podcast Episode",
+      "sub_type": "Expert Commentary",
+      "ai_prompt": "Summarize this podcast episode featuring expert commentary. Highlight the expert's insights, key topics discussed, and any actionable advice provided. Format the response as JSON with the following structure: { \"summary\": \"...\", \"expert_insights\": [\"...\"], \"key_topics\": [\"...\"], \"actionable_advice\": [\"...\"] }"
+    },
+    {
+      "category": "Media & Entertainment",
+      "type": "Podcast Episode",
+      "sub_type": "Interview Show",
+      "ai_prompt": "Summarize this interview show podcast episode. Include the guest's background, main discussion points, and any notable takeaways. Format the response as JSON with the following structure: { \"summary\": \"...\", \"guest_background\": [\"...\"], \"main_discussion_points\": [\"...\"], \"notable_takeaways\": [\"...\"] }"
+    },
+    {
+      "category": "Media & Entertainment",
+      "type": "Podcast Episode",
+      "sub_type": "News Roundup",
+      "ai_prompt": "Summarize this news roundup podcast episode. Focus on the key news stories covered, analysis provided, and any concluding remarks. Format the response as JSON with the following structure: { \"summary\": \"...\", \"key_news_stories\": [\"...\"], \"analysis\": [\"...\"], \"concluding_remarks\": [\"...\"] }"
+    },
+    {
+      "category": "Media & Entertainment",
+      "type": "Podcast Episode",
+      "sub_type": "Panel Discussion",
+      "ai_prompt": "Summarize this panel discussion podcast episode. Highlight the panelists' viewpoints, key arguments, and any consensus or disagreements. Format the response as JSON with the following structure: { \"summary\": \"...\", \"panelists_viewpoints\": [\"...\"], \"key_arguments\": [\"...\"], \"consensus_or_disagreements\": [\"...\"] }"
+    },
+    {
+      "category": "Media & Entertainment",
+      "type": "Podcast Episode",
+      "sub_type": "Solo Episode",
+      "ai_prompt": "Summarize this solo podcast episode. Focus on the host's main message, topics discussed, and any personal insights shared. Format the response as JSON with the following structure: { \"summary\": \"...\", \"main_message\": [\"...\"], \"topics_discussed\": [\"...\"], \"personal_insights\": [\"...\"] }"
+    },
+    {
+      "category": "Media & Entertainment",
+      "type": "Video Content",
+      "sub_type": "Educational Content",
+      "ai_prompt": "Summarize this educational video content. Highlight the main topics covered, instructional methods used, and key takeaways. Format the response as JSON with the following structure: { \"summary\": \"...\", \"main_topics\": [\"...\"], \"instructional_methods\": [\"...\"], \"key_takeaways\": [\"...\"] }"
+    },
+    {
+      "category": "Media & Entertainment",
+      "type": "Video Content",
+      "sub_type": "Entertainment Show",
+      "ai_prompt": "Summarize this entertainment show video. Focus on the storyline, key characters or hosts, and any notable moments. Format the response as JSON with the following structure: { \"summary\": \"...\", \"storyline\": [\"...\"], \"key_characters_or_hosts\": [\"...\"], \"notable_moments\": [\"...\"] }"
+    },
+    {
+      "category": "Media & Entertainment",
+      "type": "Video Content",
+      "sub_type": "Product Review",
+      "ai_prompt": "Summarize this product review video. Include details on the product features, pros and cons, and the reviewer's final verdict. Format the response as JSON with the following structure: { \"summary\": \"...\", \"product_features\": [\"...\"], \"pros_and_cons\": { \"pros\": [\"...\"], \"cons\": [\"...\"] }, \"final_verdict\": \"...\" }"
+    },
+    {
+      "category": "Media & Entertainment",
+      "type": "Video Content",
+      "sub_type": "Tutorial",
+      "ai_prompt": "Summarize this tutorial video. Highlight the step-by-step process, tools or materials used, and key tips provided. Format the response as JSON with the following structure: { \"summary\": \"...\", \"steps\": [\"...\"], \"tools_or_materials\": [\"...\"], \"key_tips\": [\"...\"] }"
+    },
+    {
+      "category": "Media & Entertainment",
+      "type": "Video Content",
+      "sub_type": "Vlog Entry",
+      "ai_prompt": "Summarize this vlog entry. Include details about the main theme, locations visited, and personal reflections shared by the vlogger. Format the response as JSON with the following structure: { \"summary\": \"...\", \"main_theme\": \"...\", \"locations_visited\": [\"...\"], \"personal_reflections\": [\"...\"] }"
+    },
+    {
+      "category": "Medical/Health",
+      "type": "Medical Conference",
+      "sub_type": "Case Presentation",
+      "ai_prompt": "Summarize this case presentation from the medical conference. Highlight the patient case details, diagnosis, and treatment approaches discussed. Format the response as JSON with the following structure: { \"summary\": \"...\", \"patient_case_details\": [\"...\"], \"diagnosis\": \"...\", \"treatment_approaches\": [\"...\"] }"
+    },
+    {
+      "category": "Medical/Health",
+      "type": "Medical Conference",
+      "sub_type": "Clinical Update",
+      "ai_prompt": "Summarize this clinical update from the medical conference. Include key updates on clinical practices, new guidelines, and implications for patient care. Format the response as JSON with the following structure: { \"summary\": \"...\", \"clinical_practices\": [\"...\"], \"new_guidelines\": [\"...\"], \"implications\": [\"...\"] }"
+    },
+    {
+      "category": "Medical/Health",
+      "type": "Medical Conference",
+      "sub_type": "Medical Review",
+      "ai_prompt": "Summarize this medical review session from the conference. Focus on the topics reviewed, key findings, and their relevance to clinical practice. Format the response as JSON with the following structure: { \"summary\": \"...\", \"topics_reviewed\": [\"...\"], \"key_findings\": [\"...\"], \"relevance\": [\"...\"] }"
+    },
+    {
+      "category": "Medical/Health",
+      "type": "Medical Conference",
+      "sub_type": "Research Findings",
+      "ai_prompt": "Summarize the research findings presented at the medical conference. Highlight the study objectives, methodology, results, and conclusions. Format the response as JSON with the following structure: { \"summary\": \"...\", \"study_objectives\": [\"...\"], \"methodology\": [\"...\"], \"results\": [\"...\"], \"conclusions\": [\"...\"] }"
+    },
+    {
+      "category": "Medical/Health",
+      "type": "Medical Conference",
+      "sub_type": "Treatment Protocol",
+      "ai_prompt": "Summarize the treatment protocol session from the medical conference. Include key protocols discussed, evidence supporting them, and any implementation challenges noted. Format the response as JSON with the following structure: { \"summary\": \"...\", \"key_protocols\": [\"...\"], \"evidence\": [\"...\"], \"implementation_challenges\": [\"...\"] }"
+    },
+    {
+      "category": "Medical/Health",
+      "type": "Medical Consultation",
+      "sub_type": "Follow-up Visit",
+      "ai_prompt": "Summarize the follow-up medical consultation. Highlight the patient's progress, adjustments to treatment, and any new recommendations. Format the response as JSON with the following structure: { \"summary\": \"...\", \"patient_progress\": [\"...\"], \"treatment_adjustments\": [\"...\"], \"new_recommendations\": [\"...\"] }"
+    },
+    {
+      "category": "Medical/Health",
+      "type": "Medical Consultation",
+      "sub_type": "Initial Assessment",
+      "ai_prompt": "Summarize the initial medical consultation. Focus on the patient's history, initial findings, and diagnostic plans. Format the response as JSON with the following structure: { \"summary\": \"...\", \"patient_history\": [\"...\"], \"initial_findings\": [\"...\"], \"diagnostic_plans\": [\"...\"] }"
+    },
+    {
+      "category": "Medical/Health",
+      "type": "Medical Consultation",
+      "sub_type": "Patient Review",
+      "ai_prompt": "Summarize the patient review consultation. Include the patient's condition updates, current treatments, and future considerations. Format the response as JSON with the following structure: { \"summary\": \"...\", \"condition_updates\": [\"...\"], \"current_treatments\": [\"...\"], \"future_considerations\": [\"...\"] }"
+    },
+    {
+      "category": "Medical/Health",
+      "type": "Medical Consultation",
+      "sub_type": "Specialist Consultation",
+      "ai_prompt": "Summarize the specialist consultation. Highlight the specialist's findings, recommendations, and any follow-up plans. Format the response as JSON with the following structure: { \"summary\": \"...\", \"specialist_findings\": [\"...\"], \"recommendations\": [\"...\"], \"follow_up_plans\": [\"...\"] }"
+    },
+    {
+      "category": "Medical/Health",
+      "type": "Medical Consultation",
+      "sub_type": "Treatment Planning",
+      "ai_prompt": "Summarize the treatment planning consultation. Include the goals set, treatment options discussed, and agreed-upon plan. Format the response as JSON with the following structure: { \"summary\": \"...\", \"goals_set\": [\"...\"], \"treatment_options\": [\"...\"], \"agreed_upon_plan\": [\"...\"] }"
+    },
+    {
+      "category": "Medical/Health",
+      "type": "Therapy Session",
+      "sub_type": "Assessment Session",
+      "ai_prompt": "Summarize the therapy assessment session. Include details about the client's background, issues assessed, and initial recommendations. Format the response as JSON with the following structure: { \"summary\": \"...\", \"client_background\": [\"...\"], \"issues_assessed\": [\"...\"], \"initial_recommendations\": [\"...\"] }"
+    },
+    {
+      "category": "Medical/Health",
+      "type": "Therapy Session",
+      "sub_type": "Family Counseling",
+      "ai_prompt": "Summarize the family counseling session. Highlight key issues discussed, strategies suggested, and outcomes achieved. Format the response as JSON with the following structure: { \"summary\": \"...\", \"key_issues\": [\"...\"], \"strategies_suggested\": [\"...\"], \"outcomes_achieved\": [\"...\"] }"
+    },
+    {
+      "category": "Medical/Health",
+      "type": "Therapy Session",
+      "sub_type": "Group Session",
+      "ai_prompt": "Summarize the group therapy session. Focus on the topics discussed, participant interactions, and any shared goals established. Format the response as JSON with the following structure: { \"summary\": \"...\", \"topics_discussed\": [\"...\"], \"participant_interactions\": [\"...\"], \"shared_goals\": [\"...\"] }"
+    },
+    {
+      "category": "Medical/Health",
+      "type": "Therapy Session",
+      "sub_type": "Individual Therapy",
+      "ai_prompt": "Summarize the individual therapy session. Include details on the client's concerns, therapeutic techniques used, and progress noted. Format the response as JSON with the following structure: { \"summary\": \"...\", \"client_concerns\": [\"...\"], \"therapeutic_techniques\": [\"...\"], \"progress_noted\": [\"...\"] }"
+    },
+    {
+      "category": "Medical/Health",
+      "type": "Therapy Session",
+      "sub_type": "Treatment Review",
+      "ai_prompt": "Summarize the therapy treatment review session. Highlight the treatment effectiveness, any challenges discussed, and plans for adjustment. Format the response as JSON with the following structure: { \"summary\": \"...\", \"treatment_effectiveness\": [\"...\"], \"challenges_discussed\": [\"...\"], \"adjustment_plans\": [\"...\"] }"
+    },
+    {
+      "category": "Meetings",
+      "type": "Board Meeting",
+      "sub_type": "Executive Session",
+      "ai_prompt": "Summarize this executive board meeting session. Highlight the main agenda items, decisions made, and any follow-up actions required. Format the response as JSON with the following structure: { \"summary\": \"...\", \"agenda_items\": [\"...\"], \"decisions_made\": [\"...\"], \"follow_up_actions\": [\"...\"] }"
+    },
+    {
+      "category": "Meetings",
+      "type": "Board Meeting",
+      "sub_type": "Financial Review",
+      "ai_prompt": "Summarize this financial review board meeting. Include key financial metrics discussed, issues raised, and resolutions proposed. Format the response as JSON with the following structure: { \"summary\": \"...\", \"financial_metrics\": [\"...\"], \"issues_raised\": [\"...\"], \"resolutions_proposed\": [\"...\"] }"
+    },
+    {
+      "category": "Meetings",
+      "type": "Board Meeting",
+      "sub_type": "Governance Meeting",
+      "ai_prompt": "Summarize this governance board meeting. Focus on policies reviewed, compliance matters discussed, and governance decisions made. Format the response as JSON with the following structure: { \"summary\": \"...\", \"policies_reviewed\": [\"...\"], \"compliance_matters\": [\"...\"], \"governance_decisions\": [\"...\"] }"
+    },
+    {
+      "category": "Meetings",
+      "type": "Board Meeting",
+      "sub_type": "Shareholder Meeting",
+      "ai_prompt": "Summarize this shareholder meeting. Highlight the topics discussed, shareholder questions raised, and resolutions passed. Format the response as JSON with the following structure: { \"summary\": \"...\", \"topics_discussed\": [\"...\"], \"shareholder_questions\": [\"...\"], \"resolutions_passed\": [\"...\"] }"
+    },
+    {
+      "category": "Meetings",
+      "type": "Board Meeting",
+      "sub_type": "Strategic Planning",
+      "ai_prompt": "Summarize this strategic planning board meeting. Include key strategies proposed, challenges identified, and next steps outlined. Format the response as JSON with the following structure: { \"summary\": \"...\", \"strategies_proposed\": [\"...\"], \"challenges_identified\": [\"...\"], \"next_steps\": [\"...\"] }"
+    },
+    {
+      "category": "Meetings",
+      "type": "Client Meeting",
+      "sub_type": "Feedback Session",
+      "ai_prompt": "Summarize this client feedback meeting. Include client concerns, suggestions provided, and agreed-upon actions. Format the response as JSON with the following structure: { \"summary\": \"...\", \"client_concerns\": [\"...\"], \"suggestions_provided\": [\"...\"], \"agreed_upon_actions\": [\"...\"] }"
+    },
+    {
+      "category": "Meetings",
+      "type": "Client Meeting",
+      "sub_type": "Issue Resolution",
+      "ai_prompt": "Summarize this client issue resolution meeting. Highlight the issues addressed, solutions proposed, and outcomes agreed upon. Format the response as JSON with the following structure: { \"summary\": \"...\", \"issues_addressed\": [\"...\"], \"solutions_proposed\": [\"...\"], \"outcomes_agreed\": [\"...\"] }"
+    },
+    {
+      "category": "Meetings",
+      "type": "Client Meeting",
+      "sub_type": "Project Update",
+      "ai_prompt": "Summarize this project update meeting with the client. Include project milestones, challenges discussed, and next steps. Format the response as JSON with the following structure: { \"summary\": \"...\", \"project_milestones\": [\"...\"], \"challenges_discussed\": [\"...\"], \"next_steps\": [\"...\"] }"
+    },
+    {
+      "category": "Meetings",
+      "type": "Client Meeting",
+      "sub_type": "Requirements Gathering",
+      "ai_prompt": "Summarize this client requirements gathering meeting. Highlight the requirements identified, clarifications made, and open questions. Format the response as JSON with the following structure: { \"summary\": \"...\", \"requirements_identified\": [\"...\"], \"clarifications_made\": [\"...\"], \"open_questions\": [\"...\"] }"
+    },
+    {
+      "category": "Meetings",
+      "type": "Client Meeting",
+      "sub_type": "Strategy Discussion",
+      "ai_prompt": "Summarize this client strategy discussion meeting. Include strategic goals discussed, approaches considered, and decisions made. Format the response as JSON with the following structure: { \"summary\": \"...\", \"strategic_goals\": [\"...\"], \"approaches_considered\": [\"...\"], \"decisions_made\": [\"...\"] }"
+    },
+    {
+      "category": "Meetings",
+      "type": "One-on-One Meeting",
+      "sub_type": "Career Development",
+      "ai_prompt": "Summarize this one-on-one career development meeting. Include topics discussed, goals set, and next steps planned. Format the response as JSON with the following structure: { \"summary\": \"...\", \"topics_discussed\": [\"...\"], \"goals_set\": [\"...\"], \"next_steps\": [\"...\"] }"
+    },
+    {
+      "category": "Meetings",
+      "type": "One-on-One Meeting",
+      "sub_type": "Goal Setting",
+      "ai_prompt": "Summarize this one-on-one goal setting meeting. Highlight goals discussed, challenges addressed, and plans for achievement. Format the response as JSON with the following structure: { \"summary\": \"...\", \"goals_discussed\": [\"...\"], \"challenges_addressed\": [\"...\"], \"achievement_plans\": [\"...\"] }"
+    },
+    {
+      "category": "Meetings",
+      "type": "One-on-One Meeting",
+      "sub_type": "Mentoring Session",
+      "ai_prompt": "Summarize this one-on-one mentoring session. Include topics covered, advice given, and progress reviewed. Format the response as JSON with the following structure: { \"summary\": \"...\", \"topics_covered\": [\"...\"], \"advice_given\": [\"...\"], \"progress_reviewed\": [\"...\"] }"
+    },
+    {
+      "category": "Meetings",
+      "type": "One-on-One Meeting",
+      "sub_type": "Performance Review",
+      "ai_prompt": "Summarize this one-on-one performance review meeting. Highlight performance metrics discussed, feedback provided, and improvement plans. Format the response as JSON with the following structure: { \"summary\": \"...\", \"performance_metrics\": [\"...\"], \"feedback_provided\": [\"...\"], \"improvement_plans\": [\"...\"] }"
+    },
+    {
+      "category": "Meetings",
+      "type": "One-on-One Meeting",
+      "sub_type": "Weekly Check-in",
+      "ai_prompt": "Summarize this weekly one-on-one check-in meeting. Include updates shared, issues raised, and plans for the coming week. Format the response as JSON with the following structure: { \"summary\": \"...\", \"updates_shared\": [\"...\"], \"issues_raised\": [\"...\"], \"plans_for_next_week\": [\"...\"] }"
+    },
+    {
+      "category": "Meetings",
+      "type": "Sales Call",
+      "sub_type": "Client Onboarding",
+      "ai_prompt": "Summarize this client onboarding sales call. Highlight client needs discussed, solutions proposed, and onboarding steps outlined. Format the response as JSON with the following structure: { \"summary\": \"...\", \"client_needs\": [\"...\"], \"solutions_proposed\": [\"...\"], \"onboarding_steps\": [\"...\"] }"
+    },
+    {
+      "category": "Meetings",
+      "type": "Sales Call",
+      "sub_type": "Discovery Call",
+      "ai_prompt": "Summarize this discovery sales call. Include client objectives identified, pain points discussed, and potential solutions presented. Format the response as JSON with the following structure: { \"summary\": \"...\", \"client_objectives\": [\"...\"], \"pain_points\": [\"...\"], \"potential_solutions\": [\"...\"] }"
+    },
+    {
+      "category": "Meetings",
+      "type": "Sales Call",
+      "sub_type": "Follow-up Meeting",
+      "ai_prompt": "Summarize this sales follow-up meeting. Highlight updates provided, questions answered, and next steps agreed upon. Format the response as JSON with the following structure: { \"summary\": \"...\", \"updates_provided\": [\"...\"], \"questions_answered\": [\"...\"], \"next_steps\": [\"...\"] }"
+    },
+    {
+      "category": "Meetings",
+      "type": "Sales Call",
+      "sub_type": "Negotiation",
+      "ai_prompt": "Summarize this sales negotiation meeting. Highlight negotiation points, concessions made, and agreements reached. Format the response as JSON with the following structure: { \"summary\": \"...\", \"negotiation_points\": [\"...\"], \"concessions_made\": [\"...\"], \"agreements_reached\": [\"...\"] }"
+    },
+    {
+      "category": "Meetings",
+      "type": "Sales Call",
+      "sub_type": "Product Demo",
+      "ai_prompt": "Summarize this product demo sales call. Include features demonstrated, client feedback, and follow-up actions. Format the response as JSON with the following structure: { \"summary\": \"...\", \"features_demonstrated\": [\"...\"], \"client_feedback\": [\"...\"], \"follow_up_actions\": [\"...\"] }"
+    },
+    {
+      "category": "Meetings",
+      "type": "Stand-up Meeting",
+      "sub_type": "Blockers Discussion",
+      "ai_prompt": "Summarize this stand-up meeting focused on blockers. Highlight blockers identified, solutions proposed, and team updates shared. Format the response as JSON with the following structure: { \"summary\": \"...\", \"blockers_identified\": [\"...\"], \"solutions_proposed\": [\"...\"], \"team_updates\": [\"...\"] }"
+    },
+    {
+      "category": "Meetings",
+      "type": "Stand-up Meeting",
+      "sub_type": "Daily Scrum",
+      "ai_prompt": "Summarize this daily scrum stand-up meeting. Include progress updates, blockers discussed, and tasks planned. Format the response as JSON with the following structure: { \"summary\": \"...\", \"progress_updates\": [\"...\"], \"blockers_discussed\": [\"...\"], \"tasks_planned\": [\"...\"] }"
+    },
+    {
+      "category": "Meetings",
+      "type": "Stand-up Meeting",
+      "sub_type": "Progress Updates",
+      "ai_prompt": "Summarize this progress update stand-up meeting. Highlight completed tasks, ongoing projects, and team contributions. Format the response as JSON with the following structure: { \"summary\": \"...\", \"completed_tasks\": [\"...\"], \"ongoing_projects\": [\"...\"], \"team_contributions\": [\"...\"] }"
+    },
+    {
+      "category": "Meetings",
+      "type": "Stand-up Meeting",
+      "sub_type": "Quick Updates",
+      "ai_prompt": "Summarize this stand-up meeting for quick updates. Include tasks completed, key highlights, and any urgent issues. Format the response as JSON with the following structure: { \"summary\": \"...\", \"tasks_completed\": [\"...\"], \"key_highlights\": [\"...\"], \"urgent_issues\": [\"...\"] }"
+    },
+    {
+      "category": "Meetings",
+      "type": "Stand-up Meeting",
+      "sub_type": "Team Sync",
+      "ai_prompt": "Summarize this team sync stand-up meeting. Highlight team updates, collaboration efforts, and next steps. Format the response as JSON with the following structure: { \"summary\": \"...\", \"team_updates\": [\"...\"], \"collaboration_efforts\": [\"...\"], \"next_steps\": [\"...\"] }"
+    },
+    {
+      "category": "Meetings",
+      "type": "Team Meeting",
+      "sub_type": "Department Updates",
+      "ai_prompt": "Summarize this team meeting focused on department updates. Include key updates shared, challenges discussed, and plans outlined. Format the response as JSON with the following structure: { \"summary\": \"...\", \"key_updates\": [\"...\"], \"challenges_discussed\": [\"...\"], \"plans_outlined\": [\"...\"] }"
+    },
+    {
+      "category": "Meetings",
+      "type": "Team Meeting",
+      "sub_type": "Project Planning",
+      "ai_prompt": "Summarize this team project planning meeting. Highlight goals set, timelines discussed, and tasks assigned. Format the response as JSON with the following structure: { \"summary\": \"...\", \"goals_set\": [\"...\"], \"timelines_discussed\": [\"...\"], \"tasks_assigned\": [\"...\"] }"
+    },
+    {
+      "category": "Meetings",
+      "type": "Team Meeting",
+      "sub_type": "Retrospectives",
+      "ai_prompt": "Summarize this team retrospective meeting. Include what went well, areas for improvement, and action items agreed upon. Format the response as JSON with the following structure: { \"summary\": \"...\", \"what_went_well\": [\"...\"], \"areas_for_improvement\": [\"...\"], \"action_items\": [\"...\"] }"
+    },
+    {
+      "category": "Meetings",
+      "type": "Team Meeting",
+      "sub_type": "Sprint Planning",
+      "ai_prompt": "Summarize this sprint planning meeting. Highlight sprint goals, tasks prioritized, and resource allocations. Format the response as JSON with the following structure: { \"summary\": \"...\", \"sprint_goals\": [\"...\"], \"tasks_prioritized\": [\"...\"], \"resource_allocations\": [\"...\"] }"
+    },
+    {
+      "category": "Meetings",
+      "type": "Team Meeting",
+      "sub_type": "Team Collaboration",
+      "ai_prompt": "Summarize this team collaboration meeting. Include topics discussed, ideas generated, and outcomes achieved. Format the response as JSON with the following structure: { \"summary\": \"...\", \"topics_discussed\": [\"...\"], \"ideas_generated\": [\"...\"], \"outcomes_achieved\": [\"...\"] }"
+    },
+    {
+      "category": "Webinars & Events",
+      "type": "Educational Webinar",
+      "sub_type": "Product Training",
+      "ai_prompt": "Summarize this product training webinar. Include features explained, workflows demonstrated, and best practices shared. Format the response as JSON with the following structure: { \"summary\": \"...\", \"features_explained\": [\"...\"], \"workflows_demonstrated\": [\"...\"], \"best_practices\": [\"...\"] }"
+    },
+    {
+      "category": "Webinars & Events",
+      "type": "Educational Webinar",
+      "sub_type": "Industry Workshop",
+      "ai_prompt": "Summarize this industry workshop webinar. Include industry trends discussed, best practices shared, and practical applications presented. Format the response as JSON with the following structure: { \"summary\": \"...\", \"industry_trends\": [\"...\"], \"best_practices\": [\"...\"], \"practical_applications\": [\"...\"] }"
+    },
+    {
+      "category": "Webinars & Events",
+      "type": "Educational Webinar",
+      "sub_type": "Best Practices",
+      "ai_prompt": "Summarize this best practices webinar. Highlight recommended practices, common pitfalls discussed, and implementation tips shared. Format the response as JSON with the following structure: { \"summary\": \"...\", \"recommended_practices\": [\"...\"], \"common_pitfalls\": [\"...\"], \"implementation_tips\": [\"...\"] }"
+    },
+    {
+      "category": "Webinars & Events",
+      "type": "Educational Webinar",
+      "sub_type": "Technical Deep Dive",
+      "ai_prompt": "Summarize this technical deep dive webinar. Include technical concepts covered, implementation details discussed, and troubleshooting tips provided. Format the response as JSON with the following structure: { \"summary\": \"...\", \"technical_concepts\": [\"...\"], \"implementation_details\": [\"...\"], \"troubleshooting_tips\": [\"...\"] }"
+    },
+    {
+      "category": "Webinars & Events",
+      "type": "Educational Webinar",
+      "sub_type": "Certification Course",
+      "ai_prompt": "Summarize this certification course webinar. Include learning objectives covered, certification requirements discussed, and exam preparation tips. Format the response as JSON with the following structure: { \"summary\": \"...\", \"learning_objectives\": [\"...\"], \"certification_requirements\": [\"...\"], \"exam_preparation_tips\": [\"...\"] }"
+    },
+    {
+      "category": "Webinars & Events",
+      "type": "Product Demo",
+      "sub_type": "Feature Overview",
+      "ai_prompt": "Summarize this product feature overview demo. Include features demonstrated, benefits highlighted, and use cases presented. Format the response as JSON with the following structure: { \"summary\": \"...\", \"features_demonstrated\": [\"...\"], \"benefits_highlighted\": [\"...\"], \"use_cases\": [\"...\"] }"
+    },
+    {
+      "category": "Webinars & Events",
+      "type": "Product Demo",
+      "sub_type": "Technical Walkthrough",
+      "ai_prompt": "Summarize this technical product walkthrough demo. Include technical details explained, implementation steps demonstrated, and configuration options discussed. Format the response as JSON with the following structure: { \"summary\": \"...\", \"technical_details\": [\"...\"], \"implementation_steps\": [\"...\"], \"configuration_options\": [\"...\"] }"
+    },
+    {
+      "category": "Webinars & Events",
+      "type": "Product Demo",
+      "sub_type": "Use Case Demonstration",
+      "ai_prompt": "Summarize this product use case demonstration. Include scenarios presented, solutions demonstrated, and business benefits highlighted. Format the response as JSON with the following structure: { \"summary\": \"...\", \"scenarios_presented\": [\"...\"], \"solutions_demonstrated\": [\"...\"], \"business_benefits\": [\"...\"] }"
+    },
+    {
+      "category": "Webinars & Events",
+      "type": "Product Demo",
+      "sub_type": "Integration Setup",
+      "ai_prompt": "Summarize this product integration setup demo. Include integration steps explained, configuration requirements covered, and troubleshooting tips provided. Format the response as JSON with the following structure: { \"summary\": \"...\", \"integration_steps\": [\"...\"], \"configuration_requirements\": [\"...\"], \"troubleshooting_tips\": [\"...\"] }"
+    },
+    {
+      "category": "Webinars & Events",
+      "type": "Product Demo",
+      "sub_type": "Platform Tour",
+      "ai_prompt": "Summarize this platform tour demo. Include platform features showcased, navigation explained, and key functionalities demonstrated. Format the response as JSON with the following structure: { \"summary\": \"...\", \"platform_features\": [\"...\"], \"navigation_explained\": [\"...\"], \"key_functionalities\": [\"...\"] }"
+    },
+    {
+      "category": "Webinars & Events",
+      "type": "Conference Talk",
+      "sub_type": "Keynote Speech",
+      "ai_prompt": "Summarize this conference keynote speech. Include main themes presented, key messages delivered, and future predictions discussed. Format the response as JSON with the following structure: { \"summary\": \"...\", \"main_themes\": [\"...\"], \"key_messages\": [\"...\"], \"future_predictions\": [\"...\"] }"
+    },
+    {
+      "category": "Webinars & Events",
+      "type": "Conference Talk",
+      "sub_type": "Technical Session",
+      "ai_prompt": "Summarize this conference technical session. Include technical concepts explained, implementation details discussed, and practical applications presented. Format the response as JSON with the following structure: { \"summary\": \"...\", \"technical_concepts\": [\"...\"], \"implementation_details\": [\"...\"], \"practical_applications\": [\"...\"] }"
+    },
+    {
+      "category": "Webinars & Events",
+      "type": "Conference Talk",
+      "sub_type": "Panel Discussion",
+      "ai_prompt": "Summarize this conference panel discussion. Highlight perspectives shared, topics debated, and conclusions reached. Format the response as JSON with the following structure: { \"summary\": \"...\", \"perspectives_shared\": [\"...\"], \"topics_debated\": [\"...\"], \"conclusions_reached\": [\"...\"] }"
+    },
+    {
+      "category": "Webinars & Events",
+      "type": "Conference Talk",
+      "sub_type": "Industry Trends",
+      "ai_prompt": "Summarize this conference industry trends talk. Include trends identified, market analysis presented, and future predictions discussed. Format the response as JSON with the following structure: { \"summary\": \"...\", \"trends_identified\": [\"...\"], \"market_analysis\": [\"...\"], \"future_predictions\": [\"...\"] }"
+    },
+    {
+      "category": "Webinars & Events",
+      "type": "Conference Talk",
+      "sub_type": "Case Study Presentation",
+      "ai_prompt": "Summarize this conference case study presentation. Include scenario presented, solutions implemented, and lessons learned. Format the response as JSON with the following structure: { \"summary\": \"...\", \"scenario_details\": [\"...\"], \"solutions_implemented\": [\"...\"], \"lessons_learned\": [\"...\"] }"
+    },
+    {
+      "category": "Webinars & Events",
+      "type": "Workshop",
+      "sub_type": "Hands-on Training",
+      "ai_prompt": "Summarize this hands-on training workshop. Include skills taught, exercises completed, and practical applications demonstrated. Format the response as JSON with the following structure: { \"summary\": \"...\", \"skills_taught\": [\"...\"], \"exercises_completed\": [\"...\"], \"practical_applications\": [\"...\"] }"
+    },
+    {
+      "category": "Webinars & Events",
+      "type": "Workshop",
+      "sub_type": "Interactive Session",
+      "ai_prompt": "Summarize this interactive workshop session. Include activities conducted, participant engagement, and learning outcomes achieved. Format the response as JSON with the following structure: { \"summary\": \"...\", \"activities_conducted\": [\"...\"], \"participant_engagement\": [\"...\"], \"learning_outcomes\": [\"...\"] }"
+    },
+    {
+      "category": "Webinars & Events",
+      "type": "Workshop",
+      "sub_type": "Group Exercise",
+      "ai_prompt": "Summarize this workshop group exercise session. Include exercise objectives, group dynamics observed, and outcomes achieved. Format the response as JSON with the following structure: { \"summary\": \"...\", \"exercise_objectives\": [\"...\"], \"group_dynamics\": [\"...\"], \"outcomes_achieved\": [\"...\"] }"
+    },
+    {
+      "category": "Webinars & Events",
+      "type": "Workshop",
+      "sub_type": "Skill Building",
+      "ai_prompt": "Summarize this skill building workshop. Include skills developed, practice exercises completed, and progress demonstrated. Format the response as JSON with the following structure: { \"summary\": \"...\", \"skills_developed\": [\"...\"], \"practice_exercises\": [\"...\"], \"progress_demonstrated\": [\"...\"] }"
+    },
+    {
+      "category": "Webinars & Events",
+      "type": "Workshop",
+      "sub_type": "Practical Application",
+      "ai_prompt": "Summarize this practical application workshop. Include concepts applied, real-world scenarios practiced, and solutions developed. Format the response as JSON with the following structure: { \"summary\": \"...\", \"concepts_applied\": [\"...\"], \"scenarios_practiced\": [\"...\"], \"solutions_developed\": [\"...\"] }"
+    }
+]
+  

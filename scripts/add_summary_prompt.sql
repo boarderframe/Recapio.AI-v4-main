@@ -1,0 +1,1 @@
+ALTER TABLE transcript_types ADD COLUMN summary_prompt TEXT DEFAULT 'Please analyze this {type} transcript and provide a summary in the following JSON format: {"key_points": [], "action_items": [], "summary": "", "category_specific_data": {}} Focus on aspects relevant to {sub_type} and provide structured insights.';

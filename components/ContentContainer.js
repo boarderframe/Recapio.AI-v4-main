@@ -1,17 +1,32 @@
 "use client";
 
-import { Container } from '@mui/material';
+import { Box } from '@mui/material';
+import { useThemeSettings } from '@/context/ThemeContext';
 
-export default function ContentContainer({ children, noPadding }) {
+export default function ContentContainer({ children, sx = {} }) {
+    const { themeSettings } = useThemeSettings();
+
+    // Default spacing settings
+    const spacingDefaults = {
+        contentGap: 3,
+        containerPadding: 4,
+        ...themeSettings?.spacing
+    };
+
     return (
-        <Container
-            maxWidth="lg"
+        <Box
             sx={{
-                py: 0,
-                px: { xs: 2, sm: 3 },
+                display: 'flex',
+                flexDirection: 'column',
+                gap: spacingDefaults.contentGap * 8,
+                p: spacingDefaults.containerPadding,
+                width: '100%',
+                maxWidth: '1200px',
+                margin: '0 auto',
+                ...sx
             }}
         >
             {children}
-        </Container>
+        </Box>
     );
 } 

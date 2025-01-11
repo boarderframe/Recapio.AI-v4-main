@@ -139,9 +139,6 @@ export default function Footer() {
                         gap: 2,
                     }}
                 >
-                    <Typography variant="body2" color="text.secondary">
-                        © {new Date().getFullYear()} Recapio.ai. All rights reserved.
-                    </Typography>
                     <Stack
                         direction={{ xs: 'column', sm: 'row' }}
                         spacing={{ xs: 1, sm: 3 }}

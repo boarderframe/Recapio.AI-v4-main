@@ -728,29 +728,6 @@ export default function TranscriptsPage() {
                 />
               )}
             </Box>
-
-            {/* Footer */}
-            <Box
-              sx={{
-                p: 2,
-                borderTop: `1px solid ${theme.palette.divider}`,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                position: 'sticky',
-                bottom: 0,
-                bgcolor: theme.palette.grey[50],
-                zIndex: 1,
-              }}
-            >
-              <Typography
-                variant="body2"
-                color="text.secondary"
-                sx={{ fontSize: '0.75rem' }}
-              >
-                Recapio.AI © 2024
-              </Typography>
-            </Box>
           </Paper>
         </Grid>
       </Grid>

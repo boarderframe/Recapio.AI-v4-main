@@ -104,7 +104,9 @@ export default function TranscriptTypesPage() {
         sub_type: '',
         category_color: '',
         category_icon: '',
-        summary_prompt: ''
+        analysis_instructions: '',
+        json_schema: null,
+        api_parameters: null
     });
     const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
     const [deletingId, setDeletingId] = useState(null);
@@ -278,7 +280,9 @@ export default function TranscriptTypesPage() {
                 sub_type: row.sub_type || '',
                 category_color: row.category_color || '',
                 category_icon: row.category_icon || '',
-                summary_prompt: row.summary_prompt || ''
+                analysis_instructions: row.analysis_instructions || '',
+                json_schema: row.json_schema || null,
+                api_parameters: row.api_parameters || null
             })) || [];
 
             setRows(processedRows);
@@ -297,7 +301,9 @@ export default function TranscriptTypesPage() {
             sub_type: '',
             category_color: '',
             category_icon: '',
-            summary_prompt: 'Summarize this {type} - {sub_type}. Format the response as JSON with the following structure: { "summary": "...", "key_points": ["..."], "action_items": ["..."], "category_specific_data": {} }'
+            analysis_instructions: '',
+            json_schema: null,
+            api_parameters: null
         });
         setOpenDialog(true);
     };
@@ -310,7 +316,9 @@ export default function TranscriptTypesPage() {
             sub_type: row.sub_type,
             category_color: row.category_color,
             category_icon: row.category_icon,
-            summary_prompt: row.summary_prompt
+            analysis_instructions: row.analysis_instructions || '',
+            json_schema: row.json_schema || null,
+            api_parameters: row.api_parameters || null
         });
         setOpenDialog(true);
     };
@@ -343,7 +351,7 @@ export default function TranscriptTypesPage() {
     const handleSubmit = async () => {
         try {
             if (!formData.category || !formData.type || !formData.sub_type || !formData.category_color || !formData.category_icon) {
-                alert('Please fill in all fields');
+                alert('Please fill in all required fields');
                 return;
             }
 
@@ -353,7 +361,9 @@ export default function TranscriptTypesPage() {
                 sub_type: formData.sub_type,
                 category_color: formData.category_color,
                 category_icon: formData.category_icon,
-                summary_prompt: formData.summary_prompt
+                analysis_instructions: formData.analysis_instructions,
+                json_schema: formData.json_schema,
+                api_parameters: formData.api_parameters
             };
 
             if (editingRow) {
@@ -416,9 +426,12 @@ export default function TranscriptTypesPage() {
             }
 
             const data = await response.json();
+            
             setFormData(prev => ({
                 ...prev,
-                summary_prompt: data.prompt
+                analysis_instructions: data.analysis_instructions,
+                json_schema: data.json_schema,
+                api_parameters: data.api_parameters
             }));
         } catch (error) {
             console.error('Error generating prompt:', error);
@@ -714,27 +727,80 @@ export default function TranscriptTypesPage() {
                             ))}
                         </TextField>
                         <TextField
-                            label="Summary Prompt"
-                            value={formData.summary_prompt}
-                            onChange={(e) => setFormData({ ...formData, summary_prompt: e.target.value })}
-                            required
-                            fullWidth
+                            label="Analysis Instructions"
+                            value={formData.analysis_instructions}
+                            onChange={(e) => setFormData({ ...formData, analysis_instructions: e.target.value })}
                             multiline
-                            rows={8}
+                            rows={4}
+                            fullWidth
                             InputLabelProps={{
                                 shrink: true
                             }}
-                            placeholder="Enter the AI prompt for summarizing this transcript type. The prompt should specify the JSON structure for the summary output."
                             sx={{
                                 '& .MuiOutlinedInput-root': {
                                     '&:hover fieldset': {
                                         borderColor: 'primary.main',
                                     },
                                 },
-                                '& .MuiInputBase-input': {
-                                    fontFamily: 'monospace',
-                                    fontSize: '0.875rem',
-                                    lineHeight: 1.5
+                            }}
+                        />
+
+                        <TextField
+                            label="JSON Schema"
+                            value={formData.json_schema ? JSON.stringify(formData.json_schema, null, 2) : ''}
+                            onChange={(e) => {
+                                try {
+                                    const parsed = e.target.value ? JSON.parse(e.target.value) : null;
+                                    setFormData({ ...formData, json_schema: parsed });
+                                } catch (error) {
+                                    // Don't update if JSON is invalid
+                                    console.error('Invalid JSON schema:', error);
+                                }
+                            }}
+                            multiline
+                            rows={4}
+                            fullWidth
+                            InputLabelProps={{
+                                shrink: true
+                            }}
+                            sx={{
+                                '& .MuiOutlinedInput-root': {
+                                    '&:hover fieldset': {
+                                        borderColor: 'primary.main',
+                                    },
+                                    '& textarea': {
+                                        fontFamily: 'monospace'
+                                    }
+                                },
+                            }}
+                        />
+
+                        <TextField
+                            label="API Parameters"
+                            value={formData.api_parameters ? JSON.stringify(formData.api_parameters, null, 2) : ''}
+                            onChange={(e) => {
+                                try {
+                                    const parsed = e.target.value ? JSON.parse(e.target.value) : null;
+                                    setFormData({ ...formData, api_parameters: parsed });
+                                } catch (error) {
+                                    // Don't update if JSON is invalid
+                                    console.error('Invalid API parameters:', error);
+                                }
+                            }}
+                            multiline
+                            rows={4}
+                            fullWidth
+                            InputLabelProps={{
+                                shrink: true
+                            }}
+                            sx={{
+                                '& .MuiOutlinedInput-root': {
+                                    '&:hover fieldset': {
+                                        borderColor: 'primary.main',
+                                    },
+                                    '& textarea': {
+                                        fontFamily: 'monospace'
+                                    }
                                 },
                             }}
                         />

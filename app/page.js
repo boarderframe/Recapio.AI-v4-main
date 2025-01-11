@@ -28,7 +28,7 @@ import {
 import Link from 'next/link';
 import Image from 'next/image';
 import ContentContainer from '@/components/ContentContainer';
-import PageLayout from '@/components/PageLayout';
+import AuthNavbar from '@/components/AuthNavbar';
 
 export default function Home() {
     const theme = useTheme();
@@ -101,13 +101,14 @@ export default function Home() {
     ];
 
     return (
-        <PageLayout>
-            <Box>
+        <>
+            <AuthNavbar />
+            <Box component="main">
                 {/* Hero Section */}
                 <Box
                     sx={{
                         background: 'linear-gradient(180deg, #f8f9fa 0%, rgba(248, 249, 250, 0.8) 100%)',
-                        pt: { xs: 0.5, md: 1 },
+                        pt: { xs: 8, md: 12 },
                         pb: { xs: 8, md: 12 },
                         position: 'relative',
                         overflow: 'hidden',
@@ -586,6 +587,6 @@ export default function Home() {
                     </ContentContainer>
                 </Box>
             </Box>
-        </PageLayout>
+        </>
     );
 }

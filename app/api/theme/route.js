@@ -1,44 +1,48 @@
 import { NextResponse } from 'next/server';
-import fs from 'fs/promises';
-import path from 'path';
 
-const THEME_FILE_PATH = path.join(process.cwd(), 'data', 'theme-settings.json');
-
-// Ensure the data directory exists
-async function ensureDataDirectory() {
-    const dataDir = path.join(process.cwd(), 'data');
-    try {
-        await fs.access(dataDir);
-    } catch {
-        await fs.mkdir(dataDir, { recursive: true });
+const defaultThemeSettings = {
+    spacing: {
+        contentGap: 3,
+        cardPadding: 3,
+        headerSpacing: 2,
+        sectionSpacing: 3,
+        navHeight: 56,
+        navToHeaderGap: 2,
+        headerToToolbarGap: 2,
+        toolbarToContentGap: 2
+    },
+    header: {
+        titleSize: { xs: '1.75rem', md: '2rem' },
+        titleWeight: 700,
+        titleLineHeight: 1.2,
+        subtitleSize: { xs: '0.95rem', md: '1rem' },
+        subtitleWeight: 400,
+        subtitleLineHeight: 1.4,
+        underlineWidth: '40%',
+        underlineOpacity: 0.3,
+        maxWidth: '600px',
+        borderRadius: 12,
+        padding: 3,
+    },
+    content: {
+        borderRadius: 12,
+        padding: 3,
+        maxWidth: '100%',
+        boxShadow: '0 8px 16px rgba(0, 0, 0, 0.1)',
+        borderColor: 'rgba(0, 0, 0, 0.08)'
+    },
+    navigation: {
+        height: 56,
+        borderRadius: 0,
     }
-}
+};
 
-// GET /api/theme
 export async function GET() {
-    try {
-        await ensureDataDirectory();
-        const themeData = await fs.readFile(THEME_FILE_PATH, 'utf-8');
-        return NextResponse.json(JSON.parse(themeData));
-    } catch (error) {
-        if (error.code === 'ENOENT') {
-            // If file doesn't exist, return default settings
-            return NextResponse.json({});
-        }
-        console.error('Error reading theme settings:', error);
-        return NextResponse.json({ error: 'Failed to load theme settings' }, { status: 500 });
-    }
+    return NextResponse.json(defaultThemeSettings);
 }
 
-// POST /api/theme
 export async function POST(request) {
-    try {
-        const themeSettings = await request.json();
-        await ensureDataDirectory();
-        await fs.writeFile(THEME_FILE_PATH, JSON.stringify(themeSettings, null, 2));
-        return NextResponse.json({ success: true });
-    } catch (error) {
-        console.error('Error saving theme settings:', error);
-        return NextResponse.json({ error: 'Failed to save theme settings' }, { status: 500 });
-    }
+    const body = await request.json();
+    // In a real app, you would save this to a database
+    return NextResponse.json(body);
 } 

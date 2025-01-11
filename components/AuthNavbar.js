@@ -1,7 +1,6 @@
 "use client";
 
-import React from 'react';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import {
     AppBar,
     Box,
@@ -13,21 +12,13 @@ import {
     Button,
     MenuItem,
     Avatar,
-    Divider,
-    ListItemIcon,
 } from '@mui/material';
-import MenuIcon from '@mui/icons-material/Menu';
+import { Menu as MenuIcon } from '@mui/icons-material';
 import { useAuth } from '@/lib/AuthContext';
 import { useRouter, usePathname } from 'next/navigation';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import LogoutIcon from '@mui/icons-material/Logout';
-import DashboardIcon from '@mui/icons-material/Dashboard';
-import SettingsIcon from '@mui/icons-material/Settings';
-import PersonIcon from '@mui/icons-material/Person';
 import { useTheme } from '@mui/material/styles';
-import Link from 'next/link';
-import ProfileMenu from './ProfileMenu';
 import { useThemeSettings } from '@/context/ThemeContext';
+import ProfileMenu from './ProfileMenu';
 
 export default function AuthNavbar() {
     const [mobileMenuAnchor, setMobileMenuAnchor] = useState(null);
@@ -49,10 +40,10 @@ export default function AuthNavbar() {
 
     // Post-login navigation items
     const postLoginItems = [
-        { label: 'Dashboard', path: '/dashboard', icon: <DashboardIcon /> },
+        { label: 'Dashboard', path: '/dashboard' },
         { label: 'New Transcript', path: '/new-transcript' },
-        { label: 'Transcript Library', path: '/transcripts' },
-        { label: 'Reporting', path: '/reporting' },
+        { label: 'Library', path: '/transcripts' },
+        { label: 'Reports', path: '/reporting' },
         { label: 'Settings', path: '/settings' },
     ];
 
@@ -80,7 +71,7 @@ export default function AuthNavbar() {
     const handleNavigation = (path) => {
         handleMobileMenuClose();
         handleProfileMenuClose();
-        router.replace(path);
+        router.push(path);
     };
 
     const navItems = user ? postLoginItems : preLoginItems;
@@ -89,187 +80,195 @@ export default function AuthNavbar() {
         <AppBar 
             position="fixed" 
             sx={{ 
-                backgroundColor: 'background.paper',
-                boxShadow: '0 1px 2px rgba(0, 0, 0, 0.1)',
-                height: `${themeSettings.spacing.navHeight}px`,
+                background: '#ffffff',
+                boxShadow: '0 1px 3px rgba(0, 0, 0, 0.08)',
+                height: '64px',
+                borderBottom: '1px solid',
+                borderColor: 'rgba(0, 0, 0, 0.06)'
             }}
         >
-            <Container maxWidth="xl">
+            <Box
+                sx={{
+                    maxWidth: '1200px',
+                    width: '100%',
+                    mx: 'auto',
+                    px: { xs: 2, sm: 3, md: 4 }
+                }}
+            >
                 <Toolbar 
                     disableGutters 
                     sx={{ 
-                        minHeight: `${themeSettings.spacing.navHeight}px !important`,
-                        height: `${themeSettings.spacing.navHeight}px`,
+                        minHeight: '64px !important',
+                        height: '64px',
                         display: 'flex',
                         alignItems: 'center',
-                        px: 2
+                        justifyContent: 'space-between',
+                        gap: 3
                     }}
                 >
                     {/* Logo */}
-                    <Box 
-                        onClick={() => handleNavigation(user ? '/dashboard' : '/')}
-                        sx={{ 
-                            textDecoration: 'none',
-                            cursor: 'pointer',
-                            py: 1
-                        }}
-                    >
+                    <Box sx={{ 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        width: '200px' 
+                    }}>
                         <Typography
                             variant="h6"
-                            className="brand-logo"
+                            noWrap
+                            component="a"
+                            href="/"
                             sx={{
+                                fontFamily: 'inherit',
                                 fontWeight: 700,
-                                letterSpacing: '.1rem',
-                                background: `linear-gradient(45deg, ${theme.palette.secondary.main} 30%, ${theme.palette.primary.main} 90%)`,
-                                WebkitBackgroundClip: 'text',
-                                WebkitTextFillColor: 'transparent',
-                                fontSize: '1.75rem',
-                                display: 'inline-block',
+                                fontSize: '1.4rem',
+                                letterSpacing: '0.02em',
+                                color: theme.palette.primary.main,
+                                textDecoration: 'none',
+                                textTransform: 'uppercase',
+                                display: 'flex',
+                                alignItems: 'center',
+                                height: '100%',
+                                textShadow: 'none'
                             }}
                         >
-                            RECAPIO.AI
+                            Recapio.ai
                         </Typography>
                     </Box>
 
                     {/* Desktop Navigation */}
                     <Box sx={{ 
                         display: { xs: 'none', md: 'flex' }, 
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        gap: 2,
+                        alignItems: 'center', 
+                        justifyContent: 'space-between',
                         flex: 1,
-                        mx: 4
-                    }}>
-                        {navItems.map((item, index) => (
-                            <Button 
-                                key={`nav-item-desktop-${index}`} 
-                                onClick={() => handleNavigation(item.path)}
-                                sx={{
-                                    color: pathname === item.path ? 'primary.main' : 'text.primary',
-                                    fontWeight: pathname === item.path ? 600 : 500,
-                                    fontSize: '0.95rem',
-                                    textTransform: 'none',
-                                    minHeight: '48px',
-                                    px: 2.5,
-                                    borderRadius: 1,
-                                    position: 'relative',
-                                    '&::after': {
-                                        content: '""',
-                                        position: 'absolute',
-                                        width: pathname === item.path ? '80%' : '0%',
-                                        height: '2px',
-                                        bottom: '10px',
-                                        left: '10%',
-                                        backgroundColor: theme.palette.primary.main,
-                                        transition: 'width 0.3s ease-in-out',
-                                    },
-                                    '&:hover': {
-                                        backgroundColor: 'transparent',
-                                        '&::after': {
-                                            width: '80%',
-                                        }
-                                    }
-                                }}
-                            >
-                                {item.label}
-                            </Button>
-                        ))}
-                    </Box>
-
-                    {/* Auth Controls */}
-                    <Box sx={{ 
-                        display: { xs: 'none', md: 'flex' }, 
-                        alignItems: 'center',
-                        gap: 2.5,
-                        flexShrink: 0,
+                        maxWidth: '800px',
+                        mx: 'auto'
                     }}>
                         {user ? (
                             <>
-                                <IconButton
-                                    onClick={handleProfileMenuOpen}
-                                    sx={{ 
-                                        p: 0.75,
-                                        border: '2px solid',
-                                        borderColor: 'primary.main',
-                                        transition: 'all 0.2s ease-in-out',
-                                        '&:hover': {
-                                            backgroundColor: `${theme.palette.primary.main}0A`,
-                                            transform: 'scale(1.05)',
-                                        }
-                                    }}
-                                >
-                                    <Avatar 
-                                        sx={{ 
-                                            width: 36, 
-                                            height: 36,
-                                            bgcolor: 'primary.main',
-                                            color: 'white',
-                                            fontSize: '1.1rem',
-                                            fontWeight: 600
+                                {navItems.map((item, index) => (
+                                    <Button
+                                        key={`nav-item-${index}`}
+                                        onClick={() => handleNavigation(item.path)}
+                                        sx={{
+                                            color: pathname === item.path ? 'primary.main' : 'text.secondary',
+                                            fontWeight: pathname === item.path ? 600 : 500,
+                                            fontSize: '0.9rem',
+                                            textTransform: 'none',
+                                            px: 2,
+                                            py: 0.8,
+                                            minWidth: '120px',
+                                            whiteSpace: 'nowrap',
+                                            overflow: 'hidden',
+                                            textOverflow: 'ellipsis',
+                                            borderRadius: 1.5,
+                                            backgroundColor: pathname === item.path ? 'rgba(25, 118, 210, 0.08)' : 'transparent',
+                                            '&:hover': {
+                                                backgroundColor: pathname === item.path 
+                                                    ? 'rgba(25, 118, 210, 0.12)' 
+                                                    : 'rgba(0, 0, 0, 0.04)',
+                                                color: pathname === item.path ? 'primary.main' : 'text.primary'
+                                            }
                                         }}
                                     >
-                                        {user.email ? user.email[0].toUpperCase() : 'U'}
-                                    </Avatar>
-                                </IconButton>
-                                <ProfileMenu 
-                                    anchorEl={profileMenuAnchor}
-                                    open={Boolean(profileMenuAnchor)}
-                                    onClose={handleProfileMenuClose}
-                                    user={user}
-                                    onSignOut={handleSignOut}
-                                    onNavigate={handleNavigation}
-                                />
+                                        {item.label}
+                                    </Button>
+                                ))}
                             </>
+                        ) : (
+                            <>
+                                {preLoginItems.map((item, index) => (
+                                    <Button
+                                        key={`nav-item-${index}`}
+                                        onClick={() => handleNavigation(item.path)}
+                                        sx={{
+                                            color: pathname === item.path ? 'primary.main' : 'text.secondary',
+                                            fontWeight: pathname === item.path ? 600 : 500,
+                                            fontSize: '0.9rem',
+                                            textTransform: 'none',
+                                            px: 2,
+                                            py: 0.8,
+                                            minWidth: '120px',
+                                            whiteSpace: 'nowrap',
+                                            overflow: 'hidden',
+                                            textOverflow: 'ellipsis',
+                                            borderRadius: 1.5,
+                                            backgroundColor: pathname === item.path ? 'rgba(25, 118, 210, 0.08)' : 'transparent',
+                                            '&:hover': {
+                                                backgroundColor: pathname === item.path 
+                                                    ? 'rgba(25, 118, 210, 0.12)' 
+                                                    : 'rgba(0, 0, 0, 0.04)',
+                                                color: pathname === item.path ? 'primary.main' : 'text.primary'
+                                            }
+                                        }}
+                                    >
+                                        {item.label}
+                                    </Button>
+                                ))}
+                            </>
+                        )}
+                    </Box>
+
+                    {/* Right Section - Auth Controls or Profile */}
+                    <Box sx={{ 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        width: '200px',
+                        justifyContent: 'flex-end',
+                        gap: 1
+                    }}>
+                        {user ? (
+                            <IconButton
+                                onClick={handleProfileMenuOpen}
+                                size="small"
+                                aria-label="account menu"
+                                aria-controls="profile-menu"
+                                aria-haspopup="true"
+                                aria-expanded={Boolean(profileMenuAnchor)}
+                            >
+                                <Avatar sx={{ width: 36, height: 36 }}>
+                                    {user?.email?.charAt(0).toUpperCase()}
+                                </Avatar>
+                            </IconButton>
                         ) : (
                             <>
                                 <Button
                                     onClick={() => handleNavigation('/login')}
                                     sx={{
-                                        color: 'text.primary',
+                                        color: 'text.secondary',
                                         fontSize: '0.9rem',
                                         fontWeight: 500,
                                         textTransform: 'none',
                                         px: 2,
-                                        position: 'relative',
-                                        '&::after': {
-                                            content: '""',
-                                            position: 'absolute',
-                                            width: '0%',
-                                            height: '2px',
-                                            bottom: '6px',
-                                            left: '10%',
-                                            backgroundColor: theme.palette.primary.main,
-                                            transition: 'width 0.3s ease-in-out',
-                                        },
+                                        py: 0.8,
+                                        borderRadius: 1.5,
                                         '&:hover': {
-                                            backgroundColor: 'transparent',
-                                            '&::after': {
-                                                width: '80%',
-                                            }
+                                            backgroundColor: 'rgba(0, 0, 0, 0.04)',
+                                            color: 'text.primary'
                                         }
                                     }}
                                 >
-                                    Login
+                                    Sign in
                                 </Button>
-                                <Button 
+                                <Button
                                     variant="contained"
-                                    onClick={() => handleNavigation('/signup')}
-                                    sx={{ 
-                                        fontSize: '0.9rem',
-                                        fontWeight: 500,
+                                    onClick={() => handleNavigation('/register')}
+                                    sx={{
                                         textTransform: 'none',
-                                        px: 3,
-                                        py: 1,
-                                        borderRadius: '8px',
-                                        boxShadow: `0 4px 12px ${theme.palette.primary.main}33`,
-                                        transition: 'all 0.2s ease-in-out',
+                                        fontWeight: 500,
+                                        fontSize: '0.9rem',
+                                        px: 2.5,
+                                        py: 0.8,
+                                        borderRadius: 1.5,
+                                        boxShadow: 'none',
+                                        backgroundColor: 'primary.main',
                                         '&:hover': {
-                                            transform: 'translateY(-1px)',
-                                            boxShadow: `0 6px 16px ${theme.palette.primary.main}4D`,
-                                        },
+                                            boxShadow: 'none',
+                                            backgroundColor: 'primary.dark'
+                                        }
                                     }}
                                 >
-                                    Sign Up
+                                    Get Started
                                 </Button>
                             </>
                         )}
@@ -279,15 +278,12 @@ export default function AuthNavbar() {
                     <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
                         <IconButton
                             size="large"
-                            aria-controls={Boolean(mobileMenuAnchor) ? 'mobile-menu' : undefined}
+                            aria-label="show navigation menu"
+                            aria-controls="mobile-menu"
                             aria-haspopup="true"
+                            aria-expanded={Boolean(mobileMenuAnchor)}
                             onClick={handleMobileMenuOpen}
-                            sx={{ 
-                                color: 'text.primary',
-                                '&:hover': {
-                                    backgroundColor: `${theme.palette.primary.main}0A`,
-                                }
-                            }}
+                            color="inherit"
                         >
                             <MenuIcon />
                         </IconButton>
@@ -297,31 +293,8 @@ export default function AuthNavbar() {
                     <Menu
                         id="mobile-menu"
                         anchorEl={mobileMenuAnchor}
-                        open={Boolean(mobileMenuAnchor)}
-                        onClose={handleMobileMenuClose}
-                        onClick={handleMobileMenuClose}
-                        PaperProps={{
-                            sx: {
-                                mt: 1.5,
-                                minWidth: 200,
-                                borderRadius: 2,
-                                boxShadow: '0 8px 16px rgba(0,0,0,0.1)',
-                                '& .MuiMenuItem-root': {
-                                    px: 2,
-                                    py: 1.5,
-                                    borderRadius: 1,
-                                    mx: 1,
-                                    my: 0.5,
-                                    fontSize: '0.9rem',
-                                    fontWeight: 500,
-                                    '&:hover': {
-                                        backgroundColor: `${theme.palette.primary.main}0A`,
-                                    }
-                                }
-                            }
-                        }}
                         anchorOrigin={{
-                            vertical: 'bottom',
+                            vertical: 'top',
                             horizontal: 'right',
                         }}
                         keepMounted
@@ -329,62 +302,27 @@ export default function AuthNavbar() {
                             vertical: 'top',
                             horizontal: 'right',
                         }}
+                        open={Boolean(mobileMenuAnchor)}
+                        onClose={handleMobileMenuClose}
+                        sx={{
+                            display: { xs: 'block', md: 'none' },
+                        }}
                     >
-                        {user && (
-                            <Box sx={{ px: 2, py: 1.5 }}>
-                                <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
-                                    {user.email}
-                                </Typography>
-                                <Typography variant="body2" color="text.secondary">
-                                    Pro Plan
-                                </Typography>
-                            </Box>
-                        )}
-                        <Divider sx={{ display: user ? 'block' : 'none' }} />
                         {navItems.map((item, index) => (
                             <MenuItem 
-                                key={`nav-item-mobile-${index}`} 
+                                key={`nav-item-mobile-${index}`}
                                 onClick={() => handleNavigation(item.path)}
                                 sx={{
                                     color: pathname === item.path ? 'primary.main' : 'text.primary',
-                                    fontWeight: pathname === item.path ? 600 : 400,
-                                    py: 1.5,
+                                    fontWeight: pathname === item.path ? 600 : 500,
                                 }}
                             >
                                 {item.label}
                             </MenuItem>
                         ))}
-                        
-                        {user ? [
-                            <Divider key="divider-signout" />,
-                            <MenuItem 
-                                key="signout-mobile"
-                                onClick={handleSignOut}
-                                sx={{ color: 'error.main', py: 1.5 }}
-                            >
-                                <LogoutIcon sx={{ mr: 2, fontSize: 20 }} />
-                                Sign Out
-                            </MenuItem>
-                        ] : [
-                            <Divider key="divider-auth" />,
-                            <MenuItem 
-                                key="login-mobile"
-                                onClick={() => handleNavigation('/login')}
-                                sx={{ py: 1.5 }}
-                            >
-                                Login
-                            </MenuItem>,
-                            <MenuItem 
-                                key="signup-mobile"
-                                onClick={() => handleNavigation('/signup')}
-                                sx={{ py: 1.5 }}
-                            >
-                                Sign Up
-                            </MenuItem>
-                        ]}
                     </Menu>
                 </Toolbar>
-            </Container>
+            </Box>
         </AppBar>
     );
 } 

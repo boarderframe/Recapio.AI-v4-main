@@ -1,0 +1,694 @@
+{
+  "category": "Webinars & Events",
+  "types": [
+    {
+      "type": "Product Demo",
+      "sub_types": [
+        {
+          "sub_type": "Platform Tour",
+          "analysis_instructions": "Analyze this platform tour demo transcript focusing on key features, user experience, and integration capabilities. Extract the following information:\n- Key features demonstrated and their benefits\n- User interface elements and navigation flow\n- Integration points and compatibility\n- Audience questions and responses\n- Technical specifications mentioned\n- Presenter's emphasis points\n\nProvide insights on:\n- Most highlighted features\n- User feedback and reactions\n- Integration possibilities discussed\n- Overall demo effectiveness",
+          "json_schema": {
+            "type": "object",
+            "required": ["ai_title", "summary", "themes", "hashtags", "sentiment_analysis", "category_specific_data"],
+            "properties": {
+              "ai_title": {
+                "type": "string",
+                "description": "Descriptive, SEO-friendly title capturing the essence of the transcript (50-75 chars)"
+              },
+              "summary": {
+                "type": "string",
+                "description": "Concise overview highlighting key points and main takeaways (200-300 chars)"
+              },
+              "themes": {
+                "type": "array",
+                "items": {"type": "string"},
+                "minItems": 3,
+                "maxItems": 7,
+                "description": "Main topics, concepts, and areas of discussion"
+              },
+              "hashtags": {
+                "type": "array",
+                "items": {"type": "string"},
+                "minItems": 5,
+                "maxItems": 10,
+                "description": "Relevant hashtags for social media and categorization"
+              },
+              "sentiment_analysis": {
+                "type": "object",
+                "required": ["overall", "sections"],
+                "properties": {
+                  "overall": {
+                    "type": "string",
+                    "description": "General sentiment (positive/negative/neutral) with confidence score"
+                  },
+                  "sections": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "required": ["section", "sentiment", "confidence"],
+                      "properties": {
+                        "section": {"type": "string"},
+                        "sentiment": {"type": "string"},
+                        "confidence": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 1
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "category_specific_data": {
+                "type": "object",
+                "required": ["features_highlighted", "user_feedback", "integration_options"],
+                "properties": {
+                  "features_highlighted": {
+                    "type": "array",
+                    "items": {"type": "string"},
+                    "description": "Key features demonstrated during the platform tour"
+                  },
+                  "user_feedback": {
+                    "type": "string",
+                    "description": "Aggregated feedback from users during the demo"
+                  },
+                  "integration_options": {
+                    "type": "string",
+                    "description": "Available integration options discussed"
+                  }
+                }
+              }
+            }
+          },
+          "api_parameters": {
+            "model": "gpt-4",
+            "temperature": 0.7,
+            "max_tokens": 1000,
+            "top_p": 0.95,
+            "frequency_penalty": 0,
+            "presence_penalty": 0
+          }
+        },
+        {
+          "sub_type": "Technical Walkthrough",
+          "analysis_instructions": "Analyze this technical walkthrough transcript focusing on technical details, implementation steps, and system requirements. Extract the following information:\n- Technical features and capabilities demonstrated\n- Implementation requirements and prerequisites\n- Step-by-step processes explained\n- Technical specifications and limitations\n- Integration points and APIs discussed\n- Common technical challenges addressed\n\nProvide insights on:\n- Key technical features\n- System requirements\n- Target technical audience\n- Technical complexity level",
+          "json_schema": {
+            "type": "object",
+            "required": ["ai_title", "summary", "themes", "hashtags", "sentiment_analysis", "category_specific_data"],
+            "properties": {
+              "ai_title": {
+                "type": "string",
+                "description": "Descriptive, SEO-friendly title capturing the essence of the transcript (50-75 chars)"
+              },
+              "summary": {
+                "type": "string",
+                "description": "Concise overview highlighting key points and main takeaways (200-300 chars)"
+              },
+              "themes": {
+                "type": "array",
+                "items": {"type": "string"},
+                "minItems": 3,
+                "maxItems": 7,
+                "description": "Main topics, concepts, and areas of discussion"
+              },
+              "hashtags": {
+                "type": "array",
+                "items": {"type": "string"},
+                "minItems": 5,
+                "maxItems": 10,
+                "description": "Relevant hashtags for social media and categorization"
+              },
+              "sentiment_analysis": {
+                "type": "object",
+                "required": ["overall", "sections"],
+                "properties": {
+                  "overall": {
+                    "type": "string",
+                    "description": "General sentiment (positive/negative/neutral) with confidence score"
+                  },
+                  "sections": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "required": ["section", "sentiment", "confidence"],
+                      "properties": {
+                        "section": {"type": "string"},
+                        "sentiment": {"type": "string"},
+                        "confidence": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 1
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "category_specific_data": {
+                "type": "object",
+                "required": ["features_demonstrated", "technical_requirements", "target_audience"],
+                "properties": {
+                  "features_demonstrated": {
+                    "type": "array",
+                    "items": {"type": "string"},
+                    "description": "Technical features demonstrated in detail"
+                  },
+                  "technical_requirements": {
+                    "type": "array",
+                    "items": {"type": "string"},
+                    "description": "Technical prerequisites and system requirements"
+                  },
+                  "target_audience": {
+                    "type": "string",
+                    "description": "Intended audience for the technical walkthrough"
+                  }
+                }
+              }
+            }
+          },
+          "api_parameters": {
+            "model": "gpt-4",
+            "temperature": 0.7,
+            "max_tokens": 1000,
+            "top_p": 0.95,
+            "frequency_penalty": 0,
+            "presence_penalty": 0
+          }
+        },
+        {
+          "sub_type": "Use Case Demonstration",
+          "analysis_instructions": "Analyze this use case demonstration transcript focusing on practical applications, business value, and implementation scenarios. Extract the following information:\n- Specific use case scenario presented\n- Business problems addressed\n- Solution implementation details\n- Benefits and outcomes demonstrated\n- Customer feedback or reactions\n- ROI or success metrics mentioned\n\nProvide insights on:\n- Use case applicability\n- Solution effectiveness\n- Audience engagement\n- Business value demonstrated",
+          "json_schema": {
+            "type": "object",
+            "required": ["ai_title", "summary", "themes", "hashtags", "sentiment_analysis", "category_specific_data"],
+            "properties": {
+              "ai_title": {
+                "type": "string",
+                "description": "Descriptive, SEO-friendly title capturing the essence of the transcript (50-75 chars)"
+              },
+              "summary": {
+                "type": "string",
+                "description": "Concise overview highlighting key points and main takeaways (200-300 chars)"
+              },
+              "themes": {
+                "type": "array",
+                "items": {"type": "string"},
+                "minItems": 3,
+                "maxItems": 7,
+                "description": "Main topics, concepts, and areas of discussion"
+              },
+              "hashtags": {
+                "type": "array",
+                "items": {"type": "string"},
+                "minItems": 5,
+                "maxItems": 10,
+                "description": "Relevant hashtags for social media and categorization"
+              },
+              "sentiment_analysis": {
+                "type": "object",
+                "required": ["overall", "sections"],
+                "properties": {
+                  "overall": {
+                    "type": "string",
+                    "description": "General sentiment (positive/negative/neutral) with confidence score"
+                  },
+                  "sections": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "required": ["section", "sentiment", "confidence"],
+                      "properties": {
+                        "section": {"type": "string"},
+                        "sentiment": {"type": "string"},
+                        "confidence": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 1
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "category_specific_data": {
+                "type": "object",
+                "required": ["use_case_description", "product_features", "audience_reactions"],
+                "properties": {
+                  "use_case_description": {
+                    "type": "string",
+                    "description": "Detailed description of the use case scenario"
+                  },
+                  "product_features": {
+                    "type": "array",
+                    "items": {"type": "string"},
+                    "description": "Product features relevant to the use case"
+                  },
+                  "audience_reactions": {
+                    "type": "string",
+                    "description": "Audience response and engagement during the demonstration"
+                  }
+                }
+              }
+            }
+          },
+          "api_parameters": {
+            "model": "gpt-4",
+            "temperature": 0.7,
+            "max_tokens": 1000,
+            "top_p": 0.95,
+            "frequency_penalty": 0,
+            "presence_penalty": 0
+          }
+        }
+      ]
+    },
+    {
+      "type": "Workshop",
+      "sub_types": [
+        {
+          "sub_type": "Group Exercise",
+          "analysis_instructions": "Analyze this group exercise workshop transcript focusing on collaborative activities, participant engagement, and learning outcomes. Extract the following information:\n- Exercise objectives and structure\n- Group dynamics and interactions\n- Participant contributions and insights\n- Facilitator guidance and interventions\n- Learning outcomes achieved\n- Group challenges and solutions\n\nProvide insights on:\n- Exercise effectiveness\n- Participant engagement levels\n- Key learning moments\n- Facilitator effectiveness",
+          "json_schema": {
+            "type": "object",
+            "required": ["ai_title", "summary", "themes", "hashtags", "sentiment_analysis", "category_specific_data"],
+            "properties": {
+              "ai_title": {
+                "type": "string",
+                "description": "Descriptive, SEO-friendly title capturing the essence of the transcript (50-75 chars)"
+              },
+              "summary": {
+                "type": "string",
+                "description": "Concise overview highlighting key points and main takeaways (200-300 chars)"
+              },
+              "themes": {
+                "type": "array",
+                "items": {"type": "string"},
+                "minItems": 3,
+                "maxItems": 7,
+                "description": "Main topics, concepts, and areas of discussion"
+              },
+              "hashtags": {
+                "type": "array",
+                "items": {"type": "string"},
+                "minItems": 5,
+                "maxItems": 10,
+                "description": "Relevant hashtags for social media and categorization"
+              },
+              "sentiment_analysis": {
+                "type": "object",
+                "required": ["overall", "sections"],
+                "properties": {
+                  "overall": {
+                    "type": "string",
+                    "description": "General sentiment (positive/negative/neutral) with confidence score"
+                  },
+                  "sections": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "required": ["section", "sentiment", "confidence"],
+                      "properties": {
+                        "section": {"type": "string"},
+                        "sentiment": {"type": "string"},
+                        "confidence": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 1
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "category_specific_data": {
+                "type": "object",
+                "required": ["exercise_topics", "participant_feedback", "facilitator_notes"],
+                "properties": {
+                  "exercise_topics": {
+                    "type": "array",
+                    "items": {"type": "string"},
+                    "description": "Topics covered in the group exercise"
+                  },
+                  "participant_feedback": {
+                    "type": "string",
+                    "description": "Feedback and insights from exercise participants"
+                  },
+                  "facilitator_notes": {
+                    "type": "string",
+                    "description": "Notes and observations from the exercise facilitator"
+                  }
+                }
+              }
+            }
+          },
+          "api_parameters": {
+            "model": "gpt-4",
+            "temperature": 0.7,
+            "max_tokens": 1000,
+            "top_p": 0.95,
+            "frequency_penalty": 0,
+            "presence_penalty": 0
+          }
+        },
+        {
+          "sub_type": "Hands-on Training",
+          "analysis_instructions": "Analyze this hands-on training workshop transcript focusing on skill development, practical exercises, and learning progression. Extract the following information:\n- Skills being taught and practiced\n- Training methodology and approach\n- Practical exercises and their outcomes\n- Common challenges and solutions\n- Trainer guidance and feedback\n- Participant progress and mastery\n\nProvide insights on:\n- Skill acquisition effectiveness\n- Training methodology success\n- Participant progress\n- Areas needing reinforcement",
+          "json_schema": {
+            "type": "object",
+            "required": ["ai_title", "summary", "themes", "hashtags", "sentiment_analysis", "category_specific_data"],
+            "properties": {
+              "ai_title": {
+                "type": "string",
+                "description": "Descriptive, SEO-friendly title capturing the essence of the transcript (50-75 chars)"
+              },
+              "summary": {
+                "type": "string",
+                "description": "Concise overview highlighting key points and main takeaways (200-300 chars)"
+              },
+              "themes": {
+                "type": "array",
+                "items": {"type": "string"},
+                "minItems": 3,
+                "maxItems": 7,
+                "description": "Main topics, concepts, and areas of discussion"
+              },
+              "hashtags": {
+                "type": "array",
+                "items": {"type": "string"},
+                "minItems": 5,
+                "maxItems": 10,
+                "description": "Relevant hashtags for social media and categorization"
+              },
+              "sentiment_analysis": {
+                "type": "object",
+                "required": ["overall", "sections"],
+                "properties": {
+                  "overall": {
+                    "type": "string",
+                    "description": "General sentiment (positive/negative/neutral) with confidence score"
+                  },
+                  "sections": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "required": ["section", "sentiment", "confidence"],
+                      "properties": {
+                        "section": {"type": "string"},
+                        "sentiment": {"type": "string"},
+                        "confidence": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 1
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "category_specific_data": {
+                "type": "object",
+                "required": ["skills_practiced", "tools_used", "trainer_feedback"],
+                "properties": {
+                  "skills_practiced": {
+                    "type": "array",
+                    "items": {"type": "string"},
+                    "description": "Skills practiced during the training session"
+                  },
+                  "tools_used": {
+                    "type": "array",
+                    "items": {"type": "string"},
+                    "description": "Tools and technologies used in the training"
+                  },
+                  "trainer_feedback": {
+                    "type": "string",
+                    "description": "Feedback and assessment from the trainer"
+                  }
+                }
+              }
+            }
+          },
+          "api_parameters": {
+            "model": "gpt-4",
+            "temperature": 0.7,
+            "max_tokens": 1000,
+            "top_p": 0.95,
+            "frequency_penalty": 0,
+            "presence_penalty": 0
+          }
+        },
+        {
+          "sub_type": "Interactive Session",
+          "analysis_instructions": "Analyze this interactive session workshop transcript focusing on participant engagement, discussion dynamics, and knowledge exchange. Extract the following information:\n- Session structure and flow\n- Participant interactions and contributions\n- Discussion topics and themes\n- Questions raised and answers provided\n- Key insights and takeaways\n- Group dynamics and engagement patterns\n\nProvide insights on:\n- Engagement effectiveness\n- Learning outcomes achieved\n- Discussion quality\n- Session impact",
+          "json_schema": {
+            "type": "object",
+            "required": ["ai_title", "summary", "themes", "hashtags", "sentiment_analysis", "category_specific_data"],
+            "properties": {
+              "ai_title": {
+                "type": "string",
+                "description": "Descriptive, SEO-friendly title capturing the essence of the transcript (50-75 chars)"
+              },
+              "summary": {
+                "type": "string",
+                "description": "Concise overview highlighting key points and main takeaways (200-300 chars)"
+              },
+              "themes": {
+                "type": "array",
+                "items": {"type": "string"},
+                "minItems": 3,
+                "maxItems": 7,
+                "description": "Main topics, concepts, and areas of discussion"
+              },
+              "hashtags": {
+                "type": "array",
+                "items": {"type": "string"},
+                "minItems": 5,
+                "maxItems": 10,
+                "description": "Relevant hashtags for social media and categorization"
+              },
+              "sentiment_analysis": {
+                "type": "object",
+                "required": ["overall", "sections"],
+                "properties": {
+                  "overall": {
+                    "type": "string",
+                    "description": "General sentiment (positive/negative/neutral) with confidence score"
+                  },
+                  "sections": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "required": ["section", "sentiment", "confidence"],
+                      "properties": {
+                        "section": {"type": "string"},
+                        "sentiment": {"type": "string"},
+                        "confidence": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 1
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "category_specific_data": {
+                "type": "object",
+                "required": ["participant_engagement", "learning_outcomes", "tools_used"],
+                "properties": {
+                  "participant_engagement": {
+                    "type": "string",
+                    "description": "Level and quality of participant engagement"
+                  },
+                  "learning_outcomes": {
+                    "type": "string",
+                    "description": "Achieved learning objectives and outcomes"
+                  },
+                  "tools_used": {
+                    "type": "string",
+                    "description": "Interactive tools and methods used in the session"
+                  }
+                }
+              }
+            }
+          },
+          "api_parameters": {
+            "model": "gpt-4",
+            "temperature": 0.7,
+            "max_tokens": 1000,
+            "top_p": 0.95,
+            "frequency_penalty": 0,
+            "presence_penalty": 0
+          }
+        },
+        {
+          "sub_type": "Practical Application",
+          "analysis_instructions": "Analyze this practical application workshop transcript focusing on real-world implementation, hands-on practice, and applied learning. Extract the following information:\n- Practical techniques demonstrated\n- Real-world examples discussed\n- Implementation challenges and solutions\n- Best practices shared\n- Participant attempts and results\n- Application scenarios covered\n\nProvide insights on:\n- Practical value delivered\n- Implementation readiness\n- Knowledge application success\n- Real-world relevance",
+          "json_schema": {
+            "type": "object",
+            "required": ["ai_title", "summary", "themes", "hashtags", "sentiment_analysis", "category_specific_data"],
+            "properties": {
+              "ai_title": {
+                "type": "string",
+                "description": "Descriptive, SEO-friendly title capturing the essence of the transcript (50-75 chars)"
+              },
+              "summary": {
+                "type": "string",
+                "description": "Concise overview highlighting key points and main takeaways (200-300 chars)"
+              },
+              "themes": {
+                "type": "array",
+                "items": {"type": "string"},
+                "minItems": 3,
+                "maxItems": 7,
+                "description": "Main topics, concepts, and areas of discussion"
+              },
+              "hashtags": {
+                "type": "array",
+                "items": {"type": "string"},
+                "minItems": 5,
+                "maxItems": 10,
+                "description": "Relevant hashtags for social media and categorization"
+              },
+              "sentiment_analysis": {
+                "type": "object",
+                "required": ["overall", "sections"],
+                "properties": {
+                  "overall": {
+                    "type": "string",
+                    "description": "General sentiment (positive/negative/neutral) with confidence score"
+                  },
+                  "sections": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "required": ["section", "sentiment", "confidence"],
+                      "properties": {
+                        "section": {"type": "string"},
+                        "sentiment": {"type": "string"},
+                        "confidence": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 1
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "category_specific_data": {
+                "type": "object",
+                "required": ["techniques_used", "real_world_examples", "participant_feedback"],
+                "properties": {
+                  "techniques_used": {
+                    "type": "string",
+                    "description": "Techniques and methodologies applied"
+                  },
+                  "real_world_examples": {
+                    "type": "string",
+                    "description": "Real-world examples and case studies discussed"
+                  },
+                  "participant_feedback": {
+                    "type": "string",
+                    "description": "Feedback from participants on practical applications"
+                  }
+                }
+              }
+            }
+          },
+          "api_parameters": {
+            "model": "gpt-4",
+            "temperature": 0.7,
+            "max_tokens": 1000,
+            "top_p": 0.95,
+            "frequency_penalty": 0,
+            "presence_penalty": 0
+          }
+        },
+        {
+          "sub_type": "Skill Building",
+          "analysis_instructions": "Analyze this skill building workshop transcript focusing on competency development, learning progression, and skill mastery. Extract the following information:\n- Skills being developed\n- Learning methodology used\n- Practice exercises and drills\n- Skill progression stages\n- Common challenges and solutions\n- Success indicators and metrics\n\nProvide insights on:\n- Skill development effectiveness\n- Learning progression\n- Competency achievement\n- Areas for reinforcement",
+          "json_schema": {
+            "type": "object",
+            "required": ["ai_title", "summary", "themes", "hashtags", "sentiment_analysis", "category_specific_data"],
+            "properties": {
+              "ai_title": {
+                "type": "string",
+                "description": "Descriptive, SEO-friendly title capturing the essence of the transcript (50-75 chars)"
+              },
+              "summary": {
+                "type": "string",
+                "description": "Concise overview highlighting key points and main takeaways (200-300 chars)"
+              },
+              "themes": {
+                "type": "array",
+                "items": {"type": "string"},
+                "minItems": 3,
+                "maxItems": 7,
+                "description": "Main topics, concepts, and areas of discussion"
+              },
+              "hashtags": {
+                "type": "array",
+                "items": {"type": "string"},
+                "minItems": 5,
+                "maxItems": 10,
+                "description": "Relevant hashtags for social media and categorization"
+              },
+              "sentiment_analysis": {
+                "type": "object",
+                "required": ["overall", "sections"],
+                "properties": {
+                  "overall": {
+                    "type": "string",
+                    "description": "General sentiment (positive/negative/neutral) with confidence score"
+                  },
+                  "sections": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "required": ["section", "sentiment", "confidence"],
+                      "properties": {
+                        "section": {"type": "string"},
+                        "sentiment": {"type": "string"},
+                        "confidence": {
+                          "type": "number",
+                          "minimum": 0,
+                          "maximum": 1
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "category_specific_data": {
+                "type": "object",
+                "required": ["skills_taught", "duration", "target_audience"],
+                "properties": {
+                  "skills_taught": {
+                    "type": "string",
+                    "description": "Skills and competencies taught in the session"
+                  },
+                  "duration": {
+                    "type": "string",
+                    "description": "Duration of the skill-building session"
+                  },
+                  "target_audience": {
+                    "type": "string",
+                    "description": "Target audience and skill level"
+                  }
+                }
+              }
+            }
+          },
+          "api_parameters": {
+            "model": "gpt-4",
+            "temperature": 0.7,
+            "max_tokens": 1000,
+            "top_p": 0.95,
+            "frequency_penalty": 0,
+            "presence_penalty": 0
+          }
+        }
+      ]
+    }
+  ]
+} 

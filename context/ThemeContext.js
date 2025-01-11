@@ -2,7 +2,14 @@
 
 import { createContext, useContext, useState, useEffect } from 'react';
 
-const ThemeContext = createContext();
+const ThemeContext = createContext({
+    themeSettings: null,
+    updateSpacing: () => {},
+    updateHeader: () => {},
+    updateContent: () => {},
+    resetToDefaults: () => {},
+    defaultThemeSettings: null
+});
 
 const defaultThemeSettings = {
     spacing: {
@@ -42,11 +49,15 @@ export function ThemeProvider({ children }) {
 
     // Load saved settings from the server on mount
     useEffect(() => {
+        let isMounted = true;
+        
         async function loadSettings() {
             try {
                 const response = await fetch('/api/theme');
                 const data = await response.json();
                 
+                if (!isMounted) return;
+
                 // If we have saved settings, merge them with defaults
                 if (Object.keys(data).length > 0) {
                     const mergedSettings = {
@@ -74,11 +85,16 @@ export function ThemeProvider({ children }) {
             } catch (error) {
                 console.error('Error loading theme settings:', error);
             } finally {
-                setIsLoading(false);
+                if (isMounted) {
+                    setIsLoading(false);
+                }
             }
         }
 
         loadSettings();
+        return () => {
+            isMounted = false;
+        };
     }, []);
 
     const saveToServer = async (settings) => {
@@ -142,7 +158,18 @@ export function ThemeProvider({ children }) {
     };
 
     if (isLoading) {
-        return null; // or a loading spinner
+        return (
+            <ThemeContext.Provider value={{ 
+                themeSettings: defaultThemeSettings, 
+                updateSpacing, 
+                updateHeader,
+                updateContent,
+                resetToDefaults,
+                defaultThemeSettings 
+            }}>
+                {children}
+            </ThemeContext.Provider>
+        );
     }
 
     return (
@@ -162,7 +189,7 @@ export function ThemeProvider({ children }) {
 export function useThemeSettings() {
     const context = useContext(ThemeContext);
     if (!context) {
-        throw new Error('useThemeSettings must be used within a ThemeProvider');
+        throw new Error('useThemeSettings must be used within a CustomThemeProvider');
     }
     return context;
 } 

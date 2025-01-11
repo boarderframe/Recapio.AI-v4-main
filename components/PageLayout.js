@@ -2,64 +2,45 @@
 
 import { Box } from '@mui/material';
 import { useThemeSettings } from '@/context/ThemeContext';
-import AuthNavbar from './AuthNavbar';
 import PageHeader from './PageHeader';
+import AuthNavbar from './AuthNavbar';
 
-export default function PageLayout({ children, title, subtitle, toolbar }) {
+export default function PageLayout({ children, title, subtitle }) {
     const { themeSettings } = useThemeSettings();
 
-    // Convert spacing value (0-10) to pixels, multiplied by 4 for more noticeable gaps
-    const getSpacing = (value) => value * 4;
+    // Convert spacing units to pixels (1 unit = 8px)
+    const getSpacing = (value) => {
+        if (typeof value !== 'number') return '16px';
+        return `${value * 8}px`;
+    };
 
     return (
         <>
             <AuthNavbar />
-            <Box 
-                component="main" 
-                sx={{ 
+            <Box
+                component="main"
+                sx={{
+                    flexGrow: 1,
                     minHeight: '100vh',
-                    mt: `${themeSettings.navigation.height}px`,
-                    pt: getSpacing(themeSettings.spacing.navToHeaderGap),
+                    pt: `calc(56px + ${getSpacing(4)})`, // Increased spacing from navbar
                     pb: 4,
-                    bgcolor: 'background.default'
+                    backgroundColor: 'background.default'
                 }}
             >
-                <Box sx={{ 
-                    width: '100%', 
-                    maxWidth: '1200px', 
-                    mx: 'auto', 
-                    px: { xs: 2, sm: 3 }
-                }}>
-                    {/* Content Stack */}
-                    <Box sx={{ 
-                        display: 'flex', 
-                        flexDirection: 'column',
-                    }}>
-                        {/* Header Section */}
-                        {(title || subtitle) && (
-                            <Box sx={{ mb: getSpacing(themeSettings.spacing.headerToToolbarGap) }}>
-                                <PageHeader 
-                                    title={title} 
-                                    subtitle={subtitle} 
-                                />
-                            </Box>
-                        )}
-
-                        {/* Toolbar Section */}
-                        {toolbar && (
-                            <Box sx={{ mb: getSpacing(themeSettings.spacing.toolbarToContentGap) }}>
-                                {toolbar}
-                            </Box>
-                        )}
-
-                        {/* Content Section */}
-                        <Box sx={{ 
-                            display: 'flex',
-                            flexDirection: 'column',
-                            gap: getSpacing(themeSettings.spacing.contentGap)
-                        }}>
-                            {children}
-                        </Box>
+                <Box
+                    sx={{
+                        maxWidth: '1200px', // Increased from 800px
+                        mx: 'auto',
+                        px: { xs: 2, sm: 3, md: 4 }
+                    }}
+                >
+                    <PageHeader title={title} subtitle={subtitle} />
+                    <Box
+                        sx={{
+                            mt: getSpacing(themeSettings?.spacing?.headerToToolbarGap || 2)
+                        }}
+                    >
+                        {children}
                     </Box>
                 </Box>
             </Box>

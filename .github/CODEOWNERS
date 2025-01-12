@@ -1,0 +1,33 @@
+# Global owners (if no other rule matches)
+*       @boarderframe
+
+# Documentation owners
+/docs/  @boarderframe
+
+# UI Component owners
+/components/     @boarderframe
+/styles/         @boarderframe
+/ui/            @boarderframe
+ui/*            @boarderframe
+
+# Core system owners
+/lib/           @boarderframe
+/middleware.ts  @boarderframe
+
+# API and Backend owners
+/api/           @boarderframe
+/server/        @boarderframe
+
+# Configuration owners
+*.config.js     @boarderframe
+*.config.ts     @boarderframe
+.env*           @boarderframe
+
+# Test owners
+/tests/         @boarderframe
+*.test.ts       @boarderframe
+*.test.tsx      @boarderframe
+
+# Security-sensitive files
+/lib/auth/      @boarderframe
+/lib/security/  @boarderframe 

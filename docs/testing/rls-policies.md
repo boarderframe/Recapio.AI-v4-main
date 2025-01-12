@@ -182,3 +182,4 @@ If tests fail, verify:
 2. Policies are correctly created
 3. JWT claims are properly set
 4. Required columns are properly populated (e.g., user_id, tenant_id) 
+5. All commits are properly signed with GPG keys for audit tracking 

@@ -7,6 +7,9 @@ import { AuthProvider } from '../lib/AuthContext';
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { theme } from '../lib/theme';
+import { ThemeProvider as CustomThemeProvider } from '../context/ThemeContext';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { queryClient } from '../lib/queryClient';
 
 interface ProvidersProps {
   children: React.ReactNode;
@@ -15,12 +18,15 @@ interface ProvidersProps {
 export function Providers({ children }: ProvidersProps) {
   return (
     <Provider store={store}>
-      <AuthProvider>
+      <QueryClientProvider client={queryClient}>
         <ThemeProvider theme={theme}>
-          <CssBaseline />
-          {children}
+          <CustomThemeProvider>
+            <AuthProvider>
+              {children}
+            </AuthProvider>
+          </CustomThemeProvider>
         </ThemeProvider>
-      </AuthProvider>
+      </QueryClientProvider>
     </Provider>
   );
 } 

@@ -13,6 +13,7 @@ import TimelineIcon from '@mui/icons-material/Timeline';
 import PaletteIcon from '@mui/icons-material/Palette';
 import PeopleIcon from '@mui/icons-material/People';
 import DescriptionIcon from '@mui/icons-material/Description';
+import ScienceIcon from '@mui/icons-material/Science';
 import { Tabs, Tab } from '@mui/material';
 import { useThemeSettings } from '@/context/ThemeContext';
 
@@ -21,7 +22,8 @@ const adminTabs = [
     { label: 'Transcript Types', path: '/admin/transcript-types', icon: <DescriptionIcon sx={{ mr: 1, color: 'primary.main' }} /> },
     { label: 'AI Models', path: '/admin/ai-models', icon: <SmartToyIcon sx={{ mr: 1, color: 'primary.main' }} /> },
     { label: 'Users', path: '/admin/users', icon: <PeopleIcon sx={{ mr: 1, color: 'primary.main' }} /> },
-    { label: 'Theme', path: '/admin/theme', icon: <PaletteIcon sx={{ mr: 1, color: 'primary.main' }} /> }
+    { label: 'Theme', path: '/admin/theme', icon: <PaletteIcon sx={{ mr: 1, color: 'primary.main' }} /> },
+    { label: 'Testing', path: '/admin/testing', icon: <ScienceIcon sx={{ mr: 1, color: 'primary.main' }} /> }
 ];
 
 function AdminToolbar({ currentTab, onTabChange }) {

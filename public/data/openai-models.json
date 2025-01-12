@@ -199,6 +199,15 @@
       "status": "Active"
     },
     {
+      "id": "gpt-4o-2024-08-06",
+      "created": 1722814719,
+      "owned_by": "system",
+      "type": "Chat Completion",
+      "context_length": 8192,
+      "training_data": "Up to 2023",
+      "status": "Active"
+    },
+    {
       "id": "gpt-4",
       "created": 1687882411,
       "owned_by": "openai",
@@ -211,6 +220,15 @@
       "id": "gpt-4-0613",
       "created": 1686588896,
       "owned_by": "openai",
+      "type": "Chat Completion",
+      "context_length": 8192,
+      "training_data": "Up to 2023",
+      "status": "Active"
+    },
+    {
+      "id": "gpt-4o",
+      "created": 1715367049,
+      "owned_by": "system",
       "type": "Chat Completion",
       "context_length": 8192,
       "training_data": "Up to 2023",
@@ -250,6 +268,15 @@
       "type": "Unknown",
       "context_length": null,
       "training_data": null,
+      "status": "Active"
+    },
+    {
+      "id": "gpt-4o-mini-2024-07-18",
+      "created": 1721172717,
+      "owned_by": "system",
+      "type": "Chat Completion",
+      "context_length": 8192,
+      "training_data": "Up to 2023",
       "status": "Active"
     },
     {
@@ -316,38 +343,11 @@
       "status": "Active"
     },
     {
-      "id": "gpt-4o-mini",
-      "created": 1721172741,
-      "owned_by": "system",
-      "type": "Chat Completion",
-      "context_length": 8192,
-      "training_data": "Up to 2023",
-      "status": "Active"
-    },
-    {
-      "id": "gpt-4o-2024-08-06",
-      "created": 1722814719,
-      "owned_by": "system",
-      "type": "Chat Completion",
-      "context_length": 8192,
-      "training_data": "Up to 2023",
-      "status": "Active"
-    },
-    {
       "id": "gpt-4-turbo-preview",
       "created": 1706037777,
       "owned_by": "system",
       "type": "Chat Completion",
       "context_length": 128000,
-      "training_data": "Up to 2023",
-      "status": "Active"
-    },
-    {
-      "id": "gpt-4o",
-      "created": 1715367049,
-      "owned_by": "system",
-      "type": "Chat Completion",
-      "context_length": 8192,
       "training_data": "Up to 2023",
       "status": "Active"
     },
@@ -361,8 +361,8 @@
       "status": "Active"
     },
     {
-      "id": "gpt-4o-mini-2024-07-18",
-      "created": 1721172717,
+      "id": "gpt-4o-mini",
+      "created": 1721172741,
       "owned_by": "system",
       "type": "Chat Completion",
       "context_length": 8192,
@@ -433,6 +433,6 @@
       "status": "Active"
     }
   ],
-  "lastUpdated": "2025-01-10T22:16:13.637Z",
+  "lastUpdated": "2025-01-12T22:35:27.476Z",
   "count": 48
 }

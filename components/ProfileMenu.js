@@ -5,13 +5,14 @@ import PersonIcon from '@mui/icons-material/Person';
 import SettingsIcon from '@mui/icons-material/Settings';
 import LogoutIcon from '@mui/icons-material/Logout';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
+import ScienceIcon from '@mui/icons-material/Science';
 
 export default function ProfileMenu({ anchorEl, open, onClose, user, onSignOut, onNavigate }) {
     const displayName = user?.user_metadata?.display_name || 
         (user?.email ? user.email.split('@')[0].charAt(0).toUpperCase() + user.email.split('@')[0].slice(1) : 'User');
 
     const firstName = displayName.split(' ')[0];
-    const isAdmin = user?.role === 'admin';
+    const isAdmin = user?.app_metadata?.role === 'admin' || user?.user_metadata?.role === 'admin';
 
     return (
         <Menu
@@ -77,14 +78,23 @@ export default function ProfileMenu({ anchorEl, open, onClose, user, onSignOut, 
                 </ListItemIcon>
                 Settings
             </MenuItem>
-            
+
             {isAdmin && (
-                <MenuItem onClick={() => onNavigate('/admin')}>
-                    <ListItemIcon sx={{ minWidth: 'unset' }}>
-                        <AdminPanelSettingsIcon />
-                    </ListItemIcon>
-                    Admin Console
-                </MenuItem>
+                <>
+                    <MenuItem onClick={() => onNavigate('/admin/testing')}>
+                        <ListItemIcon sx={{ minWidth: 'unset' }}>
+                            <ScienceIcon />
+                        </ListItemIcon>
+                        Testing
+                    </MenuItem>
+
+                    <MenuItem onClick={() => onNavigate('/admin')}>
+                        <ListItemIcon sx={{ minWidth: 'unset' }}>
+                            <AdminPanelSettingsIcon />
+                        </ListItemIcon>
+                        Admin Console
+                    </MenuItem>
+                </>
             )}
             
             <Box sx={{ borderTop: '1px solid', borderColor: 'divider', mt: 0.75 }}>

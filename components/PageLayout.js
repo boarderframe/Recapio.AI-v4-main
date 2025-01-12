@@ -4,7 +4,7 @@ import { Box } from '@mui/material';
 import { useThemeSettings } from '../context/ThemeContext';
 import PageHeader from './PageHeader';
 
-export default function PageLayout({ children, title, subtitle }) {
+export default function PageLayout({ children, title, subtitle, toolbar }) {
     const { themeSettings } = useThemeSettings();
 
     // Convert spacing units to pixels (1 unit = 8px)
@@ -42,6 +42,11 @@ export default function PageLayout({ children, title, subtitle }) {
                     }}
                 >
                     <PageHeader title={title} subtitle={subtitle} />
+                    {toolbar && (
+                        <Box sx={{ mt: getSpacing(themeSettings?.spacing?.headerToToolbarGap || 2) }}>
+                            {toolbar}
+                        </Box>
+                    )}
                     <Box
                         sx={{
                             mt: getSpacing(themeSettings?.spacing?.headerToToolbarGap || 2),

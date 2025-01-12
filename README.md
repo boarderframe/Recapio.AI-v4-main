@@ -1,16 +1,33 @@
-# Recapio.ai
+# Recapio
 
-AI-Powered Transcript Summarization and Insights Platform
+Recapio is a powerful transcription and analysis platform that leverages AI to convert speech to text and provide intelligent insights.
 
-## Prerequisites
+## Table of Contents
+- [Features](#features)
+- [Getting Started](#getting-started)
+- [Documentation](#documentation)
+- [Architecture](#architecture)
+- [Contributing](#contributing)
+- [License](#license)
 
-- Node.js (v18.x or later)
-- npm (v9.x or later)
-- Supabase account and project
+## Features
+- Speech-to-text transcription
+- AI-powered analysis
+- Real-time collaboration
+- Custom theme support
+- Role-based access control
+- Responsive design
+
+## Getting Started
+
+### Prerequisites
+- Node.js 18.x or higher
+- npm 9.x or higher
+- Supabase account
 - OpenAI API key
+- Google Cloud account (for speech-to-text)
 
-## Installation
-
+### Installation
 1. Clone the repository:
 ```bash
 git clone https://github.com/yourusername/recapio.git
@@ -22,96 +39,77 @@ cd recapio
 npm install
 ```
 
-3. Create a `.env.local` file in the root directory with the following environment variables:
-```env
-# Supabase Configuration
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-
-# OpenAI Configuration
-OPENAI_API_KEY=your_openai_api_key
-
-# Optional: Google Cloud Configuration (if using speech-to-text)
-GOOGLE_APPLICATION_CREDENTIALS=path_to_your_credentials.json
+3. Set up environment variables:
+```bash
+cp .env.example .env.local
 ```
+Edit `.env.local` with your configuration.
 
 4. Start the development server:
 ```bash
 npm run dev
 ```
 
-The application will be available at `http://localhost:3000`.
+## Documentation
 
-## Tech Stack
+### Core Systems
+- [Authentication System](docs/core-systems/authentication.md)
+- [Database System](docs/core-systems/database.md)
+- [Navigation System](docs/core-systems/navigation.md)
+- [Profile Menu System](docs/core-systems/profile-menu.md)
 
-- **Framework**: Next.js 14
-- **UI Library**: Material-UI (MUI) v5
-- **Authentication**: Supabase Auth
-- **Database**: Supabase (PostgreSQL)
-- **State Management**: 
-  - Redux Toolkit
-  - Zustand
-  - React Query
-- **Styling**: 
-  - Emotion
-  - Tailwind CSS
-- **Type Checking**: TypeScript
-- **Testing**: Jest & React Testing Library
-- **Code Quality**:
-  - ESLint
-  - Prettier
-- **Monitoring**: Sentry
+### Technical Documentation
+- [Architecture Overview](docs/technical/architecture.md)
+- [State Management](docs/technical/state-management.md)
+- [API Integration](docs/technical/api-integration.md)
+- [Theme System](docs/technical/theme.md)
 
-## Features
+### Deployment
+- [Deployment Guide](docs/deployment/deployment-guide.md)
+- [Environment Configuration](docs/deployment/environment.md)
+- [Security Considerations](docs/deployment/security.md)
 
-- User authentication (email, Google, GitHub)
-- Dashboard with analytics
-- Transcript processing and summarization
-- Real-time updates with Socket.IO
-- Responsive design
-- Internationalization support
-- Data visualization with various chart libraries
-- PDF and PowerPoint export capabilities
+### Planning
+- [Roadmap](docs/planning/roadmap.md)
+- [Feature Planning](docs/planning/features.md)
+- [UI/UX Guidelines](docs/planning/ui-ux.md)
 
-## Development
+### Testing
+- [Testing Guide](docs/testing/testing-guide.md)
+- [Test Environment](docs/testing/environment.md)
+- [E2E Testing](docs/testing/e2e.md)
 
-- Run tests:
-```bash
-npm test
-```
+### Troubleshooting
+- [Common Issues](docs/troubleshooting/common-issues.md)
+- [Debug Guide](docs/troubleshooting/debug-guide.md)
+- [FAQ](docs/troubleshooting/faq.md)
 
-- Run linter:
-```bash
-npm run lint
-```
+## Architecture
 
-- Build for production:
-```bash
-npm run build
-```
+### Frontend
+- Next.js 14 (App Router)
+- React 18
+- TypeScript
+- Material-UI
+- TailwindCSS
 
-## Project Structure
+### State Management
+- Redux Toolkit (Global state)
+- Zustand (UI state)
+- React Query (Server state)
 
-```
-recapio/
-├── app/                    # Next.js 14 app directory
-│   ├── api/               # API routes
-│   ├── dashboard/         # Dashboard pages
-│   └── ...               # Other pages
-├── components/            # Reusable components
-├── lib/                   # Utilities and contexts
-├── public/               # Static assets
-└── styles/               # Global styles
-```
+### Backend
+- Supabase (Database & Authentication)
+- OpenAI API (AI processing)
+- Google Cloud Speech-to-Text
+
+### Infrastructure
+- Vercel (Hosting)
+- Supabase (Backend)
+- AWS S3 (File storage)
 
 ## Contributing
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+Please read our [Contributing Guide](CONTRIBUTING.md) for details on our code of conduct and the process for submitting pull requests.
 
 ## License
-
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details. 

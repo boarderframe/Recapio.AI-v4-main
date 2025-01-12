@@ -5,10 +5,16 @@ import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import type { User } from '@supabase/supabase-js';
 import { Snackbar, Alert } from '@mui/material';
 
-const supabase = createClientComponentClient();
+// Extend the User type to include raw_user_meta_data
+interface ExtendedUser extends User {
+    raw_user_meta_data?: {
+        role?: string;
+        [key: string]: any;
+    };
+}
 
 interface AuthState {
-    user: User | null;
+    user: ExtendedUser | null;
     isLoading: boolean;
     error: Error | null;
 }
@@ -18,8 +24,10 @@ interface AuthContextType extends AuthState {
     signOut: () => Promise<void>;
     signUp: (email: string, password: string, name?: string) => Promise<{ error: Error | null }>;
     resetPassword: (email: string) => Promise<{ error: Error | null }>;
-    updateProfile: (data: Partial<User>) => Promise<{ error: Error | null }>;
+    updateProfile: (data: Partial<ExtendedUser>) => Promise<{ error: Error | null }>;
 }
+
+const supabase = createClientComponentClient();
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
@@ -50,6 +58,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 if (error) throw error;
                 if (!mounted) return;
 
+                if (session?.user) {
+                    // Map role from app_metadata or user_metadata
+                    const role = session.user.app_metadata?.role || session.user.user_metadata?.role;
+                    if (role) {
+                        session.user.user_metadata = {
+                            ...session.user.user_metadata,
+                            role: role
+                        };
+                    }
+                }
+
                 setAuthState(prev => ({
                     ...prev,
                     user: session?.user || null,
@@ -61,13 +80,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                     async (event, session) => {
                         if (!mounted) return;
 
-                        setAuthState(prev => ({
-                            ...prev,
-                            user: session?.user || null,
-                            isLoading: false
-                        }));
+                        if (session?.user && event === 'SIGNED_IN') {
+                            // Map role from app_metadata or user_metadata
+                            const role = session.user.app_metadata?.role || session.user.user_metadata?.role;
+                            if (role) {
+                                session.user.user_metadata = {
+                                    ...session.user.user_metadata,
+                                    role: role
+                                };
+                            }
 
-                        if (event === 'SIGNED_IN') {
                             setNotification({
                                 message: 'Successfully logged in',
                                 type: 'success',
@@ -80,6 +102,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                                 open: true
                             });
                         }
+
+                        setAuthState(prev => ({
+                            ...prev,
+                            user: session?.user || null,
+                            isLoading: false
+                        }));
                     }
                 );
 
@@ -108,6 +136,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             });
 
             if (error) throw error;
+            
+            // Show success notification immediately
+            setNotification({
+                message: 'Successfully logged in',
+                type: 'success',
+                open: true
+            });
+
+            // Hide notification after 500ms
+            await new Promise(resolve => setTimeout(resolve, 500));
+            setNotification(prev => ({ ...prev, open: false }));
+            
             return { error: null };
         } catch (error) {
             setNotification({
@@ -183,7 +223,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
     };
 
-    const updateProfile = async (data: Partial<User>) => {
+    const updateProfile = async (data: Partial<ExtendedUser>) => {
         try {
             const { error } = await supabase.auth.updateUser({
                 data: data
@@ -225,7 +265,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             {children}
             <Snackbar
                 open={notification.open}
-                autoHideDuration={6000}
+                autoHideDuration={1000}
                 onClose={handleCloseNotification}
                 anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
             >

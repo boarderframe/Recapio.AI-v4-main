@@ -20,6 +20,7 @@ import { useAuth } from '../lib/AuthContext';
 import Logo from './Logo';
 import Link from 'next/link';
 import type { Route } from '../lib/routes';
+import UserAvatar from './UserAvatar';
 
 interface AuthNavbarProps {
     mainRoutes: Route[];
@@ -84,11 +85,12 @@ export default function AuthNavbar({ mainRoutes, userMenuRoutes }: AuthNavbarPro
                         height: '64px',
                         display: 'flex',
                         alignItems: 'center',
+                        width: '100%',
+                        position: 'relative'
                     }}
                 >
                     <Box 
                         sx={{ 
-                            width: '200px', 
                             display: { xs: 'none', md: 'flex' },
                             alignItems: 'center',
                             height: '100%',
@@ -99,59 +101,18 @@ export default function AuthNavbar({ mainRoutes, userMenuRoutes }: AuthNavbarPro
                         <Logo />
                     </Box>
 
-                    <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
-                        <IconButton
-                            size="large"
-                            aria-label="open menu"
-                            aria-controls="menu-appbar"
-                            aria-haspopup="true"
-                            onClick={handleOpenNavMenu}
-                            sx={{ color: 'text.primary' }}
-                        >
-                            <MenuIcon />
-                        </IconButton>
-                        <Menu
-                            id="menu-appbar"
-                            anchorEl={anchorElNav}
-                            anchorOrigin={{
-                                vertical: 'bottom',
-                                horizontal: 'left',
-                            }}
-                            keepMounted
-                            transformOrigin={{
-                                vertical: 'top',
-                                horizontal: 'left',
-                            }}
-                            open={Boolean(anchorElNav)}
-                            onClose={handleCloseNavMenu}
-                            sx={{
-                                display: { xs: 'block', md: 'none' },
-                            }}
-                        >
-                            {mainRoutes.map((route) => (
-                                <MenuItem 
-                                    key={route.path}
-                                    onClick={() => handleMenuItemClick(route)}
-                                >
-                                    <Typography textAlign="center">{route.label}</Typography>
-                                </MenuItem>
-                            ))}
-                        </Menu>
-                    </Box>
-
                     <Box 
                         sx={{ 
-                            flexGrow: 1, 
                             display: { xs: 'none', md: 'flex' }, 
                             justifyContent: 'center',
                             gap: 4,
-                            position: 'absolute',
-                            left: '50%',
-                            transform: 'translateX(-50%)',
-                            width: 'auto'
+                            flex: 1,
+                            mx: 4
                         }}
                     >
-                        {mainRoutes.map((route) => (
+                        {mainRoutes.filter(route => 
+                            ['Dashboard', 'New Transcript', 'Transcript Library', 'Reporting'].includes(route.label)
+                        ).map((route) => (
                             <Button
                                 key={route.path}
                                 onClick={() => handleMenuItemClick(route)}
@@ -189,39 +150,28 @@ export default function AuthNavbar({ mainRoutes, userMenuRoutes }: AuthNavbarPro
 
                     <Box 
                         sx={{ 
-                            width: '200px', 
                             display: 'flex', 
                             justifyContent: 'flex-end',
-                            flexShrink: 0
+                            flexShrink: 0,
+                            alignItems: 'center',
+                            height: '100%'
                         }}
                     >
-                        <IconButton
+                        <UserAvatar
+                            email={user?.email}
+                            displayName={user?.user_metadata?.display_name}
+                            avatarUrl={user?.user_metadata?.avatar_url}
                             onClick={handleOpenUserMenu}
-                            sx={{
-                                width: 40,
-                                height: 40,
-                                backgroundColor: 'primary.main',
-                                color: 'white',
-                                fontSize: '1rem',
-                                fontWeight: 600,
-                                boxShadow: '0 2px 8px rgba(70, 130, 180, 0.2)',
-                                '&:hover': {
-                                    backgroundColor: 'primary.dark',
-                                    boxShadow: '0 4px 12px rgba(70, 130, 180, 0.3)',
-                                    transform: 'translateY(-1px)',
-                                },
-                                transition: 'all 0.2s ease-in-out',
-                            }}
-                        >
-                            <AccountCircle />
-                        </IconButton>
+                        />
                         <Menu
                             sx={{ 
                                 mt: '45px',
                                 '& .MuiPaper-root': {
                                     borderRadius: 2,
-                                    minWidth: 180,
+                                    minWidth: 200,
                                     boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.08)',
+                                    border: '1px solid',
+                                    borderColor: 'divider',
                                 },
                             }}
                             id="menu-appbar"
@@ -238,34 +188,100 @@ export default function AuthNavbar({ mainRoutes, userMenuRoutes }: AuthNavbarPro
                             open={Boolean(anchorElUser)}
                             onClose={handleCloseUserMenu}
                         >
-                            {userMenuRoutes.map((route) => (
-                                <MenuItem 
-                                    key={route.path}
-                                    onClick={() => handleMenuItemClick(route)}
-                                    sx={{
-                                        py: 1.5,
-                                        px: 2.5,
-                                        '&:hover': {
-                                            backgroundColor: 'action.hover',
-                                        },
-                                    }}
-                                >
-                                    <Typography>{route.label}</Typography>
-                                </MenuItem>
-                            ))}
+                            <Box sx={{ px: 2.5, py: 2, borderBottom: '1px solid', borderColor: 'divider' }}>
+                                <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
+                                    {user?.user_metadata?.display_name || user?.email}
+                                </Typography>
+                                <Typography variant="body2" color="text.secondary" sx={{ wordBreak: 'break-all' }}>
+                                    {user?.email}
+                                </Typography>
+                            </Box>
+
                             <MenuItem 
-                                onClick={() => signOut()}
+                                onClick={() => handleMenuItemClick({ 
+                                    path: '/profile', 
+                                    label: 'Profile',
+                                    requiresAuth: true 
+                                })}
                                 sx={{
                                     py: 1.5,
                                     px: 2.5,
-                                    color: 'error.main',
                                     '&:hover': {
-                                        backgroundColor: 'error.lighter',
+                                        backgroundColor: 'action.hover',
                                     },
                                 }}
                             >
-                                <Typography>Logout</Typography>
+                                <Typography>Profile</Typography>
                             </MenuItem>
+
+                            <MenuItem 
+                                onClick={() => handleMenuItemClick({ 
+                                    path: '/billing', 
+                                    label: 'Account',
+                                    requiresAuth: true 
+                                })}
+                                sx={{
+                                    py: 1.5,
+                                    px: 2.5,
+                                    '&:hover': {
+                                        backgroundColor: 'action.hover',
+                                    },
+                                }}
+                            >
+                                <Typography>Account</Typography>
+                            </MenuItem>
+
+                            <MenuItem 
+                                onClick={() => handleMenuItemClick({ 
+                                    path: '/settings', 
+                                    label: 'Settings',
+                                    requiresAuth: true 
+                                })}
+                                sx={{
+                                    py: 1.5,
+                                    px: 2.5,
+                                    '&:hover': {
+                                        backgroundColor: 'action.hover',
+                                    },
+                                }}
+                            >
+                                <Typography>Settings</Typography>
+                            </MenuItem>
+
+                            <Box sx={{ borderTop: '1px solid', borderColor: 'divider', mt: 1 }} />
+
+                            <MenuItem 
+                                onClick={() => handleMenuItemClick({ 
+                                    path: '/admin', 
+                                    label: 'Admin',
+                                    requiresAuth: true 
+                                })}
+                                sx={{
+                                    py: 1.5,
+                                    px: 2.5,
+                                    '&:hover': {
+                                        backgroundColor: 'action.hover',
+                                    },
+                                }}
+                            >
+                                <Typography>Admin</Typography>
+                            </MenuItem>
+
+                            <Box sx={{ borderTop: '1px solid', borderColor: 'divider', mt: 1 }}>
+                                <MenuItem 
+                                    onClick={() => signOut()}
+                                    sx={{
+                                        py: 1.5,
+                                        px: 2.5,
+                                        color: 'error.main',
+                                        '&:hover': {
+                                            backgroundColor: 'error.lighter',
+                                        },
+                                    }}
+                                >
+                                    <Typography>Logout</Typography>
+                                </MenuItem>
+                            </Box>
                         </Menu>
                     </Box>
                 </Toolbar>

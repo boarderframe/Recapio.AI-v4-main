@@ -3,6 +3,7 @@ export interface Route {
     label: string;
     icon?: string;
     requiresAuth: boolean;
+    requiresAdmin?: boolean;
 }
 
 export const routes: Record<string, Route> = {
@@ -83,6 +84,18 @@ export const routes: Record<string, Route> = {
         path: '/billing',
         label: 'Billing',
         requiresAuth: true
+    },
+    admin: {
+        path: '/admin',
+        label: 'Admin',
+        requiresAuth: true,
+        requiresAdmin: true
+    },
+    testing: {
+        path: '/admin/testing',
+        label: 'Testing',
+        requiresAuth: true,
+        requiresAdmin: true
     }
 };
 
@@ -91,6 +104,9 @@ export const getPublicRoutes = (): Route[] =>
 
 export const getProtectedRoutes = (): Route[] => 
     Object.values(routes).filter(route => route.requiresAuth);
+
+export const getAdminRoutes = (): Route[] =>
+    Object.values(routes).filter(route => route.requiresAdmin);
 
 export const getMainNavRoutes = (): Route[] => 
     Object.values(routes).filter(route => 
@@ -101,11 +117,12 @@ export const getMainNavRoutes = (): Route[] =>
 export const getAuthenticatedNavRoutes = (): Route[] => 
     Object.values(routes).filter(route => 
         route.requiresAuth && 
+        !route.requiresAdmin &&
         !['/profile', '/account', '/billing'].includes(route.path)
     );
 
 export const getUserMenuRoutes = (): Route[] => 
     Object.values(routes).filter(route => 
-        route.requiresAuth && 
-        ['/profile', '/account', '/billing'].includes(route.path)
+        (route.requiresAuth && ['/profile', '/account', '/billing'].includes(route.path)) ||
+        (route.requiresAdmin && ['/admin', '/admin/testing'].includes(route.path))
     ); 

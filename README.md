@@ -111,5 +111,13 @@ npm run dev
 ## Contributing
 Please read our [Contributing Guide](CONTRIBUTING.md) for details on our code of conduct and the process for submitting pull requests.
 
+### Commit Signing
+All commits must be signed with GPG keys for security and verification. See our [GPG Signing Guide](docs/setup/gpg-signing.md) for setup instructions.
+
+Required tools:
+```bash
+brew install gnupg pinentry-mac
+```
+
 ## License
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details. 

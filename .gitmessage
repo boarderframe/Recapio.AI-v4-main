@@ -1,0 +1,45 @@
+# <type>(<scope>): <subject>
+#
+# <body>
+#
+# <footer>
+#
+# Type can be:
+#   feat     (new feature)
+#   fix      (bug fix)
+#   docs     (documentation changes)
+#   style    (formatting, missing semicolons, etc; no code change)
+#   refactor (refactoring production code)
+#   test     (adding missing tests, refactoring tests)
+#   chore    (updating grunt tasks etc; no production code change)
+#
+# Scope can be:
+#   auth     (authentication related)
+#   ui       (user interface related)
+#   core     (core functionality)
+#   api      (API related)
+#   docs     (documentation)
+#   etc.
+#
+# Subject should be:
+#   - Imperative mood ("add" not "added" or "adds")
+#   - No period at the end
+#   - 50 chars or less
+#
+# Body should:
+#   - Explain what and why (not how)
+#   - Wrap at 72 chars
+#   - Use dashes (-) for bullet points
+#
+# Footer should:
+#   - Reference GitHub issues: "Closes #123, #456"
+#   - Note breaking changes: "BREAKING CHANGE: <description>"
+#
+# Example:
+# feat(auth): add OAuth2 authentication support
+#
+# - Implement Google OAuth2 login
+# - Add user profile sync with Google
+# - Store OAuth tokens securely
+#
+# Closes #123 

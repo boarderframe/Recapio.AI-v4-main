@@ -1,8 +1,10 @@
 import { Inter } from 'next/font/google';
-import ThemeRegistry from '@/components/ThemeRegistry';
-import { AuthProvider } from '@/lib/AuthContext';
+import ThemeRegistry from '../components/ThemeRegistry';
+import { AuthProvider } from '../lib/AuthContext';
 import { ThemeProvider as CustomThemeProvider } from '../context/ThemeContext';
-import Footer from '@/components/Footer';
+import Footer from '../components/Footer';
+import { Providers } from './providers';
+import Navigation from '../components/Navigation';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -16,13 +18,16 @@ export default function RootLayout({ children }) {
         <html lang="en">
             <body className={inter.className}>
                 <ThemeRegistry>
-                    <AuthProvider>
+                    <Providers>
                         <CustomThemeProvider>
-                            {children}
+                            <AuthProvider>
+                                <Navigation />
+                                {children}
+                                <Footer />
+                            </AuthProvider>
                         </CustomThemeProvider>
-                    </AuthProvider>
+                    </Providers>
                 </ThemeRegistry>
-                <Footer />
             </body>
         </html>
     );

@@ -36,7 +36,8 @@ import PageLayout from "../../components/PageLayout";
 import ContentCard from "../../components/ContentCard";
 import TranscriptList from "../../src/components/Transcripts/TranscriptList";
 import TranscriptGrid from "../../src/components/Transcripts/TranscriptGrid";
-import { useTranscripts } from "../../src/state/hooks/useTranscripts";
+import { useTranscripts } from "../../src/hooks/useTranscripts";
+import type { Transcript } from "../../src/types/transcript";
 
 const sidebarItems = [
   { id: "recent", label: "Recent", icon: <RecentIcon />, count: 5 },
@@ -53,7 +54,7 @@ export default function TranscriptsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [viewMode, setViewMode] = useState<"list" | "grid">("list");
 
-  const { data: transcripts, isLoading, error } = useTranscripts();
+  const { transcripts, isLoading, error } = useTranscripts();
 
   const debouncedSearch = useMemo(
     () =>
@@ -74,13 +75,10 @@ export default function TranscriptsPage() {
   const filteredTranscripts = useMemo(() => {
     if (!transcripts) return [];
 
-    return transcripts.filter((transcript: any) => {
+    return transcripts.filter((transcript: Transcript) => {
       const matchesSearch =
         !searchQuery ||
-        transcript.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        transcript.hashtags?.some((tag: string) =>
-          tag.toLowerCase().includes(searchQuery.toLowerCase())
-        );
+        transcript.title.toLowerCase().includes(searchQuery.toLowerCase());
 
       if (!matchesSearch) return false;
 
@@ -88,14 +86,14 @@ export default function TranscriptsPage() {
         case "recent": {
           const oneWeekAgo = new Date();
           oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
-          return new Date(transcript.created_at) >= oneWeekAgo;
+          return new Date(transcript.date) >= oneWeekAgo;
         }
         case "favorites":
-          return transcript.favorite;
+          return transcript.isFavorite;
         case "collections":
-          return !!transcript.collection_id;
+          return !!transcript.category;
         case "tags":
-          return transcript.hashtags && transcript.hashtags.length > 0;
+          return transcript.type !== undefined;
         case "all":
         default:
           return true;
@@ -108,7 +106,6 @@ export default function TranscriptsPage() {
       <PageLayout
         title="Transcripts"
         subtitle="Manage your transcripts"
-        toolbar={null}
       >
         <Typography color="error" variant="h6">
           Failed to load transcripts. Please try again later.
@@ -738,7 +735,6 @@ export default function TranscriptsPage() {
     <PageLayout
       title="Transcript Library"
       subtitle="Browse and manage your transcript collection"
-      toolbar={null}
     >
       {content}
     </PageLayout>

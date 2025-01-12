@@ -1,233 +1,138 @@
 "use client";
 import React from 'react';
-
 import {
     Box,
     Typography,
     Grid,
-    Card,
-    CardMedia,
+    Avatar,
     useTheme,
 } from '@mui/material';
-import { 
-    AutoAwesome,
-    Psychology,
-    Diversity3,
-    Speed
-} from '@mui/icons-material';
-import PageLayout from '@/components/PageLayout';
-import ContentCard from '@/components/ContentCard';
+import PageLayout from '../../components/PageLayout';
+import ContentCard from '../../components/ContentCard';
 
 export default function AboutPage() {
     const theme = useTheme();
 
-    const teamMembers = [
+    const team = [
         {
             name: 'Sarah Johnson',
-            role: 'CEO & Founder',
-            bio: 'Visionary leader with 15+ years in AI and machine learning. Previously led AI initiatives at major tech companies.',
-            image: 'https://via.placeholder.com/400x300'
+            role: 'CEO & Co-founder',
+            bio: 'Former AI research lead with 15+ years experience in machine learning and natural language processing.',
+            image: '/team/sarah.jpg'
         },
         {
             name: 'Michael Chen',
-            role: 'CTO',
-            bio: 'Expert in natural language processing and cloud architecture. PhD in Computer Science from Stanford.',
-            image: 'https://via.placeholder.com/400x300'
+            role: 'CTO & Co-founder',
+            bio: 'Previously led engineering teams at major tech companies, specializing in scalable cloud architecture.',
+            image: '/team/michael.jpg'
         },
         {
             name: 'Emily Rodriguez',
             role: 'Head of Product',
-            bio: 'Product strategist focused on user-centric design. Former Product Lead at Google and Amazon.',
-            image: 'https://via.placeholder.com/400x300'
+            bio: 'Product strategist with a background in UX design and a passion for creating intuitive user experiences.',
+            image: '/team/emily.jpg'
         },
         {
             name: 'David Kim',
             role: 'Lead Engineer',
-            bio: 'Full-stack developer specializing in scalable solutions. 10+ years experience in enterprise software.',
-            image: 'https://via.placeholder.com/400x300'
-        }
+            bio: 'Full-stack developer with expertise in building enterprise-grade applications and AI integration.',
+            image: '/team/david.jpg'
+        },
     ];
 
-    const companyValues = [
+    const values = [
         {
             title: 'Innovation',
-            description: 'Pushing boundaries with cutting-edge AI technology to transform how we process conversations',
-            icon: <AutoAwesome sx={{ fontSize: 40, color: theme => theme.palette.primary.main }} />
+            description: 'We push the boundaries of what is possible with AI and machine learning, constantly evolving our technology to deliver better results.',
         },
         {
-            title: 'User-Centric',
-            description: 'Building features that enhance and simplify user experience at every step',
-            icon: <Psychology sx={{ fontSize: 40, color: theme => theme.palette.primary.main }} />
+            title: 'Accessibility',
+            description: 'We believe in making advanced AI technology accessible to everyone, regardless of technical expertise.',
         },
         {
-            title: 'Collaboration',
-            description: 'Fostering a culture of teamwork and shared success across our organization',
-            icon: <Diversity3 sx={{ fontSize: 40, color: theme => theme.palette.primary.main }} />
+            title: 'Privacy',
+            description: 'We prioritize the security and privacy of our users data, maintaining the highest standards of data protection.',
         },
         {
-            title: 'Excellence',
-            description: 'Committed to delivering the highest quality solutions and continuous improvement',
-            icon: <Speed sx={{ fontSize: 40, color: theme => theme.palette.primary.main }} />
-        }
+            title: 'Quality',
+            description: 'We are committed to delivering the highest quality transcription and analysis services, continuously improving our accuracy.',
+        },
     ];
 
     return (
-        <PageLayout 
+        <PageLayout
             title="About Us"
             subtitle={
                 <>
-                    We're on a mission to revolutionize
+                    Transforming audio and video content into actionable insights
                     <br />
-                    how the world captures and utilizes spoken information
+                    Powered by cutting-edge AI technology
                 </>
             }
         >
-            {/* Our Story Section */}
             <ContentCard>
-                <Typography variant="h6" gutterBottom>
+                <Typography variant="h5" sx={{ fontWeight: 700, mb: 3 }}>
                     Our Story
                 </Typography>
-                <Typography variant="body2" color="text.secondary" gutterBottom>
-                    Learn about our journey and mission
+                <Typography variant="body1" sx={{ mb: 4, color: 'text.secondary', lineHeight: 1.8 }}>
+                    Founded in 2023, Recapio.AI emerged from a simple yet powerful idea: to make audio and video content more accessible and actionable through advanced AI technology. Our team of AI researchers, engineers, and product designers came together with a shared vision of transforming how people interact with and extract value from spoken content.
+                </Typography>
+                <Typography variant="body1" sx={{ mb: 6, color: 'text.secondary', lineHeight: 1.8 }}>
+                    Today, we're proud to serve thousands of users worldwide, from individual content creators to large enterprises, helping them unlock the full potential of their audio and video content through accurate transcription, intelligent summarization, and powerful analytics.
                 </Typography>
 
-                <Grid container spacing={4} sx={{ mt: 1 }}>
-                    <Grid item xs={12} md={6}>
-                        <Typography variant="body2" sx={{ 
-                            lineHeight: 1.8,
-                            color: 'text.secondary',
-                            mb: { xs: 2, md: 0 }
-                        }}>
-                            Founded in 2023, Recapio.ai emerged from a simple yet powerful idea: to make information from spoken conversations as accessible and useful as written text. Our team of experts in AI, machine learning, and natural language processing came together with a shared vision of transforming how organizations handle verbal communication.
-                        </Typography>
-                    </Grid>
-                    <Grid item xs={12} md={6}>
-                        <Card sx={{ 
-                            borderRadius: 2,
-                            overflow: 'hidden',
-                            border: '1px solid',
-                            borderColor: 'divider',
-                            bgcolor: 'background.default',
-                        }}>
-                            <CardMedia
-                                component="img"
-                                height="300"
-                                image="https://via.placeholder.com/800x600"
-                                alt="About Recapio.ai"
-                            />
-                        </Card>
-                    </Grid>
-                </Grid>
-            </ContentCard>
-
-            {/* Values Section */}
-            <ContentCard sx={{ mt: theme.spacing.contentGap }}>
-                <Typography variant="h6" gutterBottom>
+                <Typography variant="h5" sx={{ fontWeight: 700, mb: 3 }}>
                     Our Values
                 </Typography>
-                <Typography variant="body2" color="text.secondary" gutterBottom>
-                    The principles that guide everything we do
-                </Typography>
-
-                <Grid container spacing={3} sx={{ mt: 1 }}>
-                    {companyValues.map((value, index) => (
-                        <Grid item xs={12} sm={6} md={3} key={index}>
-                            <Card
-                                sx={{
-                                    height: '100%',
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    alignItems: 'center',
-                                    textAlign: 'center',
-                                    p: 3,
-                                    bgcolor: 'background.default',
-                                    border: '1px solid',
-                                    borderColor: 'divider',
-                                    borderRadius: 2,
-                                }}
-                            >
-                                <Box sx={{ mb: 2 }}>{value.icon}</Box>
-                                <Typography 
-                                    variant="subtitle1" 
-                                    sx={{ 
-                                        mb: 1, 
-                                        fontWeight: 600 
-                                    }}
-                                >
+                <Grid container spacing={4} sx={{ mb: 6 }}>
+                    {values.map((value, index) => (
+                        <Grid item xs={12} sm={6} key={index}>
+                            <Box sx={{ mb: 2 }}>
+                                <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>
                                     {value.title}
                                 </Typography>
-                                <Typography variant="body2" color="text.secondary">
+                                <Typography variant="body2" sx={{ color: 'text.secondary', lineHeight: 1.7 }}>
                                     {value.description}
                                 </Typography>
-                            </Card>
+                            </Box>
                         </Grid>
                     ))}
                 </Grid>
-            </ContentCard>
 
-            {/* Team Section */}
-            <ContentCard sx={{ mt: theme.spacing.contentGap }}>
-                <Typography variant="h6" gutterBottom>
-                    Meet Our Team
+                <Typography variant="h5" sx={{ fontWeight: 700, mb: 3 }}>
+                    Our Team
                 </Typography>
-                <Typography variant="body2" color="text.secondary" gutterBottom>
-                    The people behind Recapio.ai's innovation
-                </Typography>
-
-                <Grid container spacing={3} sx={{ mt: 1 }}>
-                    {teamMembers.map((member, index) => (
-                        <Grid item xs={12} sm={6} key={index}>
-                            <Card
-                                sx={{
-                                    height: '100%',
-                                    display: 'flex',
-                                    flexDirection: { xs: 'column', sm: 'row' },
-                                    alignItems: 'center',
-                                    p: 3,
-                                    bgcolor: 'background.default',
-                                    border: '1px solid',
-                                    borderColor: 'divider',
-                                    borderRadius: 2,
-                                }}
-                            >
-                                <CardMedia
-                                    component="img"
-                                    sx={{
-                                        width: { xs: '100%', sm: '160px' },
-                                        height: { xs: '200px', sm: '160px' },
-                                        objectFit: 'cover',
-                                        borderRadius: 1,
-                                        mb: { xs: 2, sm: 0 },
-                                        mr: { xs: 0, sm: 3 }
-                                    }}
-                                    image={member.image}
+                <Grid container spacing={4}>
+                    {team.map((member, index) => (
+                        <Grid item xs={12} sm={6} md={3} key={index}>
+                            <Box sx={{ 
+                                textAlign: 'center',
+                                transition: 'transform 0.3s ease',
+                                '&:hover': {
+                                    transform: 'translateY(-8px)',
+                                }
+                            }}>
+                                <Avatar
+                                    src={member.image}
                                     alt={member.name}
+                                    sx={{
+                                        width: 120,
+                                        height: 120,
+                                        mx: 'auto',
+                                        mb: 2,
+                                        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08)',
+                                    }}
                                 />
-                                <Box>
-                                    <Typography 
-                                        variant="subtitle1" 
-                                        sx={{ 
-                                            fontWeight: 600,
-                                            mb: 0.5
-                                        }}
-                                    >
-                                        {member.name}
-                                    </Typography>
-                                    <Typography
-                                        variant="body2"
-                                        sx={{ 
-                                            color: 'primary.main',
-                                            mb: 1,
-                                            fontWeight: 500,
-                                        }}
-                                    >
-                                        {member.role}
-                                    </Typography>
-                                    <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.6 }}>
-                                        {member.bio}
-                                    </Typography>
-                                </Box>
-                            </Card>
+                                <Typography variant="h6" sx={{ fontWeight: 600, mb: 0.5 }}>
+                                    {member.name}
+                                </Typography>
+                                <Typography variant="subtitle2" sx={{ color: 'primary.main', mb: 1 }}>
+                                    {member.role}
+                                </Typography>
+                                <Typography variant="body2" sx={{ color: 'text.secondary', lineHeight: 1.7 }}>
+                                    {member.bio}
+                                </Typography>
+                            </Box>
                         </Grid>
                     ))}
                 </Grid>

@@ -22,8 +22,8 @@ import GroupsIcon from '@mui/icons-material/Groups';
 import InsightsIcon from '@mui/icons-material/Insights';
 import SettingsSuggestIcon from '@mui/icons-material/SettingsSuggest';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-import PageLayout from '@/components/PageLayout';
-import ContentCard from '@/components/ContentCard';
+import PageLayout from '../../components/PageLayout';
+import ContentCard from '../../components/ContentCard';
 
 export default function FeaturesPage() {
     const theme = useTheme();

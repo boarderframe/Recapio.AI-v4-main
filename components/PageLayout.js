@@ -1,9 +1,8 @@
 "use client";
 
 import { Box } from '@mui/material';
-import { useThemeSettings } from '@/context/ThemeContext';
+import { useThemeSettings } from '../context/ThemeContext';
 import PageHeader from './PageHeader';
-import AuthNavbar from './AuthNavbar';
 
 export default function PageLayout({ children, title, subtitle }) {
     const { themeSettings } = useThemeSettings();
@@ -15,35 +14,44 @@ export default function PageLayout({ children, title, subtitle }) {
     };
 
     return (
-        <>
-            <AuthNavbar />
+        <Box sx={{ 
+            display: 'flex', 
+            flexDirection: 'column',
+            minHeight: '100vh',
+            backgroundColor: 'background.default'
+        }}>
             <Box
                 component="main"
                 sx={{
                     flexGrow: 1,
-                    minHeight: '100vh',
-                    pt: `calc(56px + ${getSpacing(4)})`, // Increased spacing from navbar
-                    pb: 4,
-                    backgroundColor: 'background.default'
+                    pt: `calc(${themeSettings?.spacing?.navHeight || 64}px + ${getSpacing(4)})`,
+                    pb: 6,
+                    display: 'flex',
+                    flexDirection: 'column'
                 }}
             >
                 <Box
                     sx={{
-                        maxWidth: '1200px', // Increased from 800px
+                        maxWidth: '1200px',
+                        width: '100%',
                         mx: 'auto',
-                        px: { xs: 2, sm: 3, md: 4 }
+                        px: { xs: 2, sm: 3, md: 4 },
+                        flex: 1,
+                        display: 'flex',
+                        flexDirection: 'column'
                     }}
                 >
                     <PageHeader title={title} subtitle={subtitle} />
                     <Box
                         sx={{
-                            mt: getSpacing(themeSettings?.spacing?.headerToToolbarGap || 2)
+                            mt: getSpacing(themeSettings?.spacing?.headerToToolbarGap || 2),
+                            flex: 1
                         }}
                     >
                         {children}
                     </Box>
                 </Box>
             </Box>
-        </>
+        </Box>
     );
 } 

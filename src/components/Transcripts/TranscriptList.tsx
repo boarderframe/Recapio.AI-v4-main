@@ -20,7 +20,7 @@ import {
 } from '@mui/icons-material';
 import * as MuiIcons from '@mui/icons-material';
 import { useTranscriptConfig } from '../../hooks/useTranscriptConfig';
-import type { Transcript } from '../../types/transcript';
+import { Transcript } from '@/src/types/transcript';
 
 interface TranscriptListProps {
     transcripts: Transcript[];

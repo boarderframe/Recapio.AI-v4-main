@@ -1,15 +1,18 @@
 import { SupabaseClient } from '@supabase/supabase-js';
-import { DatabaseOperations } from './utils/db-operations';
-import { BaseRecord, PaginationOptions, QueryResponse } from './utils/query-builder';
+import { DatabaseOperations, PaginationOptions, QueryResponse } from './utils/db-operations';
+import { Database } from './types';
 
-interface Transcript extends BaseRecord {
-    type: string;
-    status: string;
-    source_file: string;
-    source_language: string;
-    target_language: string;
-    created_at: string;
-    updated_at: string;
+type TranscriptRow = Database['public']['Tables']['transcripts']['Row'];
+
+export interface Transcript extends Omit<TranscriptRow, 'type'> {
+    type: 'audio' | 'video' | 'text';
+    content: string;
+    language: string;
+    metadata?: Record<string, any>;
+    title: string;
+    date: string;
+    summary?: string;
+    isFavorite?: boolean;
 }
 
 interface TranscriptStats {
@@ -19,15 +22,34 @@ interface TranscriptStats {
 }
 
 export class TranscriptsOperations extends DatabaseOperations<Transcript> {
-    constructor(client: SupabaseClient, tenantId: string | null = null) {
+    constructor(client: SupabaseClient<Database>, tenantId: string | null = null) {
         super(client, 'transcripts', tenantId);
     }
 
     async listWithType(type: string, options: PaginationOptions = {}): Promise<QueryResponse<Transcript>> {
-        return this.createQuery()
-            .filter('type', '=', type)
-            .paginateByCursor(options)
-            .execute();
+        const { pageSize = 10, cursor, ascending = true } = options;
+        let query = this.createQuery().eq('type', type);
+
+        if (cursor) {
+            query = ascending
+                ? query.gt('id', cursor)
+                : query.lt('id', cursor);
+        }
+
+        const { data, error } = await query
+            .order('id', { ascending })
+            .limit(pageSize);
+
+        if (error) throw error;
+
+        return {
+            data: data as Transcript[],
+            metadata: {
+                total: data.length,
+                returned: data.length,
+                hasMore: data.length === pageSize
+            }
+        };
     }
 
     async listByDateRange(
@@ -35,21 +57,68 @@ export class TranscriptsOperations extends DatabaseOperations<Transcript> {
         endDate: string,
         options: PaginationOptions = {}
     ): Promise<QueryResponse<Transcript>> {
-        return this.createQuery()
-            .filter('created_at', '>=', startDate)
-            .filter('created_at', '<=', endDate)
-            .paginateByCursor(options)
-            .execute();
+        const { pageSize = 10, cursor, ascending = true } = options;
+        let query = this.createQuery()
+            .gte('created_at', startDate)
+            .lte('created_at', endDate);
+
+        if (cursor) {
+            query = ascending
+                ? query.gt('id', cursor)
+                : query.lt('id', cursor);
+        }
+
+        const { data, error } = await query
+            .order('id', { ascending })
+            .limit(pageSize);
+
+        if (error) throw error;
+
+        return {
+            data: data as Transcript[],
+            metadata: {
+                total: data.length,
+                returned: data.length,
+                hasMore: data.length === pageSize
+            }
+        };
     }
 
     async listByStatus(
         status: string,
         options: PaginationOptions = {}
     ): Promise<QueryResponse<Transcript>> {
-        return this.createQuery()
-            .filter('status', '=', status)
-            .paginateByCursor(options)
-            .execute();
+        const { pageSize = 10, cursor, ascending = true } = options;
+        let query = this.createQuery().eq('status', status);
+
+        if (cursor) {
+            query = ascending
+                ? query.gt('id', cursor)
+                : query.lt('id', cursor);
+        }
+
+        const { data, error } = await query
+            .order('id', { ascending })
+            .limit(pageSize);
+
+        if (error) throw error;
+
+        return {
+            data: data as Transcript[],
+            metadata: {
+                total: data.length,
+                returned: data.length,
+                hasMore: data.length === pageSize
+            }
+        };
+    }
+
+    async search(query: string, columns: string[] = ['title']): Promise<Transcript[]> {
+        const { data, error } = await this.createQuery()
+            .or(columns.map(col => `${col}.ilike.%${query}%`).join(','));
+
+        if (error) throw error;
+        return data as Transcript[];
     }
 
     async getStats(): Promise<TranscriptStats> {
@@ -65,13 +134,15 @@ export class TranscriptsOperations extends DatabaseOperations<Transcript> {
     }
 
     private async getStatsByField(field: string): Promise<Record<string, number>> {
-        const result = await this.createQuery()
-            .select([field])
-            .execute();
+        const { data, error } = await this.createQuery();
 
-        return result.data.reduce((acc: Record<string, number>, curr: any) => {
-            const value = curr[field];
-            acc[value] = (acc[value] || 0) + 1;
+        if (error) throw error;
+
+        return (data as Transcript[]).reduce((acc: Record<string, number>, curr: Transcript) => {
+            const value = curr[field as keyof Transcript];
+            if (typeof value === 'string') {
+                acc[value] = (acc[value] || 0) + 1;
+            }
             return acc;
         }, {});
     }

@@ -1,131 +1,147 @@
+"use client";
+
+import React from 'react';
 import {
-  Grid,
-  Card,
-  CardContent,
-  CardActions,
-  Typography,
-  IconButton,
-  Chip,
-  Box,
-  Skeleton,
-  Stack,
+    Grid,
+    Card,
+    CardContent,
+    Typography,
+    IconButton,
+    Box,
+    Chip,
+    Menu,
+    MenuItem,
 } from '@mui/material';
 import {
-  Star as StarIcon,
-  StarBorder as StarBorderIcon,
-  MoreVert as MoreVertIcon,
-  Description as TranscriptIcon,
-  Tag as TagIcon,
-  Folder as CollectionIcon,
+    MoreVert as MoreVertIcon,
+    AccessTime as AccessTimeIcon,
+    CheckCircle as CheckCircleIcon,
+    Error as ErrorIcon,
+    Refresh as RefreshIcon
 } from '@mui/icons-material';
 import { formatDistanceToNow } from 'date-fns';
-import type { Transcript } from '@/app/hooks/useTranscripts';
+import type { Transcript } from '../../hooks/useTranscripts';
 
 interface TranscriptGridProps {
-  transcripts: Transcript[];
-  isLoading: boolean;
+    transcripts: Transcript[];
+    onEdit?: (transcript: Transcript) => void;
+    onDelete?: (transcript: Transcript) => void;
 }
 
-export default function TranscriptGrid({ transcripts, isLoading }: TranscriptGridProps) {
-  if (isLoading) {
+export default function TranscriptGrid({ transcripts, onEdit, onDelete }: TranscriptGridProps) {
+    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+    const [selectedTranscript, setSelectedTranscript] = React.useState<Transcript | null>(null);
+
+    const handleMenuOpen = (event: React.MouseEvent<HTMLElement>, transcript: Transcript) => {
+        setAnchorEl(event.currentTarget);
+        setSelectedTranscript(transcript);
+    };
+
+    const handleMenuClose = () => {
+        setAnchorEl(null);
+        setSelectedTranscript(null);
+    };
+
+    const handleEdit = () => {
+        if (selectedTranscript && onEdit) {
+            onEdit(selectedTranscript);
+        }
+        handleMenuClose();
+    };
+
+    const handleDelete = () => {
+        if (selectedTranscript && onDelete) {
+            onDelete(selectedTranscript);
+        }
+        handleMenuClose();
+    };
+
+    const getStatusIcon = (status: Transcript['status']) => {
+        switch (status) {
+            case 'completed':
+                return <CheckCircleIcon sx={{ color: 'success.main' }} />;
+            case 'failed':
+                return <ErrorIcon sx={{ color: 'error.main' }} />;
+            case 'processing':
+                return <RefreshIcon sx={{ color: 'info.main' }} />;
+            default:
+                return null;
+        }
+    };
+
     return (
-      <Grid container spacing={3}>
-        {[...Array(6)].map((_, index) => (
-          <Grid item xs={12} sm={6} md={4} key={index}>
-            <Card>
-              <CardContent>
-                <Skeleton variant="rectangular" height={24} width="60%" sx={{ mb: 1 }} />
-                <Skeleton variant="rectangular" height={20} width="40%" />
-              </CardContent>
-              <CardActions>
-                <Skeleton variant="circular" width={32} height={32} />
-                <Skeleton variant="circular" width={32} height={32} />
-              </CardActions>
-            </Card>
-          </Grid>
-        ))}
-      </Grid>
-    );
-  }
+        <Grid container spacing={3}>
+            {transcripts.map((transcript) => (
+                <Grid item xs={12} sm={6} md={4} key={transcript.id}>
+                    <Card 
+                        sx={{ 
+                            height: '100%',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            position: 'relative',
+                            '&:hover': {
+                                boxShadow: 3,
+                            },
+                        }}
+                    >
+                        <CardContent sx={{ flexGrow: 1 }}>
+                            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
+                                <Typography variant="h6" component="h2" noWrap>
+                                    {transcript.title}
+                                </Typography>
+                                <IconButton
+                                    size="small"
+                                    onClick={(e) => handleMenuOpen(e, transcript)}
+                                    sx={{ ml: 1 }}
+                                >
+                                    <MoreVertIcon />
+                                </IconButton>
+                            </Box>
 
-  if (!transcripts.length) {
-    return (
-      <Box sx={{ p: 3, textAlign: 'center' }}>
-        <Typography color="textSecondary">
-          No transcripts found
-        </Typography>
-      </Box>
-    );
-  }
+                            <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                                <AccessTimeIcon sx={{ fontSize: '1rem', mr: 0.5, color: 'text.secondary' }} />
+                                <Typography variant="body2" color="text.secondary">
+                                    {formatDistanceToNow(new Date(transcript.createdAt), { addSuffix: true })}
+                                </Typography>
+                            </Box>
 
-  return (
-    <Grid container spacing={3}>
-      {transcripts.map((transcript) => (
-        <Grid item xs={12} sm={6} md={4} key={transcript.id}>
-          <Card
-            sx={{
-              height: '100%',
-              display: 'flex',
-              flexDirection: 'column',
-              '&:hover': {
-                boxShadow: (theme) => theme.shadows[4],
-              },
-            }}
-          >
-            <CardContent sx={{ flexGrow: 1 }}>
-              <Box sx={{ display: 'flex', alignItems: 'flex-start', mb: 2 }}>
-                <TranscriptIcon color="primary" sx={{ mr: 1 }} />
-                <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                  {transcript.title}
-                </Typography>
-              </Box>
+                            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                                {getStatusIcon(transcript.status)}
+                                <Typography 
+                                    variant="body2" 
+                                    color="text.secondary" 
+                                    sx={{ ml: 0.5, textTransform: 'capitalize' }}
+                                >
+                                    {transcript.status}
+                                </Typography>
+                            </Box>
 
-              <Stack spacing={1}>
-                <Typography variant="body2" color="textSecondary">
-                  {formatDistanceToNow(new Date(transcript.created_at), { addSuffix: true })}
-                </Typography>
+                            <Typography 
+                                variant="body2" 
+                                color="text.secondary" 
+                                sx={{ 
+                                    display: '-webkit-box',
+                                    WebkitLineClamp: 3,
+                                    WebkitBoxOrient: 'vertical',
+                                    overflow: 'hidden',
+                                    mb: 2
+                                }}
+                            >
+                                {transcript.content}
+                            </Typography>
+                        </CardContent>
 
-                {transcript.collection_id && (
-                  <Chip
-                    size="small"
-                    icon={<CollectionIcon />}
-                    label="Collection"
-                    variant="outlined"
-                  />
-                )}
-
-                {transcript.hashtags && transcript.hashtags.length > 0 && (
-                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                    {transcript.hashtags.map((tag) => (
-                      <Chip
-                        key={tag}
-                        size="small"
-                        icon={<TagIcon />}
-                        label={tag}
-                        variant="outlined"
-                      />
-                    ))}
-                  </Box>
-                )}
-              </Stack>
-            </CardContent>
-
-            <CardActions disableSpacing>
-              <IconButton aria-label="favorite">
-                {transcript.favorite ? (
-                  <StarIcon color="warning" />
-                ) : (
-                  <StarBorderIcon />
-                )}
-              </IconButton>
-              <Box sx={{ flexGrow: 1 }} />
-              <IconButton aria-label="more options">
-                <MoreVertIcon />
-              </IconButton>
-            </CardActions>
-          </Card>
+                        <Menu
+                            anchorEl={anchorEl}
+                            open={Boolean(anchorEl)}
+                            onClose={handleMenuClose}
+                        >
+                            <MenuItem onClick={handleEdit}>Edit</MenuItem>
+                            <MenuItem onClick={handleDelete} sx={{ color: 'error.main' }}>Delete</MenuItem>
+                        </Menu>
+                    </Card>
+                </Grid>
+            ))}
         </Grid>
-      ))}
-    </Grid>
-  );
+    );
 } 

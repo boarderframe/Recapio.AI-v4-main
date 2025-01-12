@@ -1,26 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
 import { listTranscripts, getTranscript, searchTranscripts } from '../../lib/database/operations/transcript';
-import { useAppSelector, RootState } from '../state/store';
-import { BaseRecord } from '../../lib/database/utils/query-builder';
+import { Transcript } from '../types/transcript';
 
-interface Transcript extends BaseRecord {
-    type: string;
-    status: string;
-    content: string;
-    universal_metadata: Record<string, any>;
-    created_at: string;
-    updated_at: string;
-    deleted_at: string | null;
-}
-
-interface TranscriptType {
-    id: string;
-    type: string;
-    category: string;
-    sub_type: string;
-    category_color: string;
-    category_icon: string;
-}
+export type { Transcript };
 
 interface ApiResponse<T> {
     data: T[];
@@ -35,6 +17,15 @@ interface QueryResponse<T> {
         returned: number;
         hasMore: boolean;
     };
+}
+
+interface TranscriptType {
+    id: string;
+    type: string;
+    category: string;
+    sub_type: string;
+    category_color: string;
+    category_icon: string;
 }
 
 interface TranscriptStats {
@@ -63,7 +54,15 @@ export interface PaginationOptions {
 
 function transformApiResponse<T>(response: ApiResponse<T>): QueryResponse<T> {
     return {
-        data: response.data,
+        data: response.data.map((item: any) => ({
+            id: item.id,
+            title: item.title,
+            type: item.type,
+            date: item.created_at,
+            summary: item.content,
+            isFavorite: item.favorite || false,
+            category: item.category
+        })) as T[],
         metadata: {
             total: response.count || 0,
             returned: response.data.length,
@@ -73,7 +72,7 @@ function transformApiResponse<T>(response: ApiResponse<T>): QueryResponse<T> {
 }
 
 export function useTranscripts(filters: TranscriptFilters = {}, pagination: PaginationOptions = {}) {
-    const tenantId = useAppSelector((state: RootState) => state.auth.tenantId);
+    const mockTenantId = 'default-tenant'; // Mock tenant ID for development
 
     // Convert filters to query parameters
     const queryParams = {
@@ -96,27 +95,24 @@ export function useTranscripts(filters: TranscriptFilters = {}, pagination: Pagi
 
     // Fetch transcripts with type information
     const { data, isLoading, error } = useQuery<QueryResponse<Transcript & { transcript_types: TranscriptType }>>({
-        queryKey: ['transcripts', tenantId, filters, pagination],
+        queryKey: ['transcripts', filters, pagination],
         queryFn: async () => {
-            if (!tenantId) throw new Error('Tenant ID is required');
-            const response = await listTranscripts(queryParams, tenantId);
+            const response = await listTranscripts(queryParams, mockTenantId);
             return transformApiResponse(response as ApiResponse<Transcript & { transcript_types: TranscriptType }>);
-        },
-        enabled: !!tenantId
+        }
     });
 
     // Search transcripts
     const { data: searchResults, isLoading: isSearching } = useQuery<QueryResponse<Transcript>>({
-        queryKey: ['transcripts', 'search', tenantId, filters.search],
+        queryKey: ['transcripts', 'search', filters.search],
         queryFn: async () => {
-            if (!tenantId) throw new Error('Tenant ID is required');
             if (!filters.search) throw new Error('Search query is required');
             const response = await searchTranscripts(filters.search, {
                 limit: pagination.pageSize || 10
-            }, tenantId);
+            }, mockTenantId);
             return transformApiResponse(response as ApiResponse<Transcript>);
         },
-        enabled: !!tenantId && !!filters.search
+        enabled: !!filters.search
     });
 
     return {
@@ -130,19 +126,17 @@ export function useTranscripts(filters: TranscriptFilters = {}, pagination: Pagi
 }
 
 export function useRecentTranscripts(limit = 5) {
-    const tenantId = useAppSelector((state: RootState) => state.auth.tenantId);
+    const mockTenantId = 'default-tenant'; // Mock tenant ID for development
 
     const { data, isLoading } = useQuery<QueryResponse<Transcript>>({
-        queryKey: ['transcripts', 'recent', tenantId, limit],
+        queryKey: ['transcripts', 'recent', limit],
         queryFn: async () => {
-            if (!tenantId) throw new Error('Tenant ID is required');
             const response = await listTranscripts({ 
                 limit,
                 orderBy: { created_at: 'desc' }
-            }, tenantId);
+            }, mockTenantId);
             return transformApiResponse(response as ApiResponse<Transcript>);
-        },
-        enabled: !!tenantId
+        }
     });
 
     return {
@@ -152,19 +146,18 @@ export function useRecentTranscripts(limit = 5) {
 }
 
 export function useTranscriptsByType(type: string, options: PaginationOptions = {}) {
-    const tenantId = useAppSelector((state: RootState) => state.auth.tenantId);
+    const mockTenantId = 'default-tenant'; // Mock tenant ID for development
 
     const { data, isLoading } = useQuery<QueryResponse<Transcript>>({
-        queryKey: ['transcripts', 'byType', tenantId, type, options],
+        queryKey: ['transcripts', 'byType', type, options],
         queryFn: async () => {
-            if (!tenantId) throw new Error('Tenant ID is required');
             const response = await listTranscripts({ 
                 type,
                 ...options
-            }, tenantId);
+            }, mockTenantId);
             return transformApiResponse(response as ApiResponse<Transcript>);
         },
-        enabled: !!tenantId && !!type
+        enabled: !!type
     });
 
     return {
@@ -175,19 +168,18 @@ export function useTranscriptsByType(type: string, options: PaginationOptions = 
 }
 
 export function useTranscriptsByStatus(status: string, options: PaginationOptions = {}) {
-    const tenantId = useAppSelector((state: RootState) => state.auth.tenantId);
+    const mockTenantId = 'default-tenant'; // Mock tenant ID for development
 
     const { data, isLoading } = useQuery<QueryResponse<Transcript>>({
-        queryKey: ['transcripts', 'byStatus', tenantId, status, options],
+        queryKey: ['transcripts', 'byStatus', status, options],
         queryFn: async () => {
-            if (!tenantId) throw new Error('Tenant ID is required');
             const response = await listTranscripts({ 
                 status,
                 ...options
-            }, tenantId);
+            }, mockTenantId);
             return transformApiResponse(response as ApiResponse<Transcript>);
         },
-        enabled: !!tenantId && !!status
+        enabled: !!status
     });
 
     return {
@@ -202,12 +194,11 @@ export function useTranscriptsByDateRange(
     endDate: string,
     options: PaginationOptions = {}
 ) {
-    const tenantId = useAppSelector((state: RootState) => state.auth.tenantId);
+    const mockTenantId = 'default-tenant'; // Mock tenant ID for development
 
     const { data, isLoading } = useQuery<QueryResponse<Transcript>>({
-        queryKey: ['transcripts', 'byDateRange', tenantId, startDate, endDate, options],
+        queryKey: ['transcripts', 'byDateRange', startDate, endDate, options],
         queryFn: async () => {
-            if (!tenantId) throw new Error('Tenant ID is required');
             const response = await listTranscripts({ 
                 created_at: {
                     operator: 'rangeGte',
@@ -218,10 +209,10 @@ export function useTranscriptsByDateRange(
                     value: endDate
                 },
                 ...options
-            }, tenantId);
+            }, mockTenantId);
             return transformApiResponse(response as ApiResponse<Transcript>);
         },
-        enabled: !!tenantId && !!startDate && !!endDate
+        enabled: !!startDate && !!endDate
     });
 
     return {

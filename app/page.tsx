@@ -1,40 +1,41 @@
-"use client";
+'use client';
+
 import React from 'react';
 import {
-    Box,
-    Typography,
-    Button,
-    Grid,
-    Card,
-    CardContent,
-    Stack,
+  Box,
+  Typography,
+  Button,
+  Grid,
+  Card,
+  CardContent,
+  Stack,
     Container,
     Avatar,
     Chip,
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import {
-    AutoAwesome,
-    Speed,
+  AutoAwesome,
+  Speed,
     Psychology,
     Timeline,
     ArrowForward,
     CheckCircle,
     PlayArrow,
-    Security,
+  Security,
     CloudDone,
     Groups,
 } from '@mui/icons-material';
 import Link from 'next/link';
 import Image from 'next/image';
 import ContentContainer from '@/components/ContentContainer';
-import AuthNavbar from '@/components/AuthNavbar';
+import PageLayout from '@/components/PageLayout';
 
 export default function Home() {
     const theme = useTheme();
-    
-    const features = [
-        {
+
+const features = [
+  {
             icon: <AutoAwesome sx={{ fontSize: 40, color: theme.palette.primary.main }} />,
             title: 'AI-Powered Summaries',
             description: 'Get instant, accurate summaries of your transcripts powered by advanced AI.',
@@ -42,7 +43,7 @@ export default function Home() {
         },
         {
             icon: <Speed sx={{ fontSize: 40, color: theme.palette.primary.main }} />,
-            title: 'Real-Time Processing',
+    title: 'Real-Time Processing',
             description: 'Process your content in real-time with lightning-fast results.',
             benefits: ['Instant transcription', 'Live captioning', 'Quick exports'],
         },
@@ -100,23 +101,22 @@ export default function Home() {
         },
     ];
 
-    return (
-        <>
-            <AuthNavbar />
-            <Box component="main">
-                {/* Hero Section */}
-                <Box
-                    sx={{
+  return (
+        <PageLayout>
+    <Box>
+      {/* Hero Section */}
+      <Box
+        sx={{
                         background: 'linear-gradient(180deg, #f8f9fa 0%, rgba(248, 249, 250, 0.8) 100%)',
-                        pt: { xs: 8, md: 12 },
+                        pt: { xs: 0.5, md: 1 },
                         pb: { xs: 8, md: 12 },
-                        position: 'relative',
-                        overflow: 'hidden',
-                    }}
-                >
+          position: 'relative',
+          overflow: 'hidden',
+        }}
+      >
                     <ContentContainer>
                         <Grid container spacing={6} alignItems="center">
-                            <Grid item xs={12} md={6}>
+            <Grid item xs={12} md={6}>
                                 <Box sx={{ position: 'relative', zIndex: 2 }}>
                                     <Chip
                                         label="New: AI-Powered Analytics"
@@ -129,23 +129,23 @@ export default function Home() {
                                             fontWeight: 600,
                                         }}
                                     />
-                                    <Typography
-                                        component="h1"
-                                        variant="h2"
-                                        sx={{
+              <Typography
+                component="h1"
+                variant="h2"
+                sx={{
                                             fontWeight: 800,
                                             mb: 2,
                                             fontSize: { xs: '2.5rem', md: '3.75rem' },
                                             background: `linear-gradient(45deg, ${theme.palette.secondary.main} 30%, ${theme.palette.primary.main} 90%)`,
-                                            WebkitBackgroundClip: 'text',
-                                            WebkitTextFillColor: 'transparent',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
                                             lineHeight: 1.2,
-                                        }}
-                                    >
+                }}
+              >
                                         Transform Your Conversations into Insights
-                                    </Typography>
-                                    <Typography
-                                        variant="h5"
+              </Typography>
+              <Typography
+                variant="h5"
                                         sx={{
                                             mb: 4,
                                             color: theme.palette.text.secondary,
@@ -154,21 +154,21 @@ export default function Home() {
                                         }}
                                     >
                                         Automatically transcribe, summarize, and extract insights from your meetings, interviews, and podcasts with our advanced AI.
-                                    </Typography>
-                                    <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-                                        <Button
-                                            component={Link}
-                                            href="/signup"
-                                            variant="contained"
-                                            size="large"
+              </Typography>
+              <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
+                <Button
+                  component={Link}
+                  href="/signup"
+                  variant="contained"
+                  size="large"
                                             endIcon={<ArrowForward />}
-                                            sx={{
+                  sx={{
                                                 bgcolor: theme.palette.primary.main,
-                                                py: 1.5,
+                    py: 1.5,
                                                 px: 4,
                                                 borderRadius: 2,
                                                 textTransform: 'none',
-                                                fontSize: '1.1rem',
+                    fontSize: '1.1rem',
                                                 fontWeight: 600,
                                                 boxShadow: `0 4px 12px ${theme.palette.primary.main}33`,
                                                 '&:hover': {
@@ -178,21 +178,21 @@ export default function Home() {
                                             }}
                                         >
                                             Start Free Trial
-                                        </Button>
-                                        <Button
-                                            component={Link}
+                </Button>
+                <Button
+                  component={Link}
                                             href="#demo"
-                                            variant="outlined"
-                                            size="large"
+                  variant="outlined"
+                  size="large"
                                             startIcon={<PlayArrow />}
-                                            sx={{
+                  sx={{
                                                 borderColor: theme.palette.primary.main,
                                                 color: theme.palette.primary.main,
-                                                py: 1.5,
+                    py: 1.5,
                                                 px: 4,
                                                 borderRadius: 2,
                                                 textTransform: 'none',
-                                                fontSize: '1.1rem',
+                    fontSize: '1.1rem',
                                                 fontWeight: 600,
                                                 borderWidth: 2,
                                                 '&:hover': {
@@ -203,12 +203,12 @@ export default function Home() {
                                             }}
                                         >
                                             Watch Demo
-                                        </Button>
-                                    </Stack>
+                </Button>
+              </Stack>
                                 </Box>
-                            </Grid>
-                            <Grid item xs={12} md={6}>
-                                <Box
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <Box
                                     sx={{
                                         position: 'relative',
                                         height: { xs: '300px', md: '500px' },
@@ -217,11 +217,11 @@ export default function Home() {
                                 >
                                     {/* Replace with your actual hero image */}
                                     <Box
-                                        sx={{
+                sx={{
                                             position: 'absolute',
                                             top: 0,
                                             right: 0,
-                                            width: '100%',
+                  width: '100%',
                                             height: '100%',
                                             bgcolor: `${theme.palette.primary.main}15`,
                                             borderRadius: 4,
@@ -235,8 +235,8 @@ export default function Home() {
                                         </Typography>
                                     </Box>
                                 </Box>
-                            </Grid>
-                        </Grid>
+            </Grid>
+          </Grid>
                     </ContentContainer>
                 </Box>
 
@@ -271,14 +271,14 @@ export default function Home() {
                             ))}
                         </Grid>
                     </ContentContainer>
-                </Box>
+      </Box>
 
-                {/* Features Section */}
+      {/* Features Section */}
                 <Box sx={{ py: 12, bgcolor: '#f8f9fa' }}>
                     <ContentContainer>
                         <Box sx={{ textAlign: 'center', mb: 8 }}>
-                            <Typography
-                                variant="h3"
+          <Typography
+            variant="h3"
                                 sx={{
                                     fontWeight: 800,
                                     mb: 2,
@@ -288,61 +288,61 @@ export default function Home() {
                                 }}
                             >
                                 Why Choose Recapio.ai
-                            </Typography>
-                            <Typography
-                                variant="h6"
-                                color="text.secondary"
+          </Typography>
+          <Typography
+            variant="h6"
+            color="text.secondary"
                                 sx={{ maxWidth: '800px', mx: 'auto' }}
-                            >
+          >
                                 Powerful features designed to help you get the most out of your audio and video content
-                            </Typography>
+          </Typography>
                         </Box>
 
-                        <Grid container spacing={4}>
-                            {features.map((feature, index) => (
-                                <Grid item xs={12} sm={6} md={3} key={index}>
-                                    <Card
-                                        sx={{
-                                            height: '100%',
-                                            display: 'flex',
-                                            flexDirection: 'column',
+          <Grid container spacing={4}>
+            {features.map((feature, index) => (
+              <Grid item xs={12} sm={6} md={3} key={index}>
+                <Card
+                  sx={{
+                    height: '100%',
+                    display: 'flex',
+                    flexDirection: 'column',
                                             borderRadius: 3,
                                             boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
                                             transition: 'all 0.3s ease',
-                                            '&:hover': {
+                    '&:hover': {
                                                 transform: 'translateY(-8px)',
                                                 boxShadow: '0 6px 24px rgba(0, 0, 0, 0.12)',
-                                            },
-                                        }}
-                                    >
+                    },
+                  }}
+                >
                                         <CardContent sx={{ p: 4, flexGrow: 1 }}>
-                                            <Box
-                                                sx={{
+                  <Box
+                    sx={{
                                                     width: 56,
                                                     height: 56,
                                                     borderRadius: '12px',
                                                     bgcolor: `${theme.palette.primary.main}08`,
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    justifyContent: 'center',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
                                                     mb: 3,
-                                                }}
-                                            >
-                                                {feature.icon}
-                                            </Box>
-                                            <Typography
-                                                variant="h6"
+                    }}
+                  >
+                    {feature.icon}
+                  </Box>
+                    <Typography
+                      variant="h6"
                                                 sx={{ fontWeight: 700, mb: 2 }}
-                                            >
-                                                {feature.title}
-                                            </Typography>
+                    >
+                      {feature.title}
+                    </Typography>
                                             <Typography
                                                 variant="body2"
                                                 color="text.secondary"
                                                 sx={{ mb: 3 }}
                                             >
-                                                {feature.description}
-                                            </Typography>
+                      {feature.description}
+                    </Typography>
                                             <Box component="ul" sx={{ p: 0, m: 0, listStyle: 'none' }}>
                                                 {feature.benefits.map((benefit, benefitIndex) => (
                                                     <Box
@@ -370,11 +370,11 @@ export default function Home() {
                                                     </Box>
                                                 ))}
                                             </Box>
-                                        </CardContent>
-                                    </Card>
-                                </Grid>
-                            ))}
-                        </Grid>
+                  </CardContent>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
                     </ContentContainer>
                 </Box>
 
@@ -418,13 +418,13 @@ export default function Home() {
                                                 width: 80,
                                                 height: 80,
                                                 borderRadius: '20px',
-                                                bgcolor: theme => `${theme.palette.primary.main}08`,
+                                                bgcolor: `${theme.palette.primary.main}08`,
                                                 display: 'flex',
                                                 alignItems: 'center',
                                                 justifyContent: 'center',
                                                 mb: 3,
                                                 mx: 'auto',
-                                                color: theme => theme.palette.primary.main,
+                                                color: theme.palette.primary.main,
                                             }}
                                         >
                                             {step.icon}
@@ -434,7 +434,7 @@ export default function Home() {
                                             sx={{ 
                                                 fontWeight: 700, 
                                                 mb: 2,
-                                                color: theme => theme.palette.text.primary
+                                                color: theme.palette.text.primary
                                             }}
                                         >
                                             {step.title}
@@ -585,8 +585,8 @@ export default function Home() {
                             </Button>
                         </Stack>
                     </ContentContainer>
-                </Box>
-            </Box>
-        </>
-    );
-}
+      </Box>
+    </Box>
+        </PageLayout>
+  );
+} 

@@ -12,28 +12,13 @@ import {
     InputAdornment,
     IconButton,
     Divider,
-    ToggleButtonGroup,
-    ToggleButton,
-    Grid,
     CircularProgress,
+    Grid,
 } from '@mui/material';
-import { useAuth } from '@/lib/AuthContext';
-import { useRouter } from 'next/navigation';
-import PageLayout from '@/components/PageLayout';
-import ContentCard from '@/components/ContentCard';
-import { 
-    Google, 
-    GitHub, 
-    Visibility, 
-    VisibilityOff, 
-    EmailOutlined, 
-    LockOutlined,
-    PersonOutlined,
-    BusinessOutlined,
-    Person,
-    Business
-} from '@mui/icons-material';
+import { useAuth } from '../../lib/AuthContext';
 import { useTheme } from '@mui/material/styles';
+import { Google, GitHub, Visibility, VisibilityOff, EmailOutlined, LockOutlined } from '@mui/icons-material';
+import ContentCard from '../../components/ContentCard';
 
 export default function SignUpPage() {
     const [email, setEmail] = useState('');
@@ -138,16 +123,17 @@ export default function SignUpPage() {
     };
 
     return (
-        <PageLayout
-            title="Create Account"
-            subtitle={
-                <>
+        <>
+            <Box sx={{ mb: 4 }}>
+                <Typography variant="h4" component="h1" gutterBottom>
+                    Create Account
+                </Typography>
+                <Typography variant="subtitle1" color="text.secondary">
                     Join thousands of users using Recapio.ai
                     <br />
                     to transform their conversations into insights
-                </>
-            }
-        >
+                </Typography>
+            </Box>
             <ContentCard>
                 <Grid container spacing={0}>
                     {/* Left Column - Main Sign Up Form */}
@@ -611,7 +597,7 @@ export default function SignUpPage() {
                     </Grid>
                 </Grid>
             </ContentCard>
-        </PageLayout>
+        </>
     );
 }
 

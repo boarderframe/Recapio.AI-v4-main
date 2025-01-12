@@ -1,10 +1,10 @@
-"use client";
-import React from 'react';
+'use client';
 
+import React from 'react';
 import { Typography, Box, Grid, Paper } from '@mui/material';
-import PageLayout from '@/components/PageLayout';
-import ContentCard from '@/components/ContentCard';
 import { useAuth } from '@/lib/AuthContext';
+import PageHeader from '@/components/PageHeader';
+import PageBody from '@/components/PageBody';
 
 export default function DashboardPage() {
     const { user } = useAuth();
@@ -12,19 +12,17 @@ export default function DashboardPage() {
         (user?.email ? user.email.split('@')[0].charAt(0).toUpperCase() + user.email.split('@')[0].slice(1) : 'User');
 
     return (
-        <PageLayout
-            title="Dashboard"
-            subtitle={`Welcome back, ${displayName}`}
-        >
-            <ContentCard>
-                <Typography variant="h6" gutterBottom>
-                    Recent Activity
-                </Typography>
-                <Typography variant="body2" color="text.secondary" gutterBottom>
-                    Your recent transcripts and activities will appear here
-                </Typography>
-
-                <Grid container spacing={3} sx={{ mt: 1 }}>
+        <>
+            <PageHeader
+                title={`Welcome back, ${displayName}`}
+                description="View and manage your transcripts and analytics"
+                breadcrumbs={[
+                    { label: 'Home', href: '/' },
+                    { label: 'Dashboard' }
+                ]}
+            />
+            <PageBody>
+                <Grid container spacing={3}>
                     <Grid item xs={12} sm={4}>
                         <Paper
                             elevation={0}
@@ -86,7 +84,16 @@ export default function DashboardPage() {
                         </Paper>
                     </Grid>
                 </Grid>
-            </ContentCard>
-        </PageLayout>
+
+                <Box sx={{ mt: 4 }}>
+                    <Typography variant="h6" gutterBottom>
+                        Recent Activity
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                        Your recent transcripts and activities will appear here
+                    </Typography>
+                </Box>
+            </PageBody>
+        </>
     );
 } 

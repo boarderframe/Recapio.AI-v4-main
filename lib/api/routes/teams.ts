@@ -1,19 +1,11 @@
 import { Router } from 'express';
 import { ApiHandler } from '../types';
-import { NotFoundError, ValidationError, ForbiddenError } from '../errors';
-import { QueryBuilder } from '../../database/utils/query-builder';
+import { NotFoundError, ValidationError, ForbiddenError, ApiError } from '../errors';
 import { supabase } from '../../database/client';
 import { Database } from '../../database/types';
+import { validateRequest } from '../middleware/request-validator';
 
 const router = Router();
-const teams = new QueryBuilder<'teams'>(
-    'teams',
-    supabase
-);
-const teamMembers = new QueryBuilder<'team_members'>(
-    'team_members',
-    supabase
-);
 
 // List teams
 const listTeams: ApiHandler = async (req, res) => {
@@ -22,12 +14,21 @@ const listTeams: ApiHandler = async (req, res) => {
         throw new ValidationError('Missing tenant ID');
     }
 
-    const { data, cursor } = await teams.list({
-        tenantId,
-        cursor: req.query.cursor as string,
-        limit: Number(req.query.limit) || 10,
-        whereConditions: req.query.where as any
-    });
+    const query = supabase
+        .from('teams')
+        .select('*')
+        .eq('tenant_id', tenantId)
+        .order('created_at', { ascending: false })
+        .range(0, Number(req.query.limit) || 10);
+
+    if (req.query.cursor) {
+        query.lt('created_at', req.query.cursor);
+    }
+
+    const { data, error } = await query;
+    if (error) throw error;
+
+    const cursor = data.length > 0 ? data[data.length - 1].created_at : null;
     res.json({ data, cursor });
 };
 
@@ -38,7 +39,14 @@ const getTeamById: ApiHandler = async (req, res) => {
         throw new ValidationError('Missing tenant ID');
     }
 
-    const team = await teams.getById(req.params.id, tenantId);
+    const { data: team, error } = await supabase
+        .from('teams')
+        .select('*')
+        .eq('id', req.params.id)
+        .eq('tenant_id', tenantId)
+        .single();
+
+    if (error) throw error;
     if (!team) {
         throw new NotFoundError('Team');
     }
@@ -52,18 +60,32 @@ const createTeam: ApiHandler = async (req, res) => {
         throw new ValidationError('Missing tenant ID');
     }
 
-    const team = await teams.create({
-        ...req.body,
-        tenant_id: tenantId
-    });
+    const { data: team, error } = await supabase
+        .from('teams')
+        .insert({
+            ...req.body,
+            tenant_id: tenantId
+        })
+        .select()
+        .single();
 
-    // Create team member record for the creator as owner
-    await teamMembers.create({
-        team_id: team.id,
-        user_id: req.user?.id,
-        tenant_id: tenantId,
-        role: 'owner'
-    });
+    if (error) throw error;
+
+    // Check if user is team admin or owner
+    if (!req.user?.id) {
+        throw new ApiError('Unauthorized', 401);
+    }
+
+    const { error: memberError } = await supabase
+        .from('team_members')
+        .insert({
+            team_id: team.id,
+            user_id: req.user.id,
+            tenant_id: tenantId,
+            role: 'owner'
+        });
+
+    if (memberError) throw memberError;
 
     res.status(201).json(team);
 };
@@ -76,20 +98,27 @@ const updateTeam: ApiHandler = async (req, res) => {
     }
 
     // Check if user is team admin or owner
-    const member = await teamMembers.list({
-        tenantId,
-        whereConditions: [
-            { field: 'team_id', operator: 'eq', value: req.params.id },
-            { field: 'user_id', operator: 'eq', value: req.user?.id },
-            { field: 'role', operator: 'in', value: ['owner', 'admin'] }
-        ]
-    });
+    const { data: members, error: memberError } = await supabase
+        .from('team_members')
+        .select('*')
+        .eq('team_id', req.params.id)
+        .eq('user_id', req.user?.id)
+        .in('role', ['owner', 'admin']);
 
-    if (!member.data.length) {
+    if (memberError) throw memberError;
+    if (!members.length) {
         throw new ForbiddenError('Only team admins can update team settings');
     }
 
-    const team = await teams.update(req.params.id, req.body, tenantId);
+    const { data: team, error } = await supabase
+        .from('teams')
+        .update(req.body)
+        .eq('id', req.params.id)
+        .eq('tenant_id', tenantId)
+        .select()
+        .single();
+
+    if (error) throw error;
     if (!team) {
         throw new NotFoundError('Team');
     }
@@ -104,20 +133,25 @@ const deleteTeam: ApiHandler = async (req, res) => {
     }
 
     // Check if user is team owner
-    const member = await teamMembers.list({
-        tenantId,
-        whereConditions: [
-            { field: 'team_id', operator: 'eq', value: req.params.id },
-            { field: 'user_id', operator: 'eq', value: req.user?.id },
-            { field: 'role', operator: 'eq', value: 'owner' }
-        ]
-    });
+    const { data: members, error: memberError } = await supabase
+        .from('team_members')
+        .select('*')
+        .eq('team_id', req.params.id)
+        .eq('user_id', req.user?.id)
+        .eq('role', 'owner');
 
-    if (!member.data.length) {
+    if (memberError) throw memberError;
+    if (!members.length) {
         throw new ForbiddenError('Only team owners can delete teams');
     }
 
-    await teams.softDelete(req.params.id, tenantId);
+    const { error } = await supabase
+        .from('teams')
+        .update({ deleted_at: new Date().toISOString() })
+        .eq('id', req.params.id)
+        .eq('tenant_id', tenantId);
+
+    if (error) throw error;
     res.status(204).end();
 };
 
@@ -129,26 +163,30 @@ const addTeamMember: ApiHandler = async (req, res) => {
     }
 
     // Check if user is team admin or owner
-    const member = await teamMembers.list({
-        tenantId,
-        whereConditions: [
-            { field: 'team_id', operator: 'eq', value: req.params.id },
-            { field: 'user_id', operator: 'eq', value: req.user?.id },
-            { field: 'role', operator: 'in', value: ['owner', 'admin'] }
-        ]
-    });
+    const { data: members, error: memberError } = await supabase
+        .from('team_members')
+        .select('*')
+        .eq('team_id', req.params.id)
+        .eq('user_id', req.user?.id)
+        .in('role', ['owner', 'admin']);
 
-    if (!member.data.length) {
+    if (memberError) throw memberError;
+    if (!members.length) {
         throw new ForbiddenError('Only team admins can add members');
     }
 
-    const newMember = await teamMembers.create({
-        team_id: req.params.id,
-        user_id: req.body.userId,
-        tenant_id: tenantId,
-        role: req.body.role || 'member'
-    });
+    const { data: newMember, error } = await supabase
+        .from('team_members')
+        .insert({
+            team_id: req.params.id,
+            user_id: req.body.userId,
+            tenant_id: tenantId,
+            role: req.body.role || 'member'
+        })
+        .select()
+        .single();
 
+    if (error) throw error;
     res.status(201).json(newMember);
 };
 
@@ -160,25 +198,27 @@ const updateTeamMember: ApiHandler = async (req, res) => {
     }
 
     // Check if user is team owner
-    const member = await teamMembers.list({
-        tenantId,
-        whereConditions: [
-            { field: 'team_id', operator: 'eq', value: req.params.id },
-            { field: 'user_id', operator: 'eq', value: req.user?.id },
-            { field: 'role', operator: 'eq', value: 'owner' }
-        ]
-    });
+    const { data: members, error: memberError } = await supabase
+        .from('team_members')
+        .select('*')
+        .eq('team_id', req.params.id)
+        .eq('user_id', req.user?.id)
+        .eq('role', 'owner');
 
-    if (!member.data.length) {
+    if (memberError) throw memberError;
+    if (!members.length) {
         throw new ForbiddenError('Only team owners can update member roles');
     }
 
-    const updatedMember = await teamMembers.update(
-        req.params.memberId,
-        { role: req.body.role },
-        tenantId
-    );
+    const { data: updatedMember, error } = await supabase
+        .from('team_members')
+        .update({ role: req.body.role })
+        .eq('id', req.params.memberId)
+        .eq('tenant_id', tenantId)
+        .select()
+        .single();
 
+    if (error) throw error;
     if (!updatedMember) {
         throw new NotFoundError('Team member');
     }
@@ -194,20 +234,25 @@ const removeTeamMember: ApiHandler = async (req, res) => {
     }
 
     // Check if user is team admin or owner
-    const member = await teamMembers.list({
-        tenantId,
-        whereConditions: [
-            { field: 'team_id', operator: 'eq', value: req.params.id },
-            { field: 'user_id', operator: 'eq', value: req.user?.id },
-            { field: 'role', operator: 'in', value: ['owner', 'admin'] }
-        ]
-    });
+    const { data: members, error: memberError } = await supabase
+        .from('team_members')
+        .select('*')
+        .eq('team_id', req.params.id)
+        .eq('user_id', req.user?.id)
+        .in('role', ['owner', 'admin']);
 
-    if (!member.data.length) {
+    if (memberError) throw memberError;
+    if (!members.length) {
         throw new ForbiddenError('Only team admins can remove members');
     }
 
-    await teamMembers.softDelete(req.params.memberId, tenantId);
+    const { error } = await supabase
+        .from('team_members')
+        .update({ deleted_at: new Date().toISOString() })
+        .eq('id', req.params.memberId)
+        .eq('tenant_id', tenantId);
+
+    if (error) throw error;
     res.status(204).end();
 };
 

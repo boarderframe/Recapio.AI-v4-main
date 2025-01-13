@@ -2,6 +2,17 @@
 
 This guide helps you migrate from the previous component implementations to the new unified system.
 
+## Layout Types
+
+The unified system supports the following layout types:
+
+- **Marketing Layout (`layout="marketing"`)**: Used for public-facing pages like landing, about, features, and pricing.
+- **Auth Layout (`layout="auth"`)**: Used for authentication pages like login and signup.
+- **App Layout (`layout="app"`)**: Used for post-login pages like dashboard, transcripts, profile, and settings.
+- **Admin Layout (`layout="admin"`)**: Used for admin-specific pages like user management and billing.
+
+Each layout type has specific configurations for headers, footers, and other UI elements.
+
 ## PageLayout Migration
 
 ### Before (Multiple Implementations)
@@ -51,19 +62,39 @@ export default function LandingPage() {
 ```tsx
 // New implementation using unified PageLayout
 import { PageLayout } from '@/components/layout/PageLayout';
+import ContentCard from '@/components/ContentCard';
 
 // Marketing page
 export function LandingPage() {
   return (
     <PageLayout
       title="Welcome"
+      subtitle="Experience the power of AI transcription"
       layout="marketing"
       footer={{
         show: true,
         content: <MarketingFooter />
       }}
     >
-      {/* Content */}
+      <ContentCard>
+        {/* Content */}
+      </ContentCard>
+    </PageLayout>
+  );
+}
+
+// App page (post-login)
+export function DashboardPage() {
+  return (
+    <PageLayout
+      title="Dashboard"
+      subtitle="Welcome back!"
+      layout="app"
+      toolbar={<DashboardActions />}
+    >
+      <ContentCard>
+        {/* Content */}
+      </ContentCard>
     </PageLayout>
   );
 }
@@ -73,10 +104,13 @@ export function AdminPage() {
   return (
     <PageLayout
       title="Admin Dashboard"
+      subtitle="Manage system settings"
       layout="admin"
       toolbar={<AdminToolbar />}
     >
-      {/* Content */}
+      <ContentCard>
+        {/* Content */}
+      </ContentCard>
     </PageLayout>
   );
 }
@@ -86,10 +120,13 @@ export function LoginPage() {
   return (
     <PageLayout
       title="Login"
+      subtitle="Sign in to your account"
       layout="auth"
-      footer={{ show: false }}
+      toolbar={null}
     >
-      {/* Content */}
+      <ContentCard>
+        {/* Content */}
+      </ContentCard>
     </PageLayout>
   );
 }
@@ -98,182 +135,113 @@ export function LoginPage() {
 ## Migration Steps
 
 1. **Update Imports**
-   ```typescript
-   // Remove old imports
-   - import PageLayout from '@/components/PageLayout';
-   - import PageFooter from '@/components/PageFooter';
-   - import AdminLayout from '@/components/AdminLayout';
-   - import MarketingLayout from '@/components/MarketingLayout';
-   
-   // Add new unified import
-   + import { PageLayout } from '@/components/layout/PageLayout';
+   - Replace old layout imports with the unified PageLayout:
+   ```tsx
+   import { PageLayout } from '@/components/layout/PageLayout';
+   import ContentCard from '@/components/ContentCard';
    ```
 
-2. **Update Layout Configuration**
-   - Identify the correct layout type for each page:
+2. **Choose Layout Type**
+   - Determine the appropriate layout type for your page:
      - Marketing pages: `layout="marketing"`
-     - Admin pages: `layout="admin"`
-     - Dashboard pages: `layout="dashboard"`
-     - User pages: `layout="user"`
      - Auth pages: `layout="auth"`
+     - Post-login pages: `layout="app"`
+     - Admin pages: `layout="admin"`
 
-3. **Migrate Page Headers**
-   ```typescript
-   // Before
-   <Typography variant="h4">Title</Typography>
-   
-   // After
-   <PageLayout title="Title" subtitle="Optional subtitle">
+3. **Configure Layout Props**
+   - Add required props:
+     - `title`: Page title
+     - `subtitle`: Optional subtitle
+     - `layout`: Layout type
+     - `toolbar`: Optional toolbar component
+     - `footer`: Optional footer configuration
+
+4. **Wrap Content**
+   - Wrap page content in `ContentCard` for consistent styling:
+   ```tsx
+   <ContentCard>
+     {/* Your page content */}
+   </ContentCard>
    ```
 
-4. **Footer Migration**
-   ```typescript
-   // Before
-   <PageFooter sticky>
-     <FooterContent />
-   </PageFooter>
-   
-   // After
-   <PageLayout
-     footer={{
-       sticky: true,
-       content: <FooterContent />
-     }}
-   >
-   ```
+## Development Indicator
 
-5. **Toolbar Integration**
-   ```typescript
-   // Before
-   <Box sx={{ mb: 2 }}>
-     <AdminToolbar />
-   </Box>
-   
-   // After
-   <PageLayout
-     toolbar={<AdminToolbar />}
-   >
-   ```
+During development, each page displays a layout indicator chip in the bottom-right corner showing the current layout type. This helps identify which layout is being used while building and debugging pages.
 
-## Layout-Specific Migrations
+## Common Patterns
 
 ### Marketing Pages
-```typescript
-// Before
-<MarketingLayout>
-  <MarketingHeader />
-  {children}
-  <MarketingFooter />
-</MarketingLayout>
-
-// After
+```tsx
 <PageLayout
+  title="Features"
+  subtitle="Discover what Recapio.ai can do for you"
   layout="marketing"
-  title="Page Title"
-  footer={{
-    content: <MarketingFooter />
-  }}
 >
-  {children}
-</PageLayout>
-```
-
-### Admin Pages
-```typescript
-// Before
-<AdminLayout
-  title="Admin"
-  toolbar={<AdminToolbar />}
->
-  {children}
-</AdminLayout>
-
-// After
-<PageLayout
-  layout="admin"
-  title="Admin"
-  toolbar={<AdminToolbar />}
->
-  {children}
+  <ContentCard>
+    <FeaturesContent />
+  </ContentCard>
 </PageLayout>
 ```
 
 ### Auth Pages
-```typescript
-// Before
-<AuthLayout>
-  <AuthHeader />
-  {children}
-</AuthLayout>
-
-// After
+```tsx
 <PageLayout
+  title="Sign Up"
+  subtitle="Create your Recapio.ai account"
   layout="auth"
-  title="Authentication"
-  footer={{ show: false }}
+  toolbar={null}
 >
-  {children}
+  <ContentCard>
+    <SignUpForm />
+  </ContentCard>
 </PageLayout>
 ```
 
-## Common Issues and Solutions
-
-### 1. Layout Type Errors
-```typescript
-// Error: Invalid layout type
-layout="default" // ❌
-
-// Solution: Use correct layout type
-layout="marketing" // ✅
+### App Pages
+```tsx
+<PageLayout
+  title="Transcript Library"
+  subtitle="View and manage your transcripts"
+  layout="app"
+  toolbar={<TranscriptActions />}
+>
+  <ContentCard>
+    <TranscriptList />
+  </ContentCard>
+</PageLayout>
 ```
 
-### 2. Footer Configuration
-```typescript
-// Error: Incorrect footer prop
-footer={<FooterContent />} // ❌
-
-// Solution: Use footer config object
-footer={{ content: <FooterContent /> }} // ✅
+### Admin Pages
+```tsx
+<PageLayout
+  title="User Management"
+  subtitle="Manage system users and permissions"
+  layout="admin"
+  toolbar={<UserActions />}
+>
+  <ContentCard>
+    <UserTable />
+  </ContentCard>
+</PageLayout>
 ```
 
-### 3. Container Width
-```typescript
-// Error: Manual container width
-<Box maxWidth="1200px"> // ❌
+## Timeline
 
-// Solution: Use layout's built-in container
-<PageLayout layout="marketing"> // ✅
-```
+1. Phase 1: Marketing Pages Migration ✅
+   - Home, About, Features, Contact, Pricing
 
-## Migration Timeline
+2. Phase 2: Auth Pages Migration ✅
+   - Login, Signup
 
-1. **Phase 1**: Core Layout Migration (Current)
-   - Update imports
-   - Replace basic layouts
-   - Fix immediate issues
+3. Phase 3: App Pages Migration ✅
+   - Dashboard, Transcripts, Profile, Settings
 
-2. **Phase 2**: Footer Integration
-   - Migrate footer components
-   - Update footer configurations
-   - Test footer behavior
-
-3. **Phase 3**: Toolbar and Header Migration
-   - Integrate page headers
-   - Move toolbar components
-   - Update navigation
-
-4. **Phase 4**: Testing and Validation
-   - Run component tests
-   - Verify responsive behavior
-   - Check accessibility
-
-5. **Phase 5**: Cleanup
-   - Remove old components
-   - Update documentation
-   - Final testing
+4. Phase 4: Admin Pages Migration ✅
+   - Users, Profit, Billing
 
 ## Support
-- Review component documentation in `docs/ui-ux/component-system/`
-- Check example implementations in `docs/ui-ux/examples/`
-- Submit issues for migration-specific bugs
-- Request clarification in the #ui-migration Slack channel 
+
+For questions or issues during migration:
+1. Review the component documentation in `/docs/ui-ux/component-system/`
+2. Check the example implementations in `/docs/ui-ux/examples/`
+3. Submit an issue with the tag `[UI-Migration]` 

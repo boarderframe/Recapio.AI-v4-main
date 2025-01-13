@@ -1,118 +1,63 @@
 # Recapio.AI
 
-## Quick Start Guide
+## Development Approach
 
-### Prerequisites
-- Node.js 18.x or higher
-- Git with GPG signing configured
-- npm or yarn
+This project uses a local-first development approach with Supabase. All development and testing are done using a local Supabase instance, which simplifies the development process and makes testing more efficient.
 
-### Development Setup
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/boarderframe/Recapio.AI-v4-main.git
-   cd Recapio.AI-v4-main
-   ```
+### Key Points
+- Local Supabase instance for development
+- No remote schema synchronization required
+- Complete test data available through seed files
+- All database operations testable locally
 
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
+## Getting Started
 
-3. Set up GPG signing:
-   - Follow instructions in `docs/setup/gpg-signing.md`
-
-### Development Workflow
-
-We use a structured workflow with helper commands to maintain code quality and consistency.
-
-#### Helper Script
-We provide a git helper script for common operations:
+1. Install Supabase CLI:
 ```bash
-# Make the script executable (first time only)
-chmod +x scripts/git-helpers.sh
-
-# Show available commands
-./scripts/git-helpers.sh help
+brew install supabase/tap/supabase
 ```
 
-#### Creating New Features
-1. Start a new feature:
-   ```bash
-   ./scripts/git-helpers.sh feature "your-feature-description"
-   # or for UI features:
-   ./scripts/git-helpers.sh ui "your-ui-feature-description"
-   ```
+2. Start local Supabase:
+```bash
+supabase start
+```
 
-2. Make your changes and commit with conventional commits:
-   ```bash
-   git commit -m "feat: add new feature"
-   ```
+3. Initialize database:
+```bash
+psql -h localhost -p 54322 -U postgres -d postgres -f supabase/seed.sql
+```
 
-3. Publish your changes:
-   ```bash
-   ./scripts/git-helpers.sh publish
-   ```
+## Development Guidelines
 
-4. Create a pull request using the provided link
+### Database Development
+- All schema changes should be made through local migrations
+- Test data is provided through seed files
+- Database functions are tested locally
+- RLS policies are implemented and tested locally
 
-#### Branch Structure
-- `main`: Production code
-- `develop`: Development branch
-- `staging`: Pre-production testing
-- `feature/*`: New features
-- `ui/*`: UI/UX changes
-- `hotfix/*`: Emergency fixes
-- `release/*`: Release preparation
+### Code Organization
+- `/supabase/migrations` - Database migrations
+- `/supabase/seed.sql` - Test data
+- `/docs/planning` - Development strategy and documentation
+- `/docs/database` - Database documentation
 
-### Pull Requests
-- Use the PR template
-- Ensure all checks pass
-- Get required reviews
-- Resolve all conversations
-- Keep changes focused
+### Testing
+- Use local database for all testing
+- Comprehensive seed data available
+- Database functions can be tested locally
+- API endpoints testable against local instance
 
-### Documentation
-Comprehensive documentation available in `docs/`:
-- Setup guides
-- Core systems
-- UI/UX guidelines
-- Testing procedures
-- Troubleshooting
+## Documentation
 
-### Version Control
-- All commits must be signed
-- Follow conventional commit format
-- Branch protection rules enforced
-- Code review required for merges
+- [Local Development Strategy](docs/planning/local-development-strategy.md)
+- [Database Layer Strategy](docs/planning/database-layer-strategy.md)
+- [Development Strategy](docs/planning/development-strategy.md)
 
-### CI/CD
-Automated checks for:
-- Build validation
-- Tests
-- Linting
-- Type checking
-- Security scanning
-- Code quality
+## Important Notes
 
-### Security
-- GPG signing required
-- Branch protection enforced
-- CodeQL scanning enabled
-- Dependency auditing
-- Security policy enforced
+1. This project uses local development only - no remote schema synchronization is needed
+2. All database changes should be made through migrations
+3. Test data is provided through the seed file
+4. Development is simplified by focusing on local instance
 
-## Contributing
-1. Create a feature branch
-2. Make your changes
-3. Follow coding standards
-4. Add tests
-5. Create a pull request
-
-## Support
-- Check `docs/troubleshooting/fixes.md`
-- Create issues using templates
-- Follow security policy for vulnerabilities
-
-## License
-[License details here] 
+For detailed setup and development instructions, see [run.md](run.md). 

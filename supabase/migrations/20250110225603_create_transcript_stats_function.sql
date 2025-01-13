@@ -12,6 +12,20 @@ SECURITY DEFINER
 SET search_path = public
 AS $$
 BEGIN
+    -- Check if user has access to the tenant
+    IF NOT EXISTS (
+        SELECT 1 
+        FROM users 
+        WHERE id = auth.uid() 
+        AND (
+            id = p_tenant_id 
+            OR 'admin' = ANY(roles)
+            OR p_tenant_id = '00000000-0000-0000-0000-000000000000'
+        )
+    ) THEN
+        RAISE EXCEPTION 'Access denied to tenant data';
+    END IF;
+
     RETURN QUERY
     SELECT 
         COUNT(*)::BIGINT as total_count,
@@ -27,9 +41,6 @@ $$;
 
 -- Grant execute permission to authenticated users
 GRANT EXECUTE ON FUNCTION get_transcript_stats(UUID) TO authenticated;
-
--- Add row level security policy
-ALTER FUNCTION get_transcript_stats(UUID) SET RLS_ENABLED = TRUE;
 
 COMMENT ON FUNCTION get_transcript_stats(UUID) IS 'Get transcript statistics for a tenant, including counts by status and average processing time';
 

@@ -13,7 +13,7 @@ export default function MyPage() {
       title="My Page"
       subtitle="Optional subtitle"
       toolbar={<MyToolbar />}
-      layout="default" // or "admin", "marketing", etc.
+      layout="marketing" // 'marketing' | 'auth' | 'dashboard' | 'user' | 'admin'
       footer={{
         show: true,      // Control footer visibility
         sticky: false,   // Make footer sticky
@@ -27,54 +27,78 @@ export default function MyPage() {
 ```
 
 ### Props
-- `title`: Page title (required)
-- `subtitle`: Optional subtitle
-- `toolbar`: Optional toolbar component
-- `layout`: Layout type from layout config
-- `footer`: Footer configuration object
-  - `show`: Control footer visibility
-  - `sticky`: Make footer stick to bottom
-  - `content`: Custom footer content
-- `children`: Page content
+```typescript
+interface PageLayoutProps {
+  children: ReactNode;
+  title?: string;
+  subtitle?: string;
+  toolbar?: ReactNode;
+  layout?: 'marketing' | 'auth' | 'dashboard' | 'user' | 'admin';
+  footer?: {
+    show?: boolean;
+    sticky?: boolean;
+    content?: ReactNode;
+  };
+  className?: string;
+}
+```
 
 ### Layout Types
-1. **Default Layout**
-   - Standard page layout
-   - Centered content
-   - Responsive padding
-   - Standard footer
+1. **Marketing Layout** (Default)
+   - Wide content area
+   - Navigation header
+   - Full footer integration
+   - Optional sticky footer
+   - `maxWidth: '1440px'`
 
 2. **Admin Layout**
    - Full-width design
    - Left sidebar navigation
    - Action toolbar support
    - Minimal footer
+   - `maxWidth: '100%'`
 
-3. **Marketing Layout**
-   - Wide content area
-   - Navigation header
-   - Full footer integration
-   - Optional sticky footer
+3. **Dashboard Layout**
+   - Similar to admin layout
+   - Full-width design
+   - Data-focused components
+   - `maxWidth: '100%'`
 
 4. **Auth Layout**
    - Centered card layout
    - No navigation
    - No footer by default
    - Clean background
+   - `maxWidth: '480px'`
+
+5. **User Layout**
+   - Similar to dashboard
+   - Personalized content area
+   - `maxWidth: '100%'`
+
+## Component Structure
+```
+components/layout/PageLayout/
+├── index.tsx           # Main exports
+├── PageLayout.tsx      # Core layout component
+├── PageHeader.tsx      # Header component
+├── PageFooter.tsx      # Footer component
+└── types.ts           # TypeScript interfaces
+```
 
 ## Footer System
-The PageLayout includes a built-in footer management system:
+The PageLayout includes a built-in footer management system that integrates with the layout configuration:
 
 ### Default Footer Behavior
 ```tsx
-// Default footer (automatically included)
-<PageLayout layout="default">
+// Default footer (based on layout type)
+<PageLayout layout="marketing">
   {/* Content */}
 </PageLayout>
 
 // Hide footer
 <PageLayout 
-  layout="default"
+  layout="marketing"
   footer={{ show: false }}
 >
   {/* Content */}
@@ -82,7 +106,7 @@ The PageLayout includes a built-in footer management system:
 
 // Sticky footer
 <PageLayout 
-  layout="default"
+  layout="marketing"
   footer={{ sticky: true }}
 >
   {/* Content */}
@@ -90,7 +114,7 @@ The PageLayout includes a built-in footer management system:
 
 // Custom footer content
 <PageLayout 
-  layout="default"
+  layout="marketing"
   footer={{
     content: <CustomFooter />
   }}
@@ -100,53 +124,32 @@ The PageLayout includes a built-in footer management system:
 ```
 
 ### Footer Configuration by Layout Type
-- **Default**: Standard footer, not sticky
-- **Marketing**: Full-width footer with navigation
-- **Admin**: Minimal footer with version info
-- **Auth**: No footer by default
-
-## Template System
-Templates extend the base PageLayout with specific configurations:
-
-### Available Templates
-1. `DashboardTemplate`
-2. `ListingTemplate`
-3. `DetailTemplate`
-4. `SettingsTemplate`
-
-### Example
-```tsx
-import { DashboardTemplate } from '@/components/layout/templates';
-
-export default function Dashboard() {
-  return (
-    <DashboardTemplate
-      title="Dashboard"
-      metrics={<DashboardMetrics />}
-    >
-      {/* Dashboard content */}
-    </DashboardTemplate>
-  );
-}
-```
+- **Marketing**: Full footer enabled, not sticky by default
+- **Admin**: Minimal footer, not sticky
+- **Dashboard**: Footer disabled by default
+- **Auth**: No footer
+- **User**: Footer enabled, not sticky
 
 ## Implementation Details
-- Built with TypeScript
-- Uses layout configuration system
-- Integrates with theme settings
-- Supports responsive breakpoints
-- Flexible footer management
+- Built with TypeScript for type safety
+- Uses Material-UI components
+- Integrates with route-based layout configuration
+- Supports responsive design patterns
+- Flexible container sizing
+- Automatic layout type handling
 
 ## Best Practices
-1. Always use PageLayout as the base
-2. Choose appropriate templates for consistency
-3. Maintain responsive behavior
-4. Follow accessibility guidelines
-5. Use footer configuration based on layout type
+1. Always use PageLayout as the base for all pages
+2. Use the appropriate layout type for your page context
+3. Keep footer content minimal and relevant
+4. Maintain responsive behavior
+5. Follow accessibility guidelines
+6. Use proper TypeScript types
 
 ## Testing
 - Component snapshot tests
 - Layout behavior tests
 - Responsive design tests
 - Integration tests with templates
-- Footer behavior tests 
+- Footer behavior tests
+- Accessibility tests 

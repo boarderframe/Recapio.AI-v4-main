@@ -22,8 +22,8 @@ import GroupsIcon from '@mui/icons-material/Groups';
 import InsightsIcon from '@mui/icons-material/Insights';
 import SettingsSuggestIcon from '@mui/icons-material/SettingsSuggest';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-import PageLayout from '../../components/PageLayout';
-import ContentCard from '../../components/ContentCard';
+import { PageLayout } from '@/components/layout/PageLayout';
+import ContentCard from '@/components/ContentCard';
 
 export default function FeaturesPage() {
     const theme = useTheme();
@@ -94,6 +94,7 @@ export default function FeaturesPage() {
 
     return (
         <PageLayout
+            layout="marketing"
             title="Features"
             subtitle={
                 <>
@@ -253,27 +254,19 @@ export default function FeaturesPage() {
                     }}>
                         Ready to Get Started?
                     </Typography>
-                    <Typography variant="body1" color="text.secondary" sx={{ mb: 4, maxWidth: 600, mx: 'auto' }}>
-                        Join thousands of teams already using Recapio.ai to transform their conversations into actionable insights.
+                    <Typography variant="h6" sx={{ mb: 4, color: 'text.secondary' }}>
+                        Join thousands of satisfied users who trust Recapio.ai
                     </Typography>
                     <Button
                         variant="contained"
                         size="large"
                         endIcon={<ArrowForwardIcon />}
-                        href="/signup"
                         sx={{
-                            bgcolor: theme.palette.primary.main,
+                            borderRadius: '50px',
                             px: 4,
                             py: 1.5,
-                            borderRadius: '12px',
-                            textTransform: 'none',
                             fontSize: '1.1rem',
-                            fontWeight: 600,
-                            boxShadow: `0 4px 12px ${theme.palette.primary.main}33`,
-                            '&:hover': {
-                                bgcolor: theme.palette.primary.dark,
-                                boxShadow: `0 6px 16px ${theme.palette.primary.main}4D`,
-                            },
+                            textTransform: 'none',
                         }}
                     >
                         Start Free Trial

@@ -1,7 +1,7 @@
 import { Route } from '../routes/types';
 
 // Layout types
-export type LayoutType = 'default' | 'marketing' | 'dashboard' | 'admin' | 'auth';
+export type LayoutType = 'default' | 'marketing' | 'app' | 'admin' | 'auth';
 
 // Layout configuration interface
 export interface LayoutConfig {
@@ -38,13 +38,13 @@ const marketingLayout: LayoutConfig = {
     padding: '2rem'
 };
 
-const dashboardLayout: LayoutConfig = {
-    type: 'dashboard',
+const appLayout: LayoutConfig = {
+    type: 'app',
     showHeader: true,
     showFooter: false,
     showSidebar: true,
     showUserMenu: true,
-    showAdminMenu: true,
+    showAdminMenu: false,
     maxWidth: '100%',
     padding: '1.5rem'
 };
@@ -75,8 +75,8 @@ const authLayout: LayoutConfig = {
 const layoutMap: Record<Route['group'], LayoutConfig> = {
     marketing: marketingLayout,
     auth: authLayout,
-    dashboard: dashboardLayout,
-    user: dashboardLayout,
+    app: appLayout,
+    user: appLayout,
     admin: adminLayout
 };
 

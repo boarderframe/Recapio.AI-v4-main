@@ -3,7 +3,7 @@ export interface Route {
     label: string;
     requiresAuth: boolean;
     requiresAdmin?: boolean;
-    group: 'marketing' | 'auth' | 'dashboard' | 'user' | 'admin';
+    group: 'marketing' | 'auth' | 'app' | 'user' | 'admin';
     icon?: string;
 }
 

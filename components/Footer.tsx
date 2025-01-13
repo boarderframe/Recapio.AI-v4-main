@@ -19,6 +19,10 @@ import {
 } from '@mui/icons-material';
 import Logo from './Logo';
 
+interface FooterProps {
+  minimal?: boolean;
+}
+
 const footerSections = [
   {
     title: 'Product',
@@ -55,9 +59,61 @@ const socialLinks = [
   { icon: <GitHubIcon />, href: 'https://github.com/recapio' },
 ];
 
-export default function Footer() {
+export default function Footer({ minimal = false }: FooterProps) {
   const theme = useTheme();
   const year = new Date().getFullYear();
+
+  if (minimal) {
+    return (
+      <Box
+        component="footer"
+        sx={{
+          bgcolor: 'background.paper',
+          borderTop: 1,
+          borderColor: 'divider',
+          py: 2,
+          mt: 'auto',
+        }}
+      >
+        <Container maxWidth="lg">
+          <Stack
+            direction={{ xs: 'column', sm: 'row' }}
+            justifyContent="space-between"
+            alignItems="center"
+            spacing={2}
+          >
+            <Typography variant="body2" color="text.secondary">
+              © {year} Recapio.AI
+            </Typography>
+            <Stack direction="row" spacing={2}>
+              <MuiLink
+                component={Link}
+                href="/terms"
+                color="text.secondary"
+                sx={{
+                  textDecoration: 'none',
+                  '&:hover': { color: 'primary.main' },
+                }}
+              >
+                Terms
+              </MuiLink>
+              <MuiLink
+                component={Link}
+                href="/privacy"
+                color="text.secondary"
+                sx={{
+                  textDecoration: 'none',
+                  '&:hover': { color: 'primary.main' },
+                }}
+              >
+                Privacy
+              </MuiLink>
+            </Stack>
+          </Stack>
+        </Container>
+      </Box>
+    );
+  }
 
   return (
     <Box

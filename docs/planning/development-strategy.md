@@ -36,6 +36,27 @@
 - Development: v4.1.0-dev.5
 - Training: v4.1.0-train.3
 
+### Version Display System
+1. Development Environment:
+   - Version chip in bottom-right corner
+   - Shows current version and environment
+   - Clickable for detailed information
+   - Layout type indicator
+
+2. Version Information:
+   - Base version (4.x.x)
+   - Environment suffix (-dev, -rc, -train)
+   - Build number (non-production)
+   - Build time
+   - Dependencies
+   - System information
+
+3. Version Validation:
+   - Enforces 4.x.x format
+   - Validates on startup
+   - Graceful fallback to 4.1.0
+   - Console warnings for invalid versions
+
 ## Backup and Recovery Strategy
 
 ### Git-Based Backup

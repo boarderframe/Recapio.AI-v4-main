@@ -1,6 +1,6 @@
 {
   "name": "recapio",
-  "version": "1.0.0",
+  "version": "4.1.0",
   "description": "Recapio.ai - AI-Powered Transcript Summarization and Insights Platform",
   "private": true,
   "scripts": {

@@ -11,6 +11,7 @@ export interface LayoutConfig {
     showSidebar: boolean;
     showUserMenu: boolean;
     showAdminMenu: boolean;
+    showToolbar: boolean;
     maxWidth?: string;
     padding?: string;
 }
@@ -23,6 +24,7 @@ const defaultLayout: LayoutConfig = {
     showSidebar: false,
     showUserMenu: true,
     showAdminMenu: false,
+    showToolbar: false,
     maxWidth: '1280px',
     padding: '1rem'
 };
@@ -34,6 +36,7 @@ const marketingLayout: LayoutConfig = {
     showSidebar: false,
     showUserMenu: true,
     showAdminMenu: false,
+    showToolbar: false,
     maxWidth: '1440px',
     padding: '2rem'
 };
@@ -45,6 +48,7 @@ const appLayout: LayoutConfig = {
     showSidebar: true,
     showUserMenu: true,
     showAdminMenu: false,
+    showToolbar: false,
     maxWidth: '100%',
     padding: '1.5rem'
 };
@@ -56,6 +60,7 @@ const adminLayout: LayoutConfig = {
     showSidebar: true,
     showUserMenu: true,
     showAdminMenu: true,
+    showToolbar: true,
     maxWidth: '100%',
     padding: '1.5rem'
 };
@@ -67,6 +72,7 @@ const authLayout: LayoutConfig = {
     showSidebar: false,
     showUserMenu: false,
     showAdminMenu: false,
+    showToolbar: false,
     maxWidth: '480px',
     padding: '2rem'
 };

@@ -235,6 +235,24 @@
       "status": "Active"
     },
     {
+      "id": "gpt-4o-mini-2024-07-18",
+      "created": 1721172717,
+      "owned_by": "system",
+      "type": "Chat Completion",
+      "context_length": 8192,
+      "training_data": "Up to 2023",
+      "status": "Active"
+    },
+    {
+      "id": "gpt-4o-mini",
+      "created": 1721172741,
+      "owned_by": "system",
+      "type": "Chat Completion",
+      "context_length": 8192,
+      "training_data": "Up to 2023",
+      "status": "Active"
+    },
+    {
       "id": "chatgpt-4o-latest",
       "created": 1723515131,
       "owned_by": "system",
@@ -268,15 +286,6 @@
       "type": "Unknown",
       "context_length": null,
       "training_data": null,
-      "status": "Active"
-    },
-    {
-      "id": "gpt-4o-mini-2024-07-18",
-      "created": 1721172717,
-      "owned_by": "system",
-      "type": "Chat Completion",
-      "context_length": 8192,
-      "training_data": "Up to 2023",
       "status": "Active"
     },
     {
@@ -361,15 +370,6 @@
       "status": "Active"
     },
     {
-      "id": "gpt-4o-mini",
-      "created": 1721172741,
-      "owned_by": "system",
-      "type": "Chat Completion",
-      "context_length": 8192,
-      "training_data": "Up to 2023",
-      "status": "Active"
-    },
-    {
       "id": "gpt-4o-audio-preview",
       "created": 1727460443,
       "owned_by": "system",
@@ -433,6 +433,6 @@
       "status": "Active"
     }
   ],
-  "lastUpdated": "2025-01-12T22:35:27.476Z",
+  "lastUpdated": "2025-01-13T03:25:59.136Z",
   "count": 48
 }

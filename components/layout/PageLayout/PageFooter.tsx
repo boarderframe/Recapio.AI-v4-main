@@ -1,6 +1,7 @@
-import { Box, Container } from '@mui/material';
+import { Box, Container, Typography } from '@mui/material';
 import { PageFooterProps } from './types';
 import clsx from 'clsx';
+import { getVersionString } from '@/lib/version';
 
 export default function PageFooter({ children, sticky = false, className }: PageFooterProps) {
   return (
@@ -32,6 +33,16 @@ export default function PageFooter({ children, sticky = false, className }: Page
         }}
       >
         {children}
+        <Typography 
+          variant="caption" 
+          color="text.secondary"
+          sx={{ 
+            ml: 'auto',
+            opacity: 0.8
+          }}
+        >
+          {getVersionString()}
+        </Typography>
       </Container>
     </Box>
   );

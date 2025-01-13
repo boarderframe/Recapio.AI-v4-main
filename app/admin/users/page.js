@@ -5,6 +5,8 @@ import PeopleIcon from '@mui/icons-material/People';
 import SearchIcon from '@mui/icons-material/Search';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import ContentCard from '@/components/ContentCard';
+import { PersonAdd } from '@mui/icons-material';
 
 const UserRow = ({ user }) => (
     <Box sx={{ 
@@ -60,35 +62,18 @@ export default function UsersPage() {
 
     return (
         <Box>
-            <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-                <PeopleIcon sx={{ fontSize: 24, mr: 1, color: 'primary.main' }} />
-                <Typography variant="h6">Users</Typography>
-            </Box>
-
-            <Box sx={{ display: 'flex', gap: 2, mb: 3 }}>
-                <TextField
-                    placeholder="Search users..."
-                    size="small"
-                    sx={{ flexGrow: 1 }}
-                    InputProps={{
-                        startAdornment: <SearchIcon sx={{ mr: 1, color: 'text.secondary' }} />
-                    }}
-                />
-                <Button variant="contained" color="primary">
-                    Add User
-                </Button>
-            </Box>
-
-            <Box sx={{ 
-                border: '1px solid',
-                borderColor: 'divider',
-                borderRadius: 1,
-                overflow: 'hidden'
-            }}>
-                {mockUsers.map(user => (
-                    <UserRow key={user.id} user={user} />
-                ))}
-            </Box>
+            <ContentCard>
+                <Box sx={{ 
+                    border: '1px solid',
+                    borderColor: 'divider',
+                    borderRadius: 1,
+                    overflow: 'hidden'
+                }}>
+                    {mockUsers.map(user => (
+                        <UserRow key={user.id} user={user} />
+                    ))}
+                </Box>
+            </ContentCard>
         </Box>
     );
 } 

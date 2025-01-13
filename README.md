@@ -1,115 +1,118 @@
-# Recapio
+# Recapio.AI
 
-Recapio is a powerful transcription and analysis platform that leverages AI to convert speech to text and provide intelligent insights.
-
-## Table of Contents
-- [Features](#features)
-- [Getting Started](#getting-started)
-- [Documentation](#documentation)
-- [Architecture](#architecture)
-- [Contributing](#contributing)
-- [License](#license)
-
-## Features
-- Speech-to-text transcription
-- AI-powered analysis
-- Real-time collaboration
-- Custom theme support
-- Role-based access control
-- Responsive design
-
-## Getting Started
+## Quick Start Guide
 
 ### Prerequisites
 - Node.js 18.x or higher
-- npm 9.x or higher
-- Supabase account
-- OpenAI API key
-- Google Cloud account (for speech-to-text)
+- Git with GPG signing configured
+- npm or yarn
 
-### Installation
+### Development Setup
 1. Clone the repository:
-```bash
-git clone https://github.com/yourusername/recapio.git
-cd recapio
-```
+   ```bash
+   git clone https://github.com/boarderframe/Recapio.AI-v4-main.git
+   cd Recapio.AI-v4-main
+   ```
 
 2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+3. Set up GPG signing:
+   - Follow instructions in `docs/setup/gpg-signing.md`
+
+### Development Workflow
+
+We use a structured workflow with helper commands to maintain code quality and consistency.
+
+#### Helper Script
+We provide a git helper script for common operations:
 ```bash
-npm install
+# Make the script executable (first time only)
+chmod +x scripts/git-helpers.sh
+
+# Show available commands
+./scripts/git-helpers.sh help
 ```
 
-3. Set up environment variables:
-```bash
-cp .env.example .env.local
-```
-Edit `.env.local` with your configuration.
+#### Creating New Features
+1. Start a new feature:
+   ```bash
+   ./scripts/git-helpers.sh feature "your-feature-description"
+   # or for UI features:
+   ./scripts/git-helpers.sh ui "your-ui-feature-description"
+   ```
 
-4. Start the development server:
-```bash
-npm run dev
-```
+2. Make your changes and commit with conventional commits:
+   ```bash
+   git commit -m "feat: add new feature"
+   ```
 
-## Documentation
+3. Publish your changes:
+   ```bash
+   ./scripts/git-helpers.sh publish
+   ```
 
-### Core Systems
-- [Authentication System](docs/core-systems/authentication.md)
-- [Database System](docs/core-systems/database.md)
-- [Navigation System](docs/core-systems/navigation.md)
-- [Profile Menu System](docs/core-systems/profile-menu.md)
+4. Create a pull request using the provided link
 
-### Technical Documentation
-- [Architecture Overview](docs/technical/architecture.md)
-- [State Management](docs/technical/state-management.md)
-- [API Integration](docs/technical/api-integration.md)
-- [Theme System](docs/technical/theme.md)
+#### Branch Structure
+- `main`: Production code
+- `develop`: Development branch
+- `staging`: Pre-production testing
+- `feature/*`: New features
+- `ui/*`: UI/UX changes
+- `hotfix/*`: Emergency fixes
+- `release/*`: Release preparation
 
-### Deployment
-- [Deployment Guide](docs/deployment/deployment-guide.md)
-- [Environment Configuration](docs/deployment/environment.md)
-- [Security Considerations](docs/deployment/security.md)
+### Pull Requests
+- Use the PR template
+- Ensure all checks pass
+- Get required reviews
+- Resolve all conversations
+- Keep changes focused
 
-### Planning
-- [Roadmap](docs/planning/roadmap.md)
-- [Feature Planning](docs/planning/features.md)
-- [UI/UX Guidelines](docs/planning/ui-ux.md)
+### Documentation
+Comprehensive documentation available in `docs/`:
+- Setup guides
+- Core systems
+- UI/UX guidelines
+- Testing procedures
+- Troubleshooting
 
-### Testing
-- [Testing Guide](docs/testing/testing-guide.md)
-- [Test Environment](docs/testing/environment.md)
-- [E2E Testing](docs/testing/e2e.md)
+### Version Control
+- All commits must be signed
+- Follow conventional commit format
+- Branch protection rules enforced
+- Code review required for merges
 
-### Troubleshooting
-- [Common Issues](docs/troubleshooting/common-issues.md)
-- [Debug Guide](docs/troubleshooting/debug-guide.md)
-- [FAQ](docs/troubleshooting/faq.md)
+### CI/CD
+Automated checks for:
+- Build validation
+- Tests
+- Linting
+- Type checking
+- Security scanning
+- Code quality
 
-## Architecture
-
-### Frontend
-- Next.js 14 (App Router)
-- React 18
-- TypeScript
-- Material-UI
-- TailwindCSS
-
-### State Management
-- Redux Toolkit (Global state)
-- Zustand (UI state)
-- React Query (Server state)
-
-### Backend
-- Supabase (Database & Authentication)
-- OpenAI API (AI processing)
-- Google Cloud Speech-to-Text
-
-### Infrastructure
-- Vercel (Hosting)
-- Supabase (Backend)
-- AWS S3 (File storage)
+### Security
+- GPG signing required
+- Branch protection enforced
+- CodeQL scanning enabled
+- Dependency auditing
+- Security policy enforced
 
 ## Contributing
-Please read our [Contributing Guide](CONTRIBUTING.md) for details on our code of conduct and the process for submitting pull requests.
+1. Create a feature branch
+2. Make your changes
+3. Follow coding standards
+4. Add tests
+5. Create a pull request
+
+## Support
+- Check `docs/troubleshooting/fixes.md`
+- Create issues using templates
+- Follow security policy for vulnerabilities
 
 ## License
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details. 
+[License details here] 

@@ -4,6 +4,7 @@ import React from 'react';
 import { Box } from '@mui/material';
 import { PageLayout } from '@/components/layout/PageLayout';
 import Navigation from '@/components/Navigation';
+import Footer from '@/components/Footer';
 import { useAuth } from '@/lib/AuthContext';
 import { useRouter } from 'next/navigation';
 
@@ -44,7 +45,9 @@ export default function DashboardLayout({
     return (
         <PageLayout
             layout="dashboard"
-            footer={{ show: false }}
+            footer={{
+                content: <Footer minimal />
+            }}
         >
             <Navigation />
             {children}

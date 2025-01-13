@@ -1,126 +1,212 @@
-# Recapio Documentation
+# Recapio.AI Documentation
 
-This directory contains comprehensive documentation for the Recapio application. The documentation is organized into the following sections:
+## Development Workflow Guide
 
-## Directory Structure
+### Version Control System
 
-### Setup (`/setup`)
-- `getting-started.md` - Complete guide to setting up the development environment
-- `faq.md` - Frequently asked questions about setup and configuration
+#### Branch Structure
+- `main` (Production)
+  - Protected branch
+  - Requires signed commits
+  - Requires PR and reviews
+  - No direct pushes allowed
 
-### Configuration (`/configuration`)
-- `environment.md` - Environment variables and configuration settings
+- `develop` (Development)
+  - Main development branch
+  - Protected branch
+  - Requires PR and reviews
+  - Source for feature branches
 
-### Core Systems (`/core-systems`)
-- `authentication.md` - User authentication and session management
-- `database.md` - Core database system architecture
-- `navigation.md` - Application navigation and routing
-- `profile.md` - User profile and settings management
-- `permissions.md` - Access control and permissions system
+- `staging` (Pre-production)
+  - Testing environment
+  - Protected branch
+  - Deployment validation
+  - Pre-release testing
 
-### Technical Documentation (`/technical`)
-- **Architecture** (`/technical`)
-  - `architecture.md` - System architecture and design
-- **Database** (`/technical/database`)
-  - `schema.md` - Database schema documentation
-  - `schema.json` - JSON representation of database schema
-  - `supabase-guide.md` - Supabase integration guide
-- **Styling** (`/technical/styling`)
-  - `style-guide.md` - Application styling guidelines
-- **Functions** (`/technical/functions`)
-  - `app-functions.md` - Core application functions
+#### Feature Development
+1. **Starting New Features**
+   ```bash
+   # For general features
+   ./scripts/git-helpers.sh feature "feature-description"
+   
+   # For UI/UX features
+   ./scripts/git-helpers.sh ui "feature-description"
+   ```
 
-### Templates (`/templates`)
-- `TestingPageTemplate.tsx` - Template for creating testing environments
-- `README.md` - Guide to using and contributing templates
+2. **Development Process**
+   - Write code following standards
+   - Add tests
+   - Update documentation
+   - Use conventional commits
 
-### Deployment (`/deployment`)
-- `deployment-guide.md` - Comprehensive deployment procedures
+3. **Publishing Changes**
+   ```bash
+   ./scripts/git-helpers.sh publish
+   ```
+   This will:
+   - Run tests
+   - Check linting
+   - Verify types
+   - Push to remote
+   - Provide PR link
 
-### Planning (`/planning`)
-- `roadmap.md` - Development roadmap and milestones
-- `monetization.md` - Monetization strategy and implementation
-- `recommendations.md` - System recommendations and best practices
+#### Release Process
+1. **Prepare Release**
+   ```bash
+   ./scripts/git-helpers.sh release "version-number"
+   ```
 
-### UI/UX (`/ui-ux`)
-- `design-guide.md` - UI/UX design guidelines and components
-- **Examples** (`/ui-ux/examples`)
-  - `TestingPageComponents.tsx` - Reference implementation of UI components
-  - `README.md` - Guide to using the example components
+2. **Release Steps**
+   - Update version numbers
+   - Update changelog
+   - Run final tests
+   - Create PR to main
 
-### Testing (`/testing`)
-- `rls-policies.md` - Row Level Security testing procedures
+#### Hotfix Process
+1. **Create Hotfix**
+   ```bash
+   ./scripts/git-helpers.sh hotfix "issue-description"
+   ```
 
-### Troubleshooting (`/troubleshooting`)
-- `fixes.md` - Common issues and their solutions
+2. **Follow Hotfix Workflow**
+   - See `docs/planning/hotfix-workflow.md`
+   - Emergency review process
+   - Quick deployment path
 
-## Version Control Strategy
+### Code Quality
 
-### Branching Model
-- `main`: Production-ready code
-- `develop`: Main development branch
-- `feature/*`: New features (e.g., `feature/user-authentication`)
-- `fix/*`: Bug fixes (e.g., `fix/login-error`)
-- `release/*`: Release preparation (e.g., `release/v4.1.0`)
-- `hotfix/*`: Emergency fixes for production (e.g., `hotfix/critical-security-fix`)
+#### Commit Standards
+- Use conventional commits
+- Sign all commits (GPG)
+- Clear, concise messages
+- Reference issues/PRs
 
-### Version Numbering
-We follow Semantic Versioning (SemVer):
-- Major version (X.0.0): Breaking changes
-- Minor version (4.X.0): New features, backward-compatible
-- Patch version (4.0.X): Bug fixes, backward-compatible
+#### Pull Requests
+- Use PR template
+- Link related issues
+- Complete checklist
+- Get required reviews
 
-### Commit Message Format
+#### Automated Checks
+- Build validation
+- Test coverage
+- Code linting
+- Type checking
+- Security scanning
+- Dependency audit
+
+### Security Measures
+
+#### Branch Protection
+- Protected branches
+- Required reviews
+- Signed commits
+- Status checks
+
+#### Code Scanning
+- CodeQL analysis
+- Dependency scanning
+- Security updates
+- Vulnerability checks
+
+### Directory Structure
+
+#### Core Systems (`/core-systems`)
+- Authentication
+- Database
+- Navigation
+- Permissions
+- Profile Management
+
+#### Technical Docs (`/technical`)
+- Architecture
+- State Management
+- API Integration
+- Performance
+
+#### Planning (`/planning`)
+- Version Control
+- Feature Planning
+- Release Strategy
+- Hotfix Procedures
+
+#### UI/UX (`/ui-ux`)
+- Design Guidelines
+- Component Library
+- Style Guide
+- Examples
+
+### Quick Reference
+
+#### Common Commands
+```bash
+# New feature
+./scripts/git-helpers.sh feature "description"
+
+# New UI feature
+./scripts/git-helpers.sh ui "description"
+
+# Prepare release
+./scripts/git-helpers.sh release "version"
+
+# Emergency hotfix
+./scripts/git-helpers.sh hotfix "description"
+
+# Publish changes
+./scripts/git-helpers.sh publish
+
+# Show help
+./scripts/git-helpers.sh help
 ```
-<type>(<scope>): <subject>
 
-<body>
+#### Useful Links
+- [Branch Protection Rules](planning/branch-protection.md)
+- [Hotfix Workflow](planning/hotfix-workflow.md)
+- [GPG Signing Setup](setup/gpg-signing.md)
+- [Troubleshooting](troubleshooting/fixes.md)
 
-<footer>
-```
+### Best Practices
 
-Types:
-- `feat`: New features
-- `fix`: Bug fixes
-- `docs`: Documentation changes
-- `style`: Formatting changes
-- `refactor`: Code restructuring
-- `test`: Test-related changes
-- `chore`: Maintenance tasks
+#### Code Development
+1. Always work in feature branches
+2. Keep changes focused
+3. Write meaningful commits
+4. Update documentation
+5. Add proper tests
 
-Example:
-```
-feat(auth): add OAuth2 authentication support
+#### Review Process
+1. Self-review first
+2. Address all comments
+3. Keep PR size manageable
+4. Update based on feedback
+5. Verify all checks pass
 
-- Implement Google OAuth2 login
-- Add user profile sync with Google
-- Store OAuth tokens securely
+#### Documentation
+1. Update relevant docs
+2. Keep README current
+3. Document breaking changes
+4. Include examples
+5. Update quick start guide
 
-Closes #123
-```
+### Support and Help
 
-### Workflow
-1. Create feature branch from `develop`
-2. Make changes and commit using the template
-3. Push to remote and create PR
-4. Review, test, and merge to `develop`
-5. Create release branch when ready
-6. Merge release to `main` and `develop`
+#### Issue Creation
+- Use templates
+- Provide clear steps
+- Include environment info
+- Add relevant logs
 
-## Usage
+#### Getting Help
+1. Check documentation
+2. Search existing issues
+3. Ask team members
+4. Create detailed issue
 
-This documentation is primarily intended for:
-1. Developers working on the Recapio application
-2. System administrators managing the deployment
-3. UI/UX designers maintaining consistency
-4. Project managers tracking development progress
+### Maintenance
 
-## Contributing
-
-When adding new documentation:
-1. Place files in the appropriate directory based on their content
-2. Use clear, descriptive filenames in kebab-case
-3. Follow the existing markdown formatting
-4. Update this README if adding new sections
-5. Include examples and reference implementations where applicable
-6. Use templates from the `/templates` directory when available 
+#### Regular Tasks
+- Update dependencies
+- Review security alerts
+- Clean stale branches
+- Update documentation
+- Verify protection rules 

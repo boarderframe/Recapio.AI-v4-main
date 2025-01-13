@@ -3,42 +3,33 @@
 import React from 'react';
 import { Typography, Box, Grid, Paper, Button } from '@mui/material';
 import { useAuth } from '@/lib/AuthContext';
-import PageHeader from '@/components/PageHeader';
-import PageBody from '@/components/PageBody';
-import PageLayout from '@/components/PageLayout';
-import PageFooter from '@/components/PageFooter';
 import { Add as AddIcon } from '@mui/icons-material';
 import Link from 'next/link';
+import { PageLayout } from '@/components/layout/PageLayout';
+import ContentCard from '@/components/ContentCard';
 
 export default function DashboardPage() {
     const { user } = useAuth();
     const displayName = user?.user_metadata?.display_name || 
         (user?.email ? user.email.split('@')[0].charAt(0).toUpperCase() + user.email.split('@')[0].slice(1) : 'User');
 
-    const headerActions = (
-        <Button
-            component={Link}
-            href="/transcripts/new"
-            variant="contained"
-            startIcon={<AddIcon />}
-        >
-            New Transcript
-        </Button>
-    );
-
     return (
-        <PageLayout>
-            <PageHeader
-                title={`Welcome back, ${displayName}`}
-                description="View and manage your transcripts and analytics"
-                breadcrumbs={[
-                    { label: 'Home', href: '/' },
-                    { label: 'Dashboard' }
-                ]}
-                actions={headerActions}
-            />
-            
-            <PageBody>
+        <PageLayout
+            layout="app"
+            title={`Welcome back, ${displayName}`}
+            subtitle="View and manage your transcripts and analytics"
+            toolbar={
+                <Button
+                    component={Link}
+                    href="/transcripts/new"
+                    variant="contained"
+                    startIcon={<AddIcon />}
+                >
+                    New Transcript
+                </Button>
+            }
+        >
+            <ContentCard>
                 <Grid container spacing={3}>
                     <Grid item xs={12} sm={4}>
                         <Paper
@@ -125,10 +116,8 @@ export default function DashboardPage() {
                         Your recent transcripts and activities will appear here
                     </Typography>
                 </Box>
-            </PageBody>
 
-            <PageFooter>
-                <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                <Box sx={{ mt: 4, display: 'flex', justifyContent: 'flex-end' }}>
                     <Button
                         component={Link}
                         href="/transcripts"
@@ -138,7 +127,7 @@ export default function DashboardPage() {
                         View All Transcripts
                     </Button>
                 </Box>
-            </PageFooter>
+            </ContentCard>
         </PageLayout>
     );
 } 

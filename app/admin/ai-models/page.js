@@ -1,22 +1,48 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect } from 'react';
+import { Box, Paper, Button, Tabs, Tab, CircularProgress, FormControl, InputLabel, Select, MenuItem, Snackbar, Alert, Tooltip, IconButton, keyframes } from '@mui/material';
+import { DataGrid } from '@mui/x-data-grid';
+import { Refresh as RefreshIcon, Save as SaveIcon, Check as CheckIcon, Warning as WarningIcon, Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
 import axios from 'axios';
-import { Box, Tabs, Tab, Button, CircularProgress,
-    Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
-    Paper, FormControl, InputLabel, Select, MenuItem, Typography, Snackbar, Alert
-} from '@mui/material';
-import RefreshIcon from '@mui/icons-material/Refresh';
-import SaveIcon from '@mui/icons-material/Save';
 import ContentCard from '@/components/ContentCard';
-import ModelsTable from '@/components/ModelsTable';
+import TableControls from '@/components/TableControls';
+
+const pulseAnimation = keyframes`
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1);
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+`;
 
 export default function AIModelsPage() {
     const [activeTab, setActiveTab] = useState('default');
+    const [filters, setFilters] = useState({
+        search: '',
+        columns: [],
+        density: 'medium'
+    });
+    const [loading, setLoading] = useState(false);
+    const [defaultModels, setDefaultModels] = useState({
+        'Chat Completion': { provider: 'openai', modelId: '' },
+        'Text Embedding': { provider: 'openai', modelId: '' },
+        'Image Generation': { provider: 'openai', modelId: '' },
+        'Speech to Text': { provider: 'openai', modelId: '' },
+        'Text to Speech': { provider: 'openai', modelId: '' },
+        'Moderation': { provider: 'openai', modelId: '' }
+    });
+    const [isSaving, setIsSaving] = useState(false);
     const [openaiModels, setOpenaiModels] = useState([]);
     const [anthropicModels, setAnthropicModels] = useState([]);
     const [geminiModels, setGeminiModels] = useState([]);
-    const [loading, setLoading] = useState(false);
     const [refreshing, setRefreshing] = useState({
         openai: false,
         anthropic: false,
@@ -27,25 +53,11 @@ export default function AIModelsPage() {
         anthropic: null,
         gemini: null
     });
-    const [filters, setFilters] = useState({
-        search: '',
-        type: 'all',
-        status: 'all',
-        year: 'all'
-    });
-    const [defaultModels, setDefaultModels] = useState({
-        'Chat Completion': { provider: 'openai', modelId: '' },
-        'Text Embedding': { provider: 'openai', modelId: '' },
-        'Image Generation': { provider: 'openai', modelId: '' },
-        'Speech to Text': { provider: 'openai', modelId: '' },
-        'Text to Speech': { provider: 'openai', modelId: '' },
-        'Moderation': { provider: 'openai', modelId: '' }
-    });
     const [saveStatus, setSaveStatus] = useState({ open: false, message: '', severity: 'success' });
-    const [isSaving, setIsSaving] = useState(false);
 
     useEffect(() => {
         fetchAllModels();
+        loadSavedDefaults();
     }, []);
 
     const fetchAllModels = async () => {
@@ -60,6 +72,17 @@ export default function AIModelsPage() {
             console.error('Error fetching models:', error);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const loadSavedDefaults = async () => {
+        try {
+            const response = await axios.get('/api/models/defaults');
+            if (response.data.success && response.data.defaults) {
+                setDefaultModels(response.data.defaults);
+            }
+        } catch (error) {
+            console.error('Error loading default models:', error);
         }
     };
 
@@ -96,8 +119,6 @@ export default function AIModelsPage() {
                     ...prev,
                     openai: response.data.lastUpdated
                 }));
-            } else {
-                throw new Error(response.data.error || 'Failed to fetch OpenAI models');
             }
         } catch (error) {
             console.error('Error fetching OpenAI models:', error);
@@ -113,8 +134,6 @@ export default function AIModelsPage() {
                     ...prev,
                     anthropic: response.data.lastUpdated
                 }));
-            } else {
-                throw new Error(response.data.error || 'Failed to fetch Anthropic models');
             }
         } catch (error) {
             console.error('Error fetching Anthropic models:', error);
@@ -123,93 +142,26 @@ export default function AIModelsPage() {
 
     const fetchGeminiModels = async () => {
         try {
-            console.log('Fetching Gemini models...');
             const response = await axios.get('/api/models/gemini');
-            console.log('Gemini API response:', response.data);
             if (response.data.success && response.data.models) {
-                console.log('Setting Gemini models:', response.data.models.length);
                 setGeminiModels(response.data.models);
                 setLastUpdated(prev => ({
                     ...prev,
                     gemini: response.data.lastUpdated
                 }));
-            } else {
-                console.error('Gemini API error:', response.data.error);
-                throw new Error(response.data.error || 'Failed to fetch Gemini models');
             }
         } catch (error) {
             console.error('Error fetching Gemini models:', error);
         }
     };
 
-    const handleFilterChange = (filterName, value) => {
-        setFilters(prev => ({
-            ...prev,
-            [filterName]: value
-        }));
+    const handleSearch = (value) => {
+        setFilters(prev => ({ ...prev, search: value }));
     };
 
-    const getAvailableFilters = (models) => {
-        const types = new Set(models.map(model => model.type));
-        const statuses = new Set(models.map(model => model.status));
-        const years = new Set(models.map(model => new Date(model.created * 1000).getFullYear()));
-        
-        return {
-            types: Array.from(types).sort(),
-            statuses: Array.from(statuses).sort(),
-            years: Array.from(years).sort((a, b) => b - a)
-        };
+    const handleRefresh = () => {
+        refreshModels(activeTab);
     };
-
-    const sortModels = (models) => {
-        return [...models].sort((a, b) => {
-            // First sort by type
-            if (a.type < b.type) return -1;
-            if (a.type > b.type) return 1;
-            // Then by created date (most recent first)
-            return b.created - a.created;
-        });
-    };
-
-    const filterModels = (models) => {
-        return models.filter(model => {
-            const matchesSearch = !filters.search || 
-                model.id.toLowerCase().includes(filters.search.toLowerCase());
-            
-            const matchesType = filters.type === 'all' || 
-                model.type === filters.type;
-            
-            const matchesStatus = filters.status === 'all' || 
-                model.status.toLowerCase() === filters.status.toLowerCase();
-            
-            const modelYear = new Date(model.created * 1000).getFullYear();
-            const matchesYear = filters.year === 'all' || 
-                modelYear === parseInt(filters.year);
-
-            return matchesSearch && matchesType && matchesStatus && matchesYear;
-        });
-    };
-
-    const currentModels = useMemo(() => {
-        let models = [];
-        switch (activeTab) {
-            case 'openai':
-                models = openaiModels;
-                break;
-            case 'anthropic':
-                models = anthropicModels;
-                break;
-            case 'gemini':
-                models = geminiModels;
-                break;
-        }
-        return sortModels(models);
-    }, [activeTab, openaiModels, anthropicModels, geminiModels]);
-
-    const availableFilters = useMemo(() => 
-        getAvailableFilters(currentModels),
-        [currentModels]
-    );
 
     const handleDefaultModelChange = (type, field, value) => {
         setDefaultModels(prev => ({
@@ -219,58 +171,6 @@ export default function AIModelsPage() {
                 [field]: value
             }
         }));
-    };
-
-    const getAvailableProvidersForType = (type) => {
-        const providerCapabilities = {
-            'Chat Completion': ['openai', 'anthropic', 'gemini'],
-            'Text Embedding': ['openai', 'anthropic', 'gemini'],
-            'Image Generation': ['openai'],
-            'Speech to Text': ['openai'],
-            'Text to Speech': ['openai'],
-            'Moderation': ['openai']
-        };
-        return providerCapabilities[type] || [];
-    };
-
-    const getModelsForProvider = (provider, type) => {
-        let models = [];
-        switch (provider) {
-            case 'openai':
-                models = openaiModels;
-                break;
-            case 'anthropic':
-                models = anthropicModels;
-                break;
-            case 'gemini':
-                models = geminiModels;
-                break;
-        }
-        // Map the UI type to the actual model type
-        const typeMapping = {
-            'Chat Completion': 'Chat Completion',
-            'Text Embedding': 'Embedding',
-            'Image Generation': 'Image Generation',
-            'Speech to Text': 'Speech to Text',
-            'Text to Speech': 'Text to Speech',
-            'Moderation': 'Moderation'
-        };
-        
-        const modelType = typeMapping[type] || type;
-        return models.filter(model => model.type === modelType);
-    };
-
-    const getProviderDisplayName = (provider) => {
-        switch (provider) {
-            case 'openai':
-                return 'OpenAI';
-            case 'anthropic':
-                return 'Anthropic';
-            case 'gemini':
-                return 'Google Gemini';
-            default:
-                return provider;
-        }
     };
 
     const saveDefaultModels = async () => {
@@ -300,33 +200,359 @@ export default function AIModelsPage() {
         }
     };
 
-    useEffect(() => {
-        const loadSavedDefaults = async () => {
-            try {
-                const response = await axios.get('/api/models/defaults');
-                if (response.data.success && response.data.defaults) {
-                    setDefaultModels(response.data.defaults);
-                }
-            } catch (error) {
-                console.error('Error loading default models:', error);
-            }
+    const getAvailableProvidersForType = (type) => {
+        const providerCapabilities = {
+            'Chat Completion': ['openai', 'anthropic', 'gemini'],
+            'Text Embedding': ['openai', 'anthropic', 'gemini'],
+            'Image Generation': ['openai'],
+            'Speech to Text': ['openai'],
+            'Text to Speech': ['openai'],
+            'Moderation': ['openai']
         };
-        loadSavedDefaults();
-    }, []);
+        return providerCapabilities[type] || [];
+    };
+
+    const getModelsForProvider = (provider, type) => {
+        let models = [];
+        switch (provider) {
+            case 'openai':
+                models = openaiModels;
+                break;
+            case 'anthropic':
+                models = anthropicModels;
+                break;
+            case 'gemini':
+                models = geminiModels;
+                break;
+        }
+        
+        const typeMapping = {
+            'Chat Completion': 'Chat Completion',
+            'Text Embedding': 'Embedding',
+            'Image Generation': 'Image Generation',
+            'Speech to Text': 'Speech to Text',
+            'Text to Speech': 'Text to Speech',
+            'Moderation': 'Moderation'
+        };
+        
+        const modelType = typeMapping[type] || type;
+        return models.filter(model => model.type === modelType);
+    };
+
+    const getProviderDisplayName = (provider) => {
+        switch (provider) {
+            case 'openai':
+                return 'OpenAI';
+            case 'anthropic':
+                return 'Anthropic';
+            case 'gemini':
+                return 'Google Gemini';
+            default:
+                return provider;
+        }
+    };
+
+    const getCurrentModels = () => {
+        switch (activeTab) {
+            case 'openai':
+                return openaiModels;
+            case 'anthropic':
+                return anthropicModels;
+            case 'gemini':
+                return geminiModels;
+            default:
+                return [];
+        }
+    };
+
+    const filterModels = (models) => {
+        return models.filter(model => {
+            const matchesSearch = !filters.search || 
+                model.id.toLowerCase().includes(filters.search.toLowerCase());
+            return matchesSearch;
+        });
+    };
+
+    const getProviderSpecificColumns = (provider) => {
+        const commonColumns = [
+            { 
+                field: 'status', 
+                headerName: 'Status', 
+                width: 130,
+                renderCell: (params) => {
+                    const isActive = params.value === 'active';
+                    return (
+                        <Box sx={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: 0.75,
+                            px: 1.5,
+                            py: 0.5,
+                            height: 28,
+                            borderRadius: 1,
+                            fontSize: '0.75rem',
+                            bgcolor: isActive ? '#00E676' : '#FFA726',
+                            color: isActive ? '#00695C' : '#fff',
+                            fontWeight: 600,
+                            letterSpacing: '0.02em',
+                            textTransform: 'uppercase',
+                            '& .MuiSvgIcon-root': {
+                                fontSize: '1rem'
+                            }
+                        }}>
+                            {isActive ? (
+                                <Box component="span" sx={{ 
+                                    width: 6, 
+                                    height: 6, 
+                                    borderRadius: '50%', 
+                                    bgcolor: '#00695C',
+                                    boxShadow: '0 0 0 2px rgba(0,105,92,0.4)',
+                                    animation: `${pulseAnimation} 1.5s infinite`
+                                }} />
+                            ) : (
+                                <Box component="span" sx={{ 
+                                    width: 6, 
+                                    height: 6, 
+                                    borderRadius: '1px', 
+                                    bgcolor: '#fff',
+                                    transform: 'rotate(45deg)'
+                                }} />
+                            )}
+                            {params.value}
+                        </Box>
+                    );
+                }
+            },
+            { 
+                field: 'type', 
+                headerName: 'Type', 
+                width: 180,
+                renderCell: (params) => (
+                    <Box sx={{ 
+                        color: 'text.secondary', 
+                        fontSize: '0.875rem',
+                        height: 28,
+                        display: 'flex',
+                        alignItems: 'center'
+                    }}>
+                        {params.value}
+                    </Box>
+                )
+            },
+            { 
+                field: 'name', 
+                headerName: 'Model Name', 
+                flex: 1,
+                minWidth: 250,
+                renderCell: (params) => (
+                    <Box sx={{ 
+                        fontWeight: 500,
+                        color: 'text.primary',
+                        fontSize: '0.875rem',
+                        height: 28,
+                        display: 'flex',
+                        alignItems: 'center'
+                    }}>
+                        {params.value}
+                    </Box>
+                )
+            }
+        ];
+
+        const actionsColumn = {
+            field: 'actions',
+            headerName: 'Actions',
+            width: 100,
+            sortable: false,
+            renderCell: (params) => (
+                <Box sx={{ 
+                    display: 'flex', 
+                    gap: 0.5,
+                    height: 28,
+                    alignItems: 'center',
+                    '& .MuiIconButton-root': {
+                        p: 0.5,
+                        '&:hover': {
+                            bgcolor: 'action.hover'
+                        }
+                    }
+                }}>
+                    <Tooltip title="Edit Model">
+                        <IconButton
+                            size="small"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                console.log('Edit model:', params.row);
+                            }}
+                            sx={{ color: 'primary.main' }}
+                        >
+                            <EditIcon fontSize="small" />
+                        </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Delete Model">
+                        <IconButton
+                            size="small"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                console.log('Delete model:', params.row);
+                            }}
+                            sx={{ color: 'error.main' }}
+                        >
+                            <DeleteIcon fontSize="small" />
+                        </IconButton>
+                    </Tooltip>
+                </Box>
+            )
+        };
+
+        switch (provider) {
+            case 'openai':
+                return [
+                    ...commonColumns,
+                    { 
+                        field: 'tokens', 
+                        headerName: 'Max Tokens', 
+                        width: 120,
+                        renderCell: (params) => (
+                            <Box sx={{ 
+                                color: 'text.secondary', 
+                                fontSize: '0.875rem',
+                                fontFamily: 'monospace',
+                                height: 28,
+                                display: 'flex',
+                                alignItems: 'center'
+                            }}>
+                                {params.value}
+                            </Box>
+                        )
+                    },
+                    { 
+                        field: 'cost', 
+                        headerName: 'Cost/1K', 
+                        width: 100,
+                        renderCell: (params) => (
+                            <Box sx={{ 
+                                color: 'text.secondary', 
+                                fontSize: '0.875rem',
+                                fontFamily: 'monospace',
+                                height: 28,
+                                display: 'flex',
+                                alignItems: 'center'
+                            }}>
+                                {params.value}
+                            </Box>
+                        )
+                    },
+                    actionsColumn
+                ];
+            case 'anthropic':
+                return [
+                    ...commonColumns,
+                    { 
+                        field: 'context', 
+                        headerName: 'Context Length', 
+                        width: 120,
+                        renderCell: (params) => (
+                            <Box sx={{ 
+                                color: 'text.secondary', 
+                                fontSize: '0.875rem',
+                                fontFamily: 'monospace',
+                                height: 28,
+                                display: 'flex',
+                                alignItems: 'center'
+                            }}>
+                                {params.value}
+                            </Box>
+                        )
+                    },
+                    { 
+                        field: 'cost', 
+                        headerName: 'Cost/1K', 
+                        width: 100,
+                        renderCell: (params) => (
+                            <Box sx={{ 
+                                color: 'text.secondary', 
+                                fontSize: '0.875rem',
+                                fontFamily: 'monospace',
+                                height: 28,
+                                display: 'flex',
+                                alignItems: 'center'
+                            }}>
+                                {params.value}
+                            </Box>
+                        )
+                    },
+                    actionsColumn
+                ];
+            default:
+                return [
+                    ...commonColumns,
+                    { 
+                        field: 'cost', 
+                        headerName: 'Cost/1K', 
+                        width: 100,
+                        renderCell: (params) => (
+                            <Box sx={{ 
+                                color: 'text.secondary', 
+                                fontSize: '0.875rem',
+                                fontFamily: 'monospace',
+                                height: 28,
+                                display: 'flex',
+                                alignItems: 'center'
+                            }}>
+                                {params.value}
+                            </Box>
+                        )
+                    },
+                    actionsColumn
+                ];
+        }
+    };
+
+    const formatModelData = (model, provider) => {
+        const baseData = {
+            name: model.display_name || model.id,
+            type: model.type || 'Unknown',
+            status: model.deprecated ? 'deprecated' : (model.status || 'active'),
+            cost: model.cost_per_1k ? `$${model.cost_per_1k.toFixed(4)}` : 'N/A'
+        };
+
+        switch (provider) {
+            case 'openai':
+                return {
+                    ...baseData,
+                    tokens: model.max_tokens ? model.max_tokens.toLocaleString() : 'N/A'
+                };
+            case 'anthropic':
+                return {
+                    ...baseData,
+                    context: model.context_length ? `${(model.context_length/1000).toLocaleString()}k` : 'N/A'
+                };
+            case 'gemini':
+                return baseData;
+            default:
+                return baseData;
+        }
+    };
 
     return (
-        <ContentCard>
-            <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
+        <Box sx={{ pb: 4 }}>
+            <ContentCard sx={{ p: 0 }}>
                 <Tabs 
                     value={activeTab} 
-                    onChange={(e, newValue) => setActiveTab(newValue)}
-                    sx={{
+                    onChange={(e, v) => setActiveTab(v)}
+                    sx={{ 
+                        borderBottom: 1, 
+                        borderColor: 'divider',
+                        bgcolor: (theme) => theme.palette.mode === 'dark' ? 'grey.900' : 'grey.50',
+                        px: 2,
                         '& .MuiTab-root': {
                             textTransform: 'none',
                             fontSize: '0.95rem',
                             fontWeight: 500,
-                            minHeight: '42px',
-                            py: 0.5
+                            minHeight: 48,
+                            py: 1.5
                         }
                     }}
                 >
@@ -335,297 +561,293 @@ export default function AIModelsPage() {
                     <Tab label="Anthropic Models" value="anthropic" />
                     <Tab label="Google Gemini Models" value="gemini" />
                 </Tabs>
-            </Box>
 
-            {activeTab !== 'default' ? (
-                <>
-                    <ModelsTable
-                        models={filterModels(currentModels)}
-                        filters={{ ...filters, lastUpdated: lastUpdated[activeTab] }}
-                        onFilterChange={handleFilterChange}
-                        provider={activeTab === 'openai' ? 'OpenAI' : activeTab === 'anthropic' ? 'Anthropic' : 'Google Gemini'}
-                        availableFilters={availableFilters}
-                    />
-                    <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
-                        <Button
-                            variant="outlined"
-                            startIcon={refreshing[activeTab] ? <CircularProgress size={20} /> : <RefreshIcon />}
-                            onClick={() => refreshModels(activeTab)}
-                            disabled={refreshing[activeTab]}
-                        >
-                            Refresh {activeTab === 'openai' ? 'OpenAI' : activeTab === 'anthropic' ? 'Anthropic' : 'Google Gemini'} Models
-                        </Button>
-                    </Box>
-                </>
-            ) : (
-                <>
-                    <Box sx={{ 
-                        display: 'grid',
-                        gridTemplateColumns: 'repeat(3, 1fr)',
-                        gap: 2,
-                        mb: 3
-                    }}>
-                        {/* First Row */}
-                        {['Chat Completion', 'Image Generation', 'Text Embedding'].map(type => {
-                            const settings = defaultModels[type] || { provider: 'openai', modelId: '' };
-                            const availableProviders = getAvailableProvidersForType(type);
-                            const availableModels = getModelsForProvider(settings.provider || 'openai', type);
-                            
-                            if (!availableProviders.includes(settings.provider)) {
-                                handleDefaultModelChange(type, 'provider', availableProviders[0] || 'openai');
-                                handleDefaultModelChange(type, 'modelId', '');
-                            }
-
-                            return (
-                                <Paper
-                                    key={type}
-                                    elevation={0}
-                                    sx={{
-                                        p: 2,
-                                        border: '1px solid',
-                                        borderColor: 'divider',
-                                        borderRadius: 1,
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        gap: 2,
-                                        transition: 'all 0.2s ease-in-out',
-                                        '&:hover': {
-                                            borderColor: 'primary.main',
-                                            boxShadow: theme => `0 0 0 1px ${theme.palette.primary.main}20`
-                                        }
-                                    }}
-                                >
-                                    <Box sx={{ 
-                                        display: 'flex', 
-                                        alignItems: 'center',
-                                        borderBottom: '1px solid',
-                                        borderColor: 'divider',
-                                        pb: 1.5
-                                    }}>
-                                        <Typography 
-                                            variant="subtitle1" 
-                                            sx={{ 
+                {activeTab === 'default' ? (
+                    <Box sx={{ p: 3 }}>
+                        <Box sx={{ 
+                            display: 'grid',
+                            gridTemplateColumns: 'repeat(3, 1fr)',
+                            gap: 2,
+                            mb: 3
+                        }}>
+                            {Object.entries(defaultModels).map(([type, settings]) => {
+                                const availableProviders = getAvailableProvidersForType(type);
+                                const availableModels = getModelsForProvider(settings.provider || 'openai', type);
+                                
+                                return (
+                                    <Paper
+                                        key={type}
+                                        elevation={0}
+                                        sx={{ 
+                                            p: 2,
+                                            border: '1px solid',
+                                            borderColor: 'divider',
+                                            borderRadius: 1,
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            gap: 2,
+                                            transition: 'all 0.2s ease-in-out',
+                                            '&:hover': {
+                                                borderColor: 'primary.main',
+                                                boxShadow: theme => `0 0 0 1px ${theme.palette.primary.main}20`
+                                            }
+                                        }}
+                                    >
+                                        <Box sx={{ 
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            borderBottom: '1px solid',
+                                            borderColor: 'divider',
+                                            pb: 1.5
+                                        }}>
+                                            <Box sx={{ 
                                                 fontWeight: 600,
                                                 color: 'text.primary'
-                                            }}
-                                        >
-                                            {type}
-                                        </Typography>
-                                    </Box>
+                                            }}>
+                                                {type}
+                                            </Box>
+                                        </Box>
 
-                                    <FormControl 
-                                        fullWidth
-                                        size="small"
-                                    >
-                                        <InputLabel>Provider</InputLabel>
-                                        <Select
-                                            value={settings.provider || 'openai'}
-                                            onChange={(e) => {
-                                                handleDefaultModelChange(type, 'provider', e.target.value);
-                                                handleDefaultModelChange(type, 'modelId', '');
-                                            }}
-                                            label="Provider"
-                                            disabled={availableProviders.length === 0}
-                                            sx={{
-                                                '& .MuiSelect-select': {
-                                                    py: 1.5,
-                                                    fontSize: '0.9rem'
-                                                }
-                                            }}
+                                        <FormControl 
+                                            fullWidth
+                                            size="small"
                                         >
-                                            {availableProviders.map(provider => (
-                                                <MenuItem key={provider} value={provider}>
-                                                    {getProviderDisplayName(provider)}
+                                            <InputLabel>Provider</InputLabel>
+                                            <Select
+                                                value={settings.provider || 'openai'}
+                                                onChange={(e) => {
+                                                    handleDefaultModelChange(type, 'provider', e.target.value);
+                                                    handleDefaultModelChange(type, 'modelId', '');
+                                                }}
+                                                label="Provider"
+                                                disabled={availableProviders.length === 0}
+                                                sx={{
+                                                    '& .MuiSelect-select': {
+                                                        py: 1.5,
+                                                        fontSize: '0.9rem'
+                                                    }
+                                                }}
+                                            >
+                                                {availableProviders.map(provider => (
+                                                    <MenuItem key={provider} value={provider}>
+                                                        {getProviderDisplayName(provider)}
+                                                    </MenuItem>
+                                                ))}
+                                            </Select>
+                                        </FormControl>
+
+                                        <FormControl 
+                                            fullWidth
+                                            size="small"
+                                        >
+                                            <InputLabel>Model</InputLabel>
+                                            <Select
+                                                value={settings.modelId || ''}
+                                                onChange={(e) => handleDefaultModelChange(type, 'modelId', e.target.value)}
+                                                label="Model"
+                                                disabled={!settings.provider || availableModels.length === 0}
+                                                sx={{
+                                                    '& .MuiSelect-select': {
+                                                        py: 1.5,
+                                                        fontSize: '0.9rem'
+                                                    }
+                                                }}
+                                            >
+                                                <MenuItem value="">
+                                                    <em>Select a model</em>
                                                 </MenuItem>
-                                            ))}
-                                        </Select>
-                                    </FormControl>
+                                                {availableModels.map(model => (
+                                                    <MenuItem key={model.id} value={model.id}>
+                                                        {model.display_name || model.id}
+                                                    </MenuItem>
+                                                ))}
+                                            </Select>
+                                        </FormControl>
+                                    </Paper>
+                                );
+                            })}
+                        </Box>
 
-                                    <FormControl 
-                                        fullWidth
-                                        size="small"
-                                    >
-                                        <InputLabel>Model</InputLabel>
-                                        <Select
-                                            value={settings.modelId || ''}
-                                            onChange={(e) => handleDefaultModelChange(type, 'modelId', e.target.value)}
-                                            label="Model"
-                                            disabled={!settings.provider || availableModels.length === 0}
-                                            sx={{
-                                                '& .MuiSelect-select': {
-                                                    py: 1.5,
-                                                    fontSize: '0.9rem'
-                                                }
-                                            }}
-                                        >
-                                            <MenuItem value="">
-                                                <em>Select a model</em>
-                                            </MenuItem>
-                                            {availableModels.map(model => (
-                                                <MenuItem key={model.id} value={model.id}>
-                                                    {model.display_name || model.id}
-                                                </MenuItem>
-                                            ))}
-                                        </Select>
-                                    </FormControl>
-                                </Paper>
-                            );
-                        })}
-
-                        {/* Second Row */}
-                        {['Text to Speech', 'Speech to Text', 'Moderation'].map(type => {
-                            const settings = defaultModels[type] || { provider: 'openai', modelId: '' };
-                            const availableProviders = getAvailableProvidersForType(type);
-                            const availableModels = getModelsForProvider(settings.provider || 'openai', type);
-                            
-                            if (!availableProviders.includes(settings.provider)) {
-                                handleDefaultModelChange(type, 'provider', availableProviders[0] || 'openai');
-                                handleDefaultModelChange(type, 'modelId', '');
-                            }
-
-                            return (
-                                <Paper
-                                    key={type}
-                                    elevation={0}
-                                    sx={{
-                                        p: 2,
-                                        border: '1px solid',
-                                        borderColor: 'divider',
-                                        borderRadius: 1,
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        gap: 2,
-                                        transition: 'all 0.2s ease-in-out',
-                                        '&:hover': {
-                                            borderColor: 'primary.main',
-                                            boxShadow: theme => `0 0 0 1px ${theme.palette.primary.main}20`
-                                        }
-                                    }}
-                                >
-                                    <Box sx={{ 
-                                        display: 'flex', 
-                                        alignItems: 'center',
-                                        borderBottom: '1px solid',
-                                        borderColor: 'divider',
-                                        pb: 1.5
-                                    }}>
-                                        <Typography 
-                                            variant="subtitle1" 
-                                            sx={{ 
-                                                fontWeight: 600,
-                                                color: 'text.primary'
-                                            }}
-                                        >
-                                            {type}
-                                        </Typography>
-                                    </Box>
-
-                                    <FormControl 
-                                        fullWidth
-                                        size="small"
-                                    >
-                                        <InputLabel>Provider</InputLabel>
-                                        <Select
-                                            value={settings.provider || 'openai'}
-                                            onChange={(e) => {
-                                                handleDefaultModelChange(type, 'provider', e.target.value);
-                                                handleDefaultModelChange(type, 'modelId', '');
-                                            }}
-                                            label="Provider"
-                                            disabled={availableProviders.length === 0}
-                                            sx={{
-                                                '& .MuiSelect-select': {
-                                                    py: 1.5,
-                                                    fontSize: '0.9rem'
-                                                }
-                                            }}
-                                        >
-                                            {availableProviders.map(provider => (
-                                                <MenuItem key={provider} value={provider}>
-                                                    {getProviderDisplayName(provider)}
-                                                </MenuItem>
-                                            ))}
-                                        </Select>
-                                    </FormControl>
-
-                                    <FormControl 
-                                        fullWidth
-                                        size="small"
-                                    >
-                                        <InputLabel>Model</InputLabel>
-                                        <Select
-                                            value={settings.modelId || ''}
-                                            onChange={(e) => handleDefaultModelChange(type, 'modelId', e.target.value)}
-                                            label="Model"
-                                            disabled={!settings.provider || availableModels.length === 0}
-                                            sx={{
-                                                '& .MuiSelect-select': {
-                                                    py: 1.5,
-                                                    fontSize: '0.9rem'
-                                                }
-                                            }}
-                                        >
-                                            <MenuItem value="">
-                                                <em>Select a model</em>
-                                            </MenuItem>
-                                            {availableModels.map(model => (
-                                                <MenuItem key={model.id} value={model.id}>
-                                                    {model.display_name || model.id}
-                                                </MenuItem>
-                                            ))}
-                                        </Select>
-                                    </FormControl>
-                                </Paper>
-                            );
-                        })}
+                        {/* Action Buttons */}
+                        <Box sx={{ 
+                            display: 'flex', 
+                            justifyContent: 'flex-end',
+                            gap: 2,
+                            borderTop: '1px solid',
+                            borderColor: 'divider',
+                            pt: 2,
+                            mt: 3
+                        }}>
+                            <Button
+                                variant="contained"
+                                startIcon={isSaving ? <CircularProgress size={20} /> : <SaveIcon />}
+                                onClick={saveDefaultModels}
+                                disabled={isSaving}
+                                sx={{ 
+                                    px: 4,
+                                    py: 1.5,
+                                    fontSize: '0.95rem',
+                                    fontWeight: 500
+                                }}
+                            >
+                                {isSaving ? 'Saving...' : 'Save Default Models'}
+                            </Button>
+                        </Box>
                     </Box>
-                    <Box sx={{ 
-                        display: 'flex', 
-                        justifyContent: 'flex-end',
-                        borderTop: '1px solid',
-                        borderColor: 'divider',
-                        pt: 2
-                    }}>
-                        <Button
-                            variant="contained"
-                            startIcon={isSaving ? <CircularProgress size={20} color="inherit" /> : <SaveIcon />}
-                            onClick={saveDefaultModels}
-                            disabled={isSaving}
-                            sx={{ 
-                                px: 4,
-                                py: 1.5,
-                                fontSize: '0.95rem',
-                                fontWeight: 500
+                ) : (
+                    <>
+                        <TableControls
+                            onSearch={handleSearch}
+                            searchPlaceholder={`Search ${getProviderDisplayName(activeTab)} models...`}
+                            sx={{
+                                p: 1.5,
+                                borderBottom: '1px solid',
+                                borderColor: 'divider',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 2,
+                                bgcolor: (theme) => theme.palette.mode === 'dark' ? 'grey.900' : 'grey.50',
+                                '& .MuiInputBase-root': {
+                                    height: 40
+                                }
                             }}
-                        >
-                            {isSaving ? 'Saving...' : 'Save Default Models'}
-                        </Button>
-                    </Box>
-                </>
-            )}
-            <Snackbar
-                open={saveStatus.open}
-                autoHideDuration={800}
-                onClose={() => setSaveStatus(prev => ({ ...prev, open: false }))}
-                anchorOrigin={{ vertical: 'center', horizontal: 'center' }}
-                sx={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center'
-                }}
-            >
-                <Alert 
-                    onClose={() => setSaveStatus(prev => ({ ...prev, open: false }))} 
-                    severity={saveStatus.severity}
-                    variant="filled"
-                    sx={{ 
-                        minWidth: '300px',
-                        boxShadow: 'rgba(0, 0, 0, 0.2) 0px 3px 8px'
-                    }}
+                        />
+
+                        <Box sx={{ 
+                            height: 'calc(100vh - 300px)',
+                            width: '100%',
+                            '& .MuiDataGrid-root': {
+                                border: 'none',
+                                '& .MuiDataGrid-cell': {
+                                    borderBottom: '1px solid',
+                                    borderColor: 'divider'
+                                },
+                                '& .MuiDataGrid-columnHeaders': {
+                                    bgcolor: (theme) => theme.palette.mode === 'dark' ? 'grey.900' : 'grey.50',
+                                    borderBottom: '2px solid',
+                                    borderColor: 'divider'
+                                },
+                                '& .MuiDataGrid-row': {
+                                    '&:hover': {
+                                        bgcolor: (theme) => theme.palette.mode === 'dark' ? 'grey.900' : 'grey.50'
+                                    }
+                                },
+                                '& .MuiDataGrid-footerContainer': {
+                                    borderTop: '1px solid',
+                                    borderColor: 'divider',
+                                    bgcolor: (theme) => theme.palette.mode === 'dark' ? 'grey.900' : 'grey.50'
+                                }
+                            }
+                        }}>
+                            <DataGrid
+                                rows={filterModels(getCurrentModels()).map((model, index) => ({
+                                    id: model.id,
+                                    ...formatModelData(model, activeTab)
+                                }))}
+                                columns={getProviderSpecificColumns(activeTab)}
+                                pageSize={10}
+                                rowsPerPageOptions={[10, 25, 50]}
+                                disableSelectionOnClick
+                                loading={loading}
+                                components={{
+                                    NoRowsOverlay: () => (
+                                        <Box sx={{ 
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            height: '100%',
+                                            gap: 1
+                                        }}>
+                                            <Box sx={{ fontSize: '0.95rem', fontWeight: 500, color: 'text.secondary' }}>
+                                                No models available
+                                            </Box>
+                                            <Box sx={{ fontSize: '0.875rem', color: 'text.disabled' }}>
+                                                {loading ? 'Loading models...' : `No ${getProviderDisplayName(activeTab)} models found`}
+                                            </Box>
+                                        </Box>
+                                    )
+                                }}
+                                sx={{
+                                    '& .MuiDataGrid-columnHeader': {
+                                        py: 2,
+                                        '& .MuiDataGrid-columnHeaderTitle': {
+                                            fontWeight: 600,
+                                            fontSize: '0.875rem',
+                                            color: 'text.primary'
+                                        }
+                                    }
+                                }}
+                            />
+                        </Box>
+
+                        {/* Action Buttons */}
+                        <Box sx={{ 
+                            display: 'flex', 
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            gap: 2,
+                            borderTop: '1px solid',
+                            borderColor: 'divider',
+                            pt: 2,
+                            mt: 3,
+                            px: 3,
+                            pb: 3,
+                            bgcolor: (theme) => theme.palette.mode === 'dark' ? 'grey.900' : 'grey.50'
+                        }}>
+                            {lastUpdated[activeTab] && (
+                                <Box sx={{ 
+                                    fontSize: '0.875rem',
+                                    color: 'text.secondary',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: 0.5
+                                }}>
+                                    <Box component="span" sx={{ color: 'text.disabled' }}>Last updated:</Box>
+                                    {new Date(lastUpdated[activeTab]).toLocaleString()}
+                                </Box>
+                            )}
+                            <Button
+                                variant="contained"
+                                startIcon={refreshing[activeTab] ? <CircularProgress size={20} /> : <RefreshIcon />}
+                                onClick={handleRefresh}
+                                disabled={refreshing[activeTab]}
+                                sx={{ 
+                                    px: 4,
+                                    py: 1.5,
+                                    fontSize: '0.95rem',
+                                    fontWeight: 500,
+                                    boxShadow: 'none',
+                                    '&:hover': {
+                                        boxShadow: 'none'
+                                    }
+                                }}
+                            >
+                                {refreshing[activeTab] ? 'Refreshing...' : `Refresh ${getProviderDisplayName(activeTab)} Models`}
+                            </Button>
+                        </Box>
+                    </>
+                )}
+
+                <Snackbar
+                    open={saveStatus.open}
+                    autoHideDuration={800}
+                    onClose={() => setSaveStatus(prev => ({ ...prev, open: false }))}
+                    anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
                 >
-                    {saveStatus.message}
-                </Alert>
-            </Snackbar>
-        </ContentCard>
+                    <Alert 
+                        onClose={() => setSaveStatus(prev => ({ ...prev, open: false }))} 
+                        severity={saveStatus.severity}
+                        variant="filled"
+                        sx={{ 
+                            minWidth: '300px',
+                            boxShadow: 'rgba(0, 0, 0, 0.2) 0px 3px 8px'
+                        }}
+                    >
+                        {saveStatus.message}
+                    </Alert>
+                </Snackbar>
+            </ContentCard>
+        </Box>
     );
 } 

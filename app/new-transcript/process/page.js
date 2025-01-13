@@ -17,7 +17,7 @@ import {
     Chip,
     LinearProgress
 } from '@mui/material';
-import PageLayout from '@/components/PageLayout';
+import { PageLayout } from '@/components/layout/PageLayout';
 import ContentCard from '@/components/ContentCard';
 import { useTheme } from '@mui/material/styles';
 import { 
@@ -50,8 +50,27 @@ export default function ProcessTranscriptPage() {
 
     return (
         <PageLayout
+            layout="app"
             title="Process Transcript"
-            subtitle="Configure processing options and preview your content"
+            subtitle="Configure processing options and start transcription"
+            toolbar={
+                <Box sx={{ display: 'flex', gap: 2 }}>
+                    <Button
+                        variant="outlined"
+                        startIcon={isPlaying ? <Pause /> : <PlayArrow />}
+                        onClick={() => setIsPlaying(!isPlaying)}
+                    >
+                        {isPlaying ? 'Pause' : 'Preview'}
+                    </Button>
+                    <Button
+                        variant="contained"
+                        startIcon={<Mic />}
+                        onClick={() => console.log('Start processing')}
+                    >
+                        Start Processing
+                    </Button>
+                </Box>
+            }
         >
             <ContentCard>
                 <Box sx={{ p: 3 }}>

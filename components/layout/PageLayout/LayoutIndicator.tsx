@@ -1,6 +1,5 @@
 import { Box, Chip, Stack, Tooltip, Typography } from '@mui/material';
 import { getVersionInfo, getVersionString, getEnvironmentString } from '@/lib/version';
-import { useState } from 'react';
 
 interface LayoutIndicatorProps {
     layout: string;
@@ -211,35 +210,34 @@ const getLayoutTooltip = (layout: string) => {
 
 export default function LayoutIndicator({ layout }: LayoutIndicatorProps) {
     const versionInfo = getVersionInfo();
-    const [showTooltip, setShowTooltip] = useState(false);
     
-    // Format detailed info for tooltip
-    const detailedInfo = (
+    // Format version info tooltip
+    const versionTooltip = (
         <Box sx={{ p: 1.5, maxWidth: 300 }}>
-            <Typography variant="subtitle2" sx={{ mb: 1, color: 'text.primary' }}>
-                {versionInfo.version} ({versionInfo.environment})
+            <Typography variant="caption" sx={{ color: 'info.main', fontWeight: 500 }}>
+                Version Information
             </Typography>
             
-            <Typography variant="caption" component="div" sx={{ mb: 0.5, color: 'text.primary' }}>
-                Build #{versionInfo.buildNumber} - {new Date(versionInfo.buildTime).toLocaleString()}
+            <Typography variant="caption" component="div" sx={{ mt: 0.5, color: 'text.secondary' }}>
+                • Version: {versionInfo.version}
+                <br/>• Environment: {versionInfo.environment}
+                <br/>• Build #{versionInfo.buildNumber}
+                <br/>• Built: {new Date(versionInfo.buildTime).toLocaleString()}
             </Typography>
             
             <Typography variant="caption" component="div" sx={{ mt: 1, color: 'text.secondary' }}>
                 Dependencies:
-            </Typography>
-            <Typography variant="caption" component="div" sx={{ ml: 1, color: 'text.secondary' }}>
-                Node: {versionInfo.dependencies.node}<br />
-                Next.js: {versionInfo.dependencies.next}<br />
-                React: {versionInfo.dependencies.react}<br />
-                MUI: {versionInfo.dependencies.mui}
+                <br/>• Node: {versionInfo.dependencies.node}
+                <br/>• Next.js: {versionInfo.dependencies.next}
+                <br/>• React: {versionInfo.dependencies.react}
+                <br/>• MUI: {versionInfo.dependencies.mui}
             </Typography>
             
             <Typography variant="caption" component="div" sx={{ mt: 1, color: 'text.secondary' }}>
                 System:
-            </Typography>
-            <Typography variant="caption" component="div" sx={{ ml: 1, color: 'text.secondary' }}>
-                {versionInfo.system.platform} ({versionInfo.system.arch})<br />
-                {versionInfo.system.memory} • {versionInfo.system.cpus} CPUs
+                <br/>• Platform: {versionInfo.system.platform} ({versionInfo.system.arch})
+                <br/>• Memory: {versionInfo.system.memory}
+                <br/>• CPUs: {versionInfo.system.cpus}
             </Typography>
         </Box>
     );
@@ -258,11 +256,9 @@ export default function LayoutIndicator({ layout }: LayoutIndicatorProps) {
         >
             <Stack direction="row" spacing={1}>
                 <Tooltip
-                    title={detailedInfo}
+                    title={versionTooltip}
                     arrow
                     placement="top-end"
-                    open={showTooltip}
-                    onClose={() => setShowTooltip(false)}
                     componentsProps={{
                         tooltip: {
                             sx: {
@@ -280,13 +276,9 @@ export default function LayoutIndicator({ layout }: LayoutIndicatorProps) {
                         size="small"
                         color="info"
                         variant="filled"
-                        onClick={() => setShowTooltip(!showTooltip)}
                         sx={{
                             fontWeight: 500,
-                            cursor: 'pointer',
-                            '&:hover': {
-                                opacity: 0.9,
-                            },
+                            cursor: 'help',
                         }}
                     />
                 </Tooltip>

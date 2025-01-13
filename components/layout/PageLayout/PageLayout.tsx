@@ -7,15 +7,14 @@ import { Route } from '@/lib/routes/types';
 import clsx from 'clsx';
 import LayoutIndicator from './LayoutIndicator';
 
-export default function PageLayout({
+export const PageLayout = ({
   children,
   title,
   subtitle,
-  toolbar,
   layout = 'marketing',
   footer,
   className,
-}: PageLayoutProps) {
+}: PageLayoutProps) => {
   // Create a mock route object for layout configuration
   const mockRoute: Route = {
     path: '/',
@@ -52,7 +51,6 @@ export default function PageLayout({
         <PageHeader
           title={title}
           subtitle={subtitle}
-          toolbar={toolbar}
         />
         
         <Box
@@ -76,4 +74,4 @@ export default function PageLayout({
       <LayoutIndicator layout={layoutConfig.type} />
     </Box>
   );
-} 
+}; 

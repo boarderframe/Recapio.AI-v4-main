@@ -1,7 +1,15 @@
 'use client';
 
-import AdminLayout from '@/components/AdminLayout';
+import { PageLayout } from '@/components/layout/PageLayout';
 
 export default function AdminRootLayout({ children }) {
-    return <AdminLayout>{children}</AdminLayout>;
+    return (
+        <PageLayout
+            layout="admin"
+            title="Admin Dashboard"
+            footer={{ show: false }}
+        >
+            {children}
+        </PageLayout>
+    );
 } 

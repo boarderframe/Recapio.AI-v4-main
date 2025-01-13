@@ -1,9 +1,8 @@
 'use client';
 
 import React from 'react';
-import { Box } from '@mui/material';
+import { PageLayout } from '@/components/layout/PageLayout';
 import Navigation from '@/components/Navigation';
-import PageLayout from '@/components/PageLayout';
 import Footer from '@/components/Footer';
 
 export default function MarketingLayout({
@@ -12,20 +11,14 @@ export default function MarketingLayout({
     children: React.ReactNode;
 }) {
     return (
-        <PageLayout>
-            <Box
-                sx={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    minHeight: '100vh',
-                }}
-            >
-                <Navigation />
-                <Box component="main" sx={{ flex: 1 }}>
-                    {children}
-                </Box>
-                <Footer />
-            </Box>
+        <PageLayout
+            layout="marketing"
+            footer={{
+                content: <Footer />
+            }}
+        >
+            <Navigation />
+            {children}
         </PageLayout>
     );
 } 

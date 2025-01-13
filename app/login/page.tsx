@@ -89,6 +89,7 @@ export default function LoginPage() {
             layout="auth"
             title="Welcome Back"
             subtitle="Sign in to your account and continue your journey with Recapio.ai"
+            toolbar={null}
         >
             <ContentCard>
                 <Box

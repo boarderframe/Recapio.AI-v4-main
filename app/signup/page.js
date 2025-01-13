@@ -139,6 +139,7 @@ export default function SignUpPage() {
             layout="auth"
             title="Create Account"
             subtitle="Join thousands of users using Recapio.ai to transform their conversations into insights"
+            toolbar={null}
         >
             <ContentCard>
                 <Grid container spacing={0}>

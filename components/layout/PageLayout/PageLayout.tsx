@@ -5,6 +5,7 @@ import PageFooter from './PageFooter';
 import { getLayoutConfig, LayoutConfig } from '@/lib/layout/config';
 import { Route } from '@/lib/routes/types';
 import clsx from 'clsx';
+import LayoutIndicator from './LayoutIndicator';
 
 export default function PageLayout({
   children,
@@ -71,6 +72,8 @@ export default function PageLayout({
           {footer?.content}
         </PageFooter>
       )}
+
+      <LayoutIndicator layout={layoutConfig.type} />
     </Box>
   );
 } 

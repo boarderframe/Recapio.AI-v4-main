@@ -28,18 +28,66 @@ const VERSION_SUFFIXES = {
 ### Version Display Components
 
 #### Layout Indicator
-- Located in bottom-right corner (development only)
-- Shows version, layout type, and environment
-- Clickable version chip reveals detailed information
-- Styled for visibility without interference
+Located in the bottom-right corner, the indicator consists of three interactive chips:
 
-#### Detailed Version Information
+1. Version Chip (Blue)
+   - Shows current version number
+   - Clickable to show detailed system information
+   - Includes dependencies and system details
+   - Color-coded for visibility
+
+2. Layout Chip (Color varies by type)
+   - Shows current layout type
+   - Hover for detailed layout information
+   - Color coding:
+     - Marketing: Blue (Primary)
+     - Auth: Purple (Secondary)
+     - App: Green (Success)
+     - Admin: Red (Error)
+
+3. Environment Chip
+   - Shows current environment
+   - Hover for environment details
+   - Color coding:
+     - Production: Green
+     - Development: Orange
+     - Staging: Blue
+
+### Detailed Information Display
+
+#### Version Details
 - Base Version
 - Environment
 - Build Number (non-production)
 - Build Time
-- Dependencies (Next.js, React, MUI)
-- System Information (Node.js, Platform, Architecture)
+- Dependencies:
+  - Node.js version
+  - Next.js version
+  - React version
+  - MUI version
+- System Information:
+  - Platform
+  - Architecture
+  - Memory
+  - CPU cores
+
+#### Layout Information
+Each layout type includes:
+- Description
+- Feature list
+- Routing pattern
+- Authentication requirements
+- Special configurations
+
+#### Environment Details
+Environment-specific information includes:
+- Environment type
+- Build number
+- Build time
+- Environment features
+- Active configurations
+- Monitoring status
+- Available tools
 
 ### Environment Configuration
 Required environment variables:
@@ -62,12 +110,24 @@ NEXT_PUBLIC_BUILD_TIME=2024-03-19T00:00:00.000Z
 - Training: v4.1.0-train.1
 - Includes build number
 
+## Build Number Management
+
+### Development Environment
+- Increments automatically on server restart
+- Maintains counter in memory
+- Resets on full server restart
+
+### Production/Staging
+- Set via environment variable
+- Managed by deployment process
+- Tracked in deployment logs
+
 ## Best Practices
 
 ### Version Updates
 1. Update version in package.json
 2. Follow semantic versioning (4.x.x)
-3. Increment build number for deployments
+3. Set appropriate environment variables
 4. Update build time on deployment
 
 ### Environment Handling
@@ -76,9 +136,16 @@ NEXT_PUBLIC_BUILD_TIME=2024-03-19T00:00:00.000Z
 3. Handle invalid versions gracefully
 4. Log version information on startup
 
+### Layout Management
+1. Use appropriate layout types
+2. Follow routing conventions
+3. Implement required security measures
+4. Maintain layout documentation
+
 ## Future Enhancements
-1. Automated build number increments
+1. Automated build number management in CI/CD
 2. Version history tracking
 3. Environment-specific styling
 4. Extended system information
-5. Performance metrics integration 
+5. Performance metrics integration
+6. Deployment tracking integration 

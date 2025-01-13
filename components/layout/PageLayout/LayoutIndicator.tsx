@@ -1,14 +1,14 @@
-import { Box, Chip, Stack, Tooltip } from '@mui/material';
-import { LayoutType } from '@/lib/layout/config';
-import { getVersionInfo, getDetailedVersionInfo } from '@/lib/version';
+import { Box, Chip, Stack, Tooltip, Typography } from '@mui/material';
+import { getVersionInfo, getVersionString, getEnvironmentString } from '@/lib/version';
 import { useState } from 'react';
 
 interface LayoutIndicatorProps {
-    layout: LayoutType;
+    layout: string;
 }
 
-const getLayoutColor = (layout: LayoutType) => {
-    switch (layout) {
+// Color mapping for different layout types
+const getLayoutColor = (layout: string) => {
+    switch (layout.toLowerCase()) {
         case 'marketing':
             return 'primary';
         case 'auth':
@@ -22,41 +22,230 @@ const getLayoutColor = (layout: LayoutType) => {
     }
 };
 
-function formatDetailedInfo(info: ReturnType<typeof getDetailedVersionInfo>): string {
-    const buildDate = new Date(info.buildTime).toLocaleString();
-    const envSpecific = info.environment !== 'PRODUCTION' 
-        ? `Build: #${info.buildNumber}`
-        : '';
+// Layout descriptions
+const getLayoutDescription = (layout: string) => {
+    switch (layout.toLowerCase()) {
+        case 'marketing':
+            return {
+                description: 'Public marketing pages and landing pages',
+                features: [
+                    'Public access',
+                    'SEO optimized',
+                    'High performance',
+                    'Marketing analytics',
+                    'Lead capture forms'
+                ],
+                routing: '/marketing/*',
+                auth: 'No authentication required'
+            };
+        case 'auth':
+            return {
+                description: 'Authentication and authorization pages',
+                features: [
+                    'Login/Signup flows',
+                    'Password recovery',
+                    'OAuth providers',
+                    'MFA support',
+                    'Session management'
+                ],
+                routing: '/auth/*',
+                security: 'Enhanced security measures'
+            };
+        case 'app':
+            return {
+                description: 'Main application interface for logged-in users',
+                features: [
+                    'Full app functionality',
+                    'User dashboard',
+                    'Real-time updates',
+                    'Data management',
+                    'User preferences'
+                ],
+                routing: '/app/*',
+                auth: 'Requires authentication'
+            };
+        case 'admin':
+            return {
+                description: 'Administrative dashboard and controls',
+                features: [
+                    'System management',
+                    'User administration',
+                    'Analytics dashboard',
+                    'Configuration controls',
+                    'Audit logging'
+                ],
+                routing: '/admin/*',
+                auth: 'Requires admin privileges'
+            };
+        default:
+            return {
+                description: 'Custom layout type',
+                features: ['Custom implementation'],
+                routing: '/*',
+                auth: 'Varies'
+            };
+    }
+};
 
-    return `
-Version Information:
-------------------
-Version: ${info.version}
-Base Version: ${info.baseVersion}
-Environment: ${info.environment}
-${envSpecific}
-Built: ${buildDate}
+// Environment details
+const getEnvironmentDetails = (env: string) => {
+    const versionInfo = getVersionInfo();
+    const buildDate = new Date(versionInfo.buildTime).toLocaleString();
+    
+    switch (env.toLowerCase()) {
+        case 'production':
+            return (
+                <Box sx={{ p: 1.5, maxWidth: 300 }}>
+                    <Typography variant="caption" sx={{ color: 'success.main', fontWeight: 500 }}>
+                        Production Environment
+                    </Typography>
+                    <Typography variant="caption" component="div" sx={{ mt: 0.5, color: 'text.secondary' }}>
+                        • Live system - Stable release
+                        <br/>• Strict security controls
+                        <br/>• Performance optimized
+                        <br/>• CDN enabled
+                        <br/>• Error tracking active
+                        <br/>• Analytics enabled
+                        <br/>• Auto-scaling enabled
+                        <br/>• Built: {buildDate}
+                    </Typography>
+                    <Typography variant="caption" component="div" sx={{ mt: 1, color: 'text.secondary' }}>
+                        Status:
+                        <br/>• Cache: Enabled
+                        <br/>• SSL: Enforced
+                        <br/>• Monitoring: Active
+                    </Typography>
+                </Box>
+            );
+        case 'development':
+            return (
+                <Box sx={{ p: 1.5, maxWidth: 300 }}>
+                    <Typography variant="caption" sx={{ color: 'warning.main', fontWeight: 500 }}>
+                        Development Environment
+                    </Typography>
+                    <Typography variant="caption" component="div" sx={{ mt: 0.5, color: 'text.secondary' }}>
+                        • Debug mode enabled
+                        <br/>• Hot reloading active
+                        <br/>• Error reporting verbose
+                        <br/>• API mocking available
+                        <br/>• Test data enabled
+                        <br/>• Build #{versionInfo.buildNumber}
+                        <br/>• Built: {buildDate}
+                    </Typography>
+                    <Typography variant="caption" component="div" sx={{ mt: 1, color: 'text.secondary' }}>
+                        Dev Tools:
+                        <br/>• React DevTools
+                        <br/>• Network Inspector
+                        <br/>• Performance Monitor
+                    </Typography>
+                </Box>
+            );
+        case 'staging':
+            return (
+                <Box sx={{ p: 1.5, maxWidth: 300 }}>
+                    <Typography variant="caption" sx={{ color: 'info.main', fontWeight: 500 }}>
+                        Staging Environment
+                    </Typography>
+                    <Typography variant="caption" component="div" sx={{ mt: 0.5, color: 'text.secondary' }}>
+                        • Pre-production testing
+                        <br/>• QA verification
+                        <br/>• Integration testing
+                        <br/>• Performance testing
+                        <br/>• Security scanning
+                        <br/>• Build #{versionInfo.buildNumber}
+                        <br/>• Built: {buildDate}
+                    </Typography>
+                    <Typography variant="caption" component="div" sx={{ mt: 1, color: 'text.secondary' }}>
+                        Monitoring:
+                        <br/>• Error tracking
+                        <br/>• Performance metrics
+                        <br/>• Test coverage
+                    </Typography>
+                </Box>
+            );
+        default:
+            return (
+                <Box sx={{ p: 1.5, maxWidth: 300 }}>
+                    <Typography variant="caption" component="div" sx={{ color: 'text.secondary' }}>
+                        Environment: {env}
+                        <br/>Build #{versionInfo.buildNumber}
+                        <br/>Built: {buildDate}
+                        <br/>Status: Custom configuration
+                    </Typography>
+                </Box>
+            );
+    }
+};
 
-Dependencies:
-------------------
-Next.js: ${info.dependencies.next}
-React: ${info.dependencies.react}
-MUI: ${info.dependencies.mui}
-
-System:
-------------------
-Node: ${info.nodeVersion}
-Platform: ${info.platform}
-Architecture: ${info.arch}
-    `.trim();
-}
+// Layout info tooltip
+const getLayoutTooltip = (layout: string) => {
+    const info = getLayoutDescription(layout);
+    return (
+        <Box sx={{ p: 1.5, maxWidth: 300 }}>
+            <Typography variant="caption" sx={{ color: 'text.primary', fontWeight: 500 }}>
+                {layout.toUpperCase()} Layout
+            </Typography>
+            <Typography variant="caption" component="div" sx={{ mt: 0.5, color: 'text.secondary' }}>
+                {info.description}
+            </Typography>
+            
+            <Typography variant="caption" component="div" sx={{ mt: 1, color: 'text.secondary' }}>
+                Features:
+            </Typography>
+            <Typography variant="caption" component="div" sx={{ ml: 1, color: 'text.secondary' }}>
+                {info.features.map((feature, index) => (
+                    <span key={index}>• {feature}<br/></span>
+                ))}
+            </Typography>
+            
+            <Typography variant="caption" component="div" sx={{ mt: 1, color: 'text.secondary' }}>
+                Configuration:
+            </Typography>
+            <Typography variant="caption" component="div" sx={{ ml: 1, color: 'text.secondary' }}>
+                • Route: {info.routing}<br/>
+                • Auth: {info.auth}
+            </Typography>
+        </Box>
+    );
+};
 
 export default function LayoutIndicator({ layout }: LayoutIndicatorProps) {
-    if (process.env.NODE_ENV === 'production') return null;
-
     const versionInfo = getVersionInfo();
-    const [showDetails, setShowDetails] = useState(false);
-    const detailedInfo = getDetailedVersionInfo();
+    const [showTooltip, setShowTooltip] = useState(false);
+    
+    // Format detailed info for tooltip
+    const detailedInfo = (
+        <Box sx={{ p: 1.5, maxWidth: 300 }}>
+            <Typography variant="subtitle2" sx={{ mb: 1, color: 'text.primary' }}>
+                {versionInfo.version} ({versionInfo.environment})
+            </Typography>
+            
+            <Typography variant="caption" component="div" sx={{ mb: 0.5, color: 'text.primary' }}>
+                Build #{versionInfo.buildNumber} - {new Date(versionInfo.buildTime).toLocaleString()}
+            </Typography>
+            
+            <Typography variant="caption" component="div" sx={{ mt: 1, color: 'text.secondary' }}>
+                Dependencies:
+            </Typography>
+            <Typography variant="caption" component="div" sx={{ ml: 1, color: 'text.secondary' }}>
+                Node: {versionInfo.dependencies.node}<br />
+                Next.js: {versionInfo.dependencies.next}<br />
+                React: {versionInfo.dependencies.react}<br />
+                MUI: {versionInfo.dependencies.mui}
+            </Typography>
+            
+            <Typography variant="caption" component="div" sx={{ mt: 1, color: 'text.secondary' }}>
+                System:
+            </Typography>
+            <Typography variant="caption" component="div" sx={{ ml: 1, color: 'text.secondary' }}>
+                {versionInfo.system.platform} ({versionInfo.system.arch})<br />
+                {versionInfo.system.memory} • {versionInfo.system.cpus} CPUs
+            </Typography>
+        </Box>
+    );
+
+    // Layout info tooltip
+    const layoutInfo = getLayoutTooltip(layout);
 
     return (
         <Box
@@ -64,42 +253,36 @@ export default function LayoutIndicator({ layout }: LayoutIndicatorProps) {
                 position: 'fixed',
                 bottom: 16,
                 right: 16,
-                zIndex: 9999,
+                zIndex: 1000,
             }}
         >
             <Stack direction="row" spacing={1}>
-                <Tooltip 
-                    title={formatDetailedInfo(detailedInfo)}
-                    open={showDetails}
-                    onClose={() => setShowDetails(false)}
-                    onClick={() => setShowDetails(!showDetails)}
+                <Tooltip
+                    title={detailedInfo}
                     arrow
                     placement="top-end"
-                    sx={{
-                        '& .MuiTooltip-tooltip': {
-                            maxWidth: 'none',
-                            fontFamily: 'monospace',
-                            whiteSpace: 'pre',
-                            fontSize: '0.875rem',
-                            bgcolor: 'background.paper',
-                            color: 'text.primary',
-                            border: 1,
-                            borderColor: 'divider',
-                            p: 2,
-                            borderRadius: 1,
-                        }
+                    open={showTooltip}
+                    onClose={() => setShowTooltip(false)}
+                    componentsProps={{
+                        tooltip: {
+                            sx: {
+                                bgcolor: 'background.paper',
+                                boxShadow: 2,
+                                '& .MuiTooltip-arrow': {
+                                    color: 'background.paper',
+                                },
+                            },
+                        },
                     }}
                 >
                     <Chip
                         label={versionInfo.version}
+                        size="small"
                         color="info"
                         variant="filled"
-                        size="small"
+                        onClick={() => setShowTooltip(!showTooltip)}
                         sx={{
-                            fontWeight: 600,
-                            textTransform: 'uppercase',
-                            letterSpacing: '0.5px',
-                            boxShadow: 2,
+                            fontWeight: 500,
                             cursor: 'pointer',
                             '&:hover': {
                                 opacity: 0.9,
@@ -107,30 +290,62 @@ export default function LayoutIndicator({ layout }: LayoutIndicatorProps) {
                         }}
                     />
                 </Tooltip>
-                <Chip
-                    label={`Layout: ${layout}`}
-                    color={getLayoutColor(layout)}
-                    variant="filled"
-                    size="small"
-                    sx={{
-                        fontWeight: 600,
-                        textTransform: 'uppercase',
-                        letterSpacing: '0.5px',
-                        boxShadow: 2,
+                
+                <Tooltip
+                    title={layoutInfo}
+                    arrow
+                    placement="top"
+                    componentsProps={{
+                        tooltip: {
+                            sx: {
+                                bgcolor: 'background.paper',
+                                boxShadow: 2,
+                                '& .MuiTooltip-arrow': {
+                                    color: 'background.paper',
+                                },
+                            },
+                        },
                     }}
-                />
-                <Chip
-                    label={versionInfo.environment}
-                    color="warning"
-                    variant="filled"
-                    size="small"
-                    sx={{
-                        fontWeight: 600,
-                        textTransform: 'uppercase',
-                        letterSpacing: '0.5px',
-                        boxShadow: 2,
+                >
+                    <Chip
+                        label={`LAYOUT: ${layout.toUpperCase()}`}
+                        size="small"
+                        color={getLayoutColor(layout)}
+                        variant="filled"
+                        sx={{
+                            fontWeight: 500,
+                            cursor: 'help',
+                        }}
+                    />
+                </Tooltip>
+                
+                <Tooltip
+                    title={getEnvironmentDetails(versionInfo.environment)}
+                    arrow
+                    placement="top-start"
+                    componentsProps={{
+                        tooltip: {
+                            sx: {
+                                bgcolor: 'background.paper',
+                                boxShadow: 2,
+                                '& .MuiTooltip-arrow': {
+                                    color: 'background.paper',
+                                },
+                            },
+                        },
                     }}
-                />
+                >
+                    <Chip
+                        label={getEnvironmentString()}
+                        size="small"
+                        color={versionInfo.environment === 'PRODUCTION' ? 'success' : 'warning'}
+                        variant="filled"
+                        sx={{
+                            fontWeight: 500,
+                            cursor: 'help',
+                        }}
+                    />
+                </Tooltip>
             </Stack>
         </Box>
     );

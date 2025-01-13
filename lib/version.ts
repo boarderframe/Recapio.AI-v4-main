@@ -1,4 +1,5 @@
 import pkg from '../package.json';
+import os from 'os';
 
 // Validate version format (should be 4.x.x)
 function validateVersion(version: string): string {
@@ -26,8 +27,24 @@ export const APP_ENV = process.env.NEXT_PUBLIC_APP_ENV || process.env.NODE_ENV |
 export const BUILD_TIME = process.env.NEXT_PUBLIC_BUILD_TIME || new Date().toISOString();
 export const IS_DEV = APP_ENV === 'development';
 
-// Get build number from env or default to 1
-const BUILD_NUMBER = process.env.NEXT_PUBLIC_BUILD_NUMBER || '1';
+// Build number management using environment variables
+// In development, we increment the number on each server restart
+let buildCounter = 1;
+export const BUILD_NUMBER = (() => {
+    // Try to get from environment
+    const envBuildNumber = process.env.NEXT_PUBLIC_BUILD_NUMBER;
+    if (envBuildNumber) {
+        return parseInt(envBuildNumber, 10);
+    }
+    
+    // For development, use memory counter
+    if (IS_DEV) {
+        return buildCounter++;
+    }
+    
+    // Default to 1 for other cases
+    return 1;
+})();
 
 export function getEnvironmentString(): string {
     return APP_ENV.toUpperCase();
@@ -46,30 +63,52 @@ export function getVersionString(): string {
     return `v${baseVersion}${suffix}.${BUILD_NUMBER}`;
 }
 
-export function getVersionInfo() {
+export interface DetailedVersionInfo {
+    version: string;
+    baseVersion: string;
+    environment: string;
+    buildNumber: number;
+    buildTime: string;
+    dependencies: {
+        node: string;
+        next: string;
+        react: string;
+        mui: string;
+    };
+    system: {
+        platform: string;
+        arch: string;
+        memory: string;
+        cpus: number;
+    };
+}
+
+export function getVersionInfo(): DetailedVersionInfo {
     const versionString = getVersionString();
+    const totalMem = Math.round(os.totalmem() / (1024 * 1024 * 1024));
+    
     return {
         version: versionString,
         baseVersion: BASE_VERSION,
         environment: getEnvironmentString(),
-        buildTime: BUILD_TIME,
         buildNumber: BUILD_NUMBER,
-        isDev: IS_DEV,
-        nextVersion: pkg.dependencies?.next || 'unknown',
-        reactVersion: pkg.dependencies?.react || 'unknown',
-        nodeVersion: process.version,
-    };
-}
-
-export function getDetailedVersionInfo() {
-    return {
-        ...getVersionInfo(),
+        buildTime: BUILD_TIME,
         dependencies: {
+            node: process.version,
             next: pkg.dependencies?.next || 'unknown',
             react: pkg.dependencies?.react || 'unknown',
             mui: pkg.dependencies?.['@mui/material'] || 'unknown',
         },
-        platform: process.platform,
-        arch: process.arch,
+        system: {
+            platform: os.platform(),
+            arch: os.arch(),
+            memory: `${totalMem}GB RAM`,
+            cpus: os.cpus().length,
+        }
     };
+}
+
+// Development helper to track version changes
+if (IS_DEV) {
+    console.log('Version Info:', getVersionInfo());
 } 

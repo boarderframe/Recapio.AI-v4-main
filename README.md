@@ -1,89 +1,193 @@
-# Recapio.AI v4.3.1
+# Recapio.AI
 
-## Latest Updates
-- Fixed auth system stability issues
-- Improved session management
-- Enhanced UI state handling
-- Better TypeScript type safety
+A modern web application for transcribing and analyzing audio content using AI.
 
-## Development Approach
+## Features
 
-This project uses a local-first development approach with Supabase. All development and testing are done using a local Supabase instance, which simplifies the development process and makes testing more efficient.
+- 🎯 Advanced Speech Recognition with AI
+- 📊 Smart Analytics & Insights
+- 🔄 Real-time Processing
+- 📱 Responsive Design
+- 🔒 Secure Authentication
+- 👥 Role-based Access Control
+- 🎨 Modern UI with Tailwind CSS
+- 🌙 Dark Mode Support
+- 🚀 Optimized Performance
 
-### Key Points
-- Local Supabase instance for development
-- TypeScript support with proper type definitions
-- Complete test data available through seed files
-- All database operations are type-safe and testable locally
-- Robust auth system with proper state management
+## Tech Stack
+
+- **Framework**: Next.js 14 (App Router)
+- **Authentication**: Supabase Auth
+- **Database**: Supabase PostgreSQL
+- **Styling**: Tailwind CSS with custom theme
+- **Icons**: Heroicons
+- **UI Components**: Headless UI
+- **State Management**: Zustand
+- **Type Safety**: TypeScript
+- **Development**: Docker & Supabase CLI
 
 ## Getting Started
 
-1. Install Supabase CLI:
-```bash
-brew install supabase/tap/supabase
+### Prerequisites
+
+- Node.js 18.17 or later
+- npm or yarn
+- Docker Desktop
+- Supabase CLI
+- Git
+
+### Local Development
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/yourusername/recapio.git
+   cd recapio
+   ```
+
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+3. Start Docker Desktop and set up Supabase:
+   ```bash
+   supabase start
+   ```
+
+4. Create a `.env.local` file:
+   ```
+   NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:54321
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+   ```
+
+5. Start the development server:
+   ```bash
+   npm run dev
+   ```
+
+Visit `http://localhost:3000` to see the application.
+
+## Project Structure
+
+```
+app/
+├── (marketing)/     # Public pages
+│   ├── page.tsx    # Home
+│   ├── features/   # Feature showcase
+│   ├── pricing/    # Pricing plans
+│   ├── about/      # About us
+│   └── contact/    # Contact form
+├── (auth)/         # Authentication
+│   ├── signin/     # Login page
+│   └── signup/     # Registration
+├── (app)/          # Protected pages
+│   ├── dashboard/  # User dashboard
+│   ├── transcripts/# Transcript management
+│   ├── library/    # Resource library
+│   ├── reporting/  # Analytics & reports
+│   ├── settings/   # User settings
+│   └── profile/    # User profile
+└── (admin)/        # Admin section
+    ├── console/    # Admin dashboard
+    ├── debug/      # Debug tools
+    └── testing/    # Testing utilities
+
+components/
+├── layout/         # Layout components
+│   ├── AdminNavigation.tsx  # Admin nav with groups
+│   ├── AppNavigation.tsx    # Main app navigation
+│   └── PublicNavbar.tsx     # Marketing site nav
+├── ui/            # UI components
+└── providers/     # Context providers
+
+lib/
+├── supabase/      # Supabase client
+├── state/         # State management
+└── utils/         # Utilities
+
+styles/            # Global styles
 ```
 
-2. Start local Supabase:
-```bash
-supabase start
-```
+## Authentication & Authorization
 
-3. Initialize database:
-```bash
-psql -h localhost -p 54322 -U postgres -d postgres -f supabase/seed.sql
-```
+The application uses Supabase Authentication with:
+- Email/Password authentication
+- Role-based access control (User, Admin)
+- Protected routes with middleware
+- Session management
+- Profile creation on signup
+- User metadata for roles
 
-## Development Guidelines
+## Navigation System
 
-### Authentication System
-- Uses Zustand for global state management
-- Session storage for better security
-- Proper cleanup of auth listeners
-- Type-safe auth operations
-- UI state synchronization
-- See [Auth Troubleshooting](docs/troubleshooting/auth-troubleshooting.md) for common issues
+### Marketing Pages
+- Public navigation with mobile menu
+- Feature highlights
+- Pricing information
+- About and contact pages
 
-### Database Development
-- All schema changes should be made through local migrations
-- Database operations are fully typed with TypeScript
-- Test data is provided through seed files
-- Database functions and relationships are tested locally
-- RLS policies are implemented and tested locally
+### App Pages (Post-Login)
+- Protected navigation with user profile
+- Dashboard access
+- Transcript management
+- Settings and profile pages
 
-### Code Organization
-- `/supabase/migrations` - Database migrations
-- `/supabase/seed.sql` - Test data
-- `/docs/planning` - Development strategy and documentation
-- `/docs/database` - Database documentation
-- `/lib/database` - TypeScript database operations
-- `/types` - TypeScript type definitions
-- `/lib/state` - Global state management
-- `/docs/troubleshooting` - Common issues and solutions
+### Admin Section
+- Role-restricted access
+- Grouped navigation:
+  - Navigation group (App, Public)
+  - Admin group (Console, Debug, Testing)
+- Custom themed interface
+- Quick access to all sections
 
-### Testing
-- Use local database for all testing
-- Type-safe database operations
-- Comprehensive seed data available
-- Database functions can be tested locally
-- API endpoints testable against local instance
-- UI components tested with proper state management
+## Available Scripts
 
-## Documentation
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm start` - Start production server
+- `npm run lint` - Run ESLint
+- `npm run test` - Run tests
+- `supabase start` - Start Supabase services
+- `supabase stop` - Stop Supabase services
 
-- [Local Development Strategy](docs/planning/local-development-strategy.md)
-- [Database Layer Strategy](docs/planning/database-layer-strategy.md)
-- [Development Strategy](docs/planning/development-strategy.md)
-- [Auth Troubleshooting](docs/troubleshooting/auth-troubleshooting.md)
+## Contributing
 
-## Important Notes
+1. Fork the repository
+2. Create your feature branch
+3. Commit your changes
+4. Push to the branch
+5. Open a Pull Request
 
-1. This project uses local development only - no remote schema synchronization is needed
-2. All database changes should be made through migrations
-3. All database operations are type-safe with TypeScript
-4. Test data is provided through the seed file
-5. Development is simplified by focusing on local instance
-6. Always check component mount status before state updates
-7. Use proper cleanup for subscriptions and effects
+## License
 
-For detailed setup and development instructions, see [run.md](run.md). 
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Support
+
+For support:
+- Email: support@recapio.ai
+- Discord: [Join our community](https://discord.gg/recapio)
+- Documentation: [docs.recapio.ai](https://docs.recapio.ai)
+
+## Roadmap
+
+Completed:
+- ✅ Migration to Tailwind CSS
+- ✅ Admin interface redesign
+- ✅ Role-based navigation
+- ✅ Dark mode support
+
+In Progress:
+- [ ] Email verification
+- [ ] Password reset flow
+- [ ] Enhanced user profiles
+- [ ] Mobile navigation improvements
+- [ ] Loading state refinements
+
+## Acknowledgments
+
+- Next.js team for the amazing framework
+- Supabase team for the backend infrastructure
+- Tailwind CSS team for the styling system
+- Headless UI team for accessible components
+- All contributors and supporters 

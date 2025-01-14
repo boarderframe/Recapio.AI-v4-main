@@ -1,5 +1,6 @@
 import { SupabaseClient } from '@supabase/supabase-js';
 import { DatabaseError, ErrorCodes } from './error-handling';
+import { log } from '@/lib/utils/logger';
 
 export interface TransactionOperation<T = any> {
     execute: () => Promise<T>;
@@ -18,34 +19,62 @@ export class TransactionManager {
     async executeTransaction(operations: TransactionOperation[]): Promise<any[]> {
         const results: any[] = [];
         let currentIndex = 0;
+        const transactionId = crypto.randomUUID();
 
         try {
-            // Start transaction
+            log.db.info('Starting transaction', { transactionId });
             await this.client.rpc('begin_transaction');
 
-            // Execute operations
             for (const operation of operations) {
+                log.db.debug('Executing operation in transaction', {
+                    transactionId,
+                    operationIndex: currentIndex,
+                    totalOperations: operations.length
+                });
+
                 const result = await operation.execute();
                 results.push(result);
                 currentIndex++;
+
+                log.db.debug('Operation completed successfully', {
+                    transactionId,
+                    operationIndex: currentIndex - 1
+                });
             }
 
-            // Commit transaction
+            log.db.info('Committing transaction', { transactionId });
             await this.client.rpc('commit_transaction');
+
+            log.db.info('Transaction completed successfully', {
+                transactionId,
+                operationsExecuted: currentIndex
+            });
 
             return results;
         } catch (error) {
-            // Rollback transaction
+            log.db.error('Transaction failed, initiating rollback', {
+                transactionId,
+                operationIndex: currentIndex,
+                error: error instanceof Error ? error.message : String(error)
+            });
+
             await this.client.rpc('rollback_transaction');
 
-            // Execute rollback operations in reverse order
             for (let i = currentIndex - 1; i >= 0; i--) {
                 const operation = operations[i];
                 if (operation.rollback) {
                     try {
+                        log.db.debug('Rolling back operation', {
+                            transactionId,
+                            operationIndex: i
+                        });
                         await operation.rollback();
                     } catch (rollbackError) {
-                        console.error('Rollback failed:', rollbackError);
+                        log.db.error('Rollback failed for operation', {
+                            transactionId,
+                            operationIndex: i,
+                            error: rollbackError instanceof Error ? rollbackError.message : String(rollbackError)
+                        });
                     }
                 }
             }
@@ -84,6 +113,8 @@ export class TransactionManager {
      * @returns {Promise<void>}
      */
     async begin(): Promise<void> {
+        const transactionId = crypto.randomUUID();
+        log.db.info('Beginning transaction', { transactionId });
         await this.client.rpc('begin_transaction');
     }
 
@@ -92,6 +123,7 @@ export class TransactionManager {
      * @returns {Promise<void>}
      */
     async commit(): Promise<void> {
+        log.db.info('Committing transaction');
         await this.client.rpc('commit_transaction');
     }
 
@@ -100,6 +132,7 @@ export class TransactionManager {
      * @returns {Promise<void>}
      */
     async rollback(): Promise<void> {
+        log.db.info('Rolling back transaction');
         await this.client.rpc('rollback_transaction');
     }
 } 

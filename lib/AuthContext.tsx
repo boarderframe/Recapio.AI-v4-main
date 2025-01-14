@@ -1,9 +1,18 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import type { User } from '@supabase/supabase-js';
 import { Snackbar, Alert } from '@mui/material';
+import { useRouter } from 'next/navigation';
+import { supabase } from './supabaseClient';
+import { useAuthStore } from '@/lib/state/stores/authStore';
+import { log } from '@/lib/utils/logger';
+
+type Notification = {
+    message: string;
+    type: 'success' | 'error' | 'info';
+    open: boolean;
+};
 
 // Extend the User type to include raw_user_meta_data
 interface ExtendedUser extends User {
@@ -13,13 +22,9 @@ interface ExtendedUser extends User {
     };
 }
 
-interface AuthState {
+interface AuthContextType {
     user: ExtendedUser | null;
-    isLoading: boolean;
-    error: Error | null;
-}
-
-interface AuthContextType extends AuthState {
+    loading: boolean;
     signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
     signOut: () => Promise<void>;
     signUp: (email: string, password: string, name?: string) => Promise<{ error: Error | null }>;
@@ -27,131 +32,52 @@ interface AuthContextType extends AuthState {
     updateProfile: (data: Partial<ExtendedUser>) => Promise<{ error: Error | null }>;
 }
 
-const supabase = createClientComponentClient();
-
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-    const [authState, setAuthState] = useState<AuthState>({
-        user: null,
-        isLoading: true,
-        error: null
-    });
-    const [notification, setNotification] = useState<{
-        message: string;
-        type: 'success' | 'error';
-        open: boolean;
-    }>({
-        message: '',
-        type: 'success',
-        open: false
-    });
+    const router = useRouter();
+    const { user, session, isLoading, signIn: authStoreSignIn, signOut: authStoreSignOut } = useAuthStore();
+    const [notification, setNotification] = useState<Notification | null>(null);
 
+    // Handle auth state changes
     useEffect(() => {
-        let mounted = true;
-
-        // Check for existing session
-        const checkSession = async () => {
-            try {
-                const { data: { session }, error } = await supabase.auth.getSession();
-                
-                if (error) throw error;
-                if (!mounted) return;
-
-                if (session?.user) {
-                    // Map role from app_metadata or user_metadata
-                    const role = session.user.app_metadata?.role || session.user.user_metadata?.role;
-                    if (role) {
-                        session.user.user_metadata = {
-                            ...session.user.user_metadata,
-                            role: role
-                        };
-                    }
-                }
-
-                setAuthState(prev => ({
-                    ...prev,
-                    user: session?.user || null,
-                    isLoading: false
-                }));
-
-                // Set up auth state change listener
-                const { data: { subscription } } = supabase.auth.onAuthStateChange(
-                    async (event, session) => {
-                        if (!mounted) return;
-
-                        if (session?.user && event === 'SIGNED_IN') {
-                            // Map role from app_metadata or user_metadata
-                            const role = session.user.app_metadata?.role || session.user.user_metadata?.role;
-                            if (role) {
-                                session.user.user_metadata = {
-                                    ...session.user.user_metadata,
-                                    role: role
-                                };
-                            }
-
-                            setNotification({
-                                message: 'Successfully logged in',
-                                type: 'success',
-                                open: true
-                            });
-                        } else if (event === 'SIGNED_OUT') {
-                            setNotification({
-                                message: 'Successfully logged out',
-                                type: 'success',
-                                open: true
-                            });
-                        }
-
-                        setAuthState(prev => ({
-                            ...prev,
-                            user: session?.user || null,
-                            isLoading: false
-                        }));
-                    }
-                );
-
-                return () => {
-                    mounted = false;
-                    subscription.unsubscribe();
-                };
-            } catch (error) {
-                if (!mounted) return;
-                setAuthState(prev => ({
-                    ...prev,
-                    error: error as Error,
-                    isLoading: false
-                }));
+        if (user && session) {
+            log.auth.info('Auth state updated - user authenticated', {
+                userId: user.id,
+                email: user.email
+            });
+            
+            // Only navigate if we're on an auth page and not during sign in
+            const isAuthPage = window.location.pathname.startsWith('/login') || 
+                             window.location.pathname.startsWith('/signup');
+            
+            if (isAuthPage && !window.location.pathname.includes('returnTo')) {
+                router.replace('/dashboard');
             }
-        };
-
-        checkSession();
-    }, []);
+        }
+    }, [user, session, router]);
 
     const signIn = async (email: string, password: string) => {
         try {
-            const { data, error } = await supabase.auth.signInWithPassword({
-                email,
-                password,
-            });
-
-            if (error) throw error;
+            await authStoreSignIn(email, password);
             
-            // Show success notification immediately
+            // Get return URL or default to dashboard
+            const returnTo = new URLSearchParams(window.location.search).get('returnTo');
+            const destination = returnTo || '/dashboard';
+            
+            // Navigate immediately after successful sign in
+            router.replace(destination);
+            
             setNotification({
-                message: 'Successfully logged in',
+                message: 'Successfully signed in',
                 type: 'success',
                 open: true
             });
-
-            // Hide notification after 500ms
-            await new Promise(resolve => setTimeout(resolve, 500));
-            setNotification(prev => ({ ...prev, open: false }));
-            
             return { error: null };
         } catch (error) {
+            const message = error instanceof Error ? error.message : 'Failed to sign in';
             setNotification({
-                message: (error as Error).message,
+                message,
                 type: 'error',
                 open: true
             });
@@ -161,11 +87,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const signOut = async () => {
         try {
-            const { error } = await supabase.auth.signOut();
-            if (error) throw error;
-        } catch (error) {
+            await authStoreSignOut();
             setNotification({
-                message: 'Error signing out',
+                message: 'Successfully signed out',
+                type: 'success',
+                open: true
+            });
+            router.push('/');
+        } catch (error) {
+            const message = error instanceof Error ? error.message : 'Error signing out';
+            setNotification({
+                message,
                 type: 'error',
                 open: true
             });
@@ -247,35 +179,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
     };
 
-    const handleCloseNotification = () => {
-        setNotification(prev => ({ ...prev, open: false }));
-    };
-
-    const value = {
-        ...authState,
-        signIn,
-        signOut,
-        signUp,
-        resetPassword,
-        updateProfile
-    };
-
     return (
-        <AuthContext.Provider value={value}>
+        <AuthContext.Provider
+            value={{
+                user: user as ExtendedUser | null,
+                loading: isLoading,
+                signIn,
+                signOut,
+                signUp,
+                resetPassword,
+                updateProfile,
+            }}
+        >
             {children}
             <Snackbar
-                open={notification.open}
-                autoHideDuration={1000}
-                onClose={handleCloseNotification}
-                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                open={notification?.open}
+                autoHideDuration={2000}
+                onClose={() => setNotification(null)}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
             >
                 <Alert
-                    onClose={handleCloseNotification}
-                    severity={notification.type}
-                    variant="filled"
+                    onClose={() => setNotification(null)}
+                    severity={notification?.type}
                     sx={{ width: '100%' }}
                 >
-                    {notification.message}
+                    {notification?.message}
                 </Alert>
             </Snackbar>
         </AuthContext.Provider>

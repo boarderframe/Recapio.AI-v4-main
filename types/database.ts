@@ -38,6 +38,32 @@ export interface Database {
           created_by: string
         }>
       }
+      summaries: {
+        Row: {
+          id: string
+          transcript_id: string
+          content: Json
+          format: 'stream' | 'cards' | 'summary'
+          tenant_id: string
+          user_id: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          transcript_id: string
+          content: Json
+          format: 'stream' | 'cards' | 'summary'
+          tenant_id: string
+          user_id: string
+        }
+        Update: Partial<{
+          transcript_id: string
+          content: Json
+          format: 'stream' | 'cards' | 'summary'
+          tenant_id: string
+          user_id: string
+        }>
+      }
       users: {
         Row: {
           id: string
@@ -132,12 +158,8 @@ export interface Database {
         }>
       }
     }
-    Views: {
-      [_ in never]: never
-    }
-    Functions: {
-      [_ in never]: never
-    }
+    Views: Record<string, never>
+    Functions: Record<string, never>
     Enums: {
       user_role: 'admin' | 'user' | 'tester'
     }

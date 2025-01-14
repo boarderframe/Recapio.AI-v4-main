@@ -1,4 +1,4 @@
-# Recapio.AI
+# Recapio.AI v4.3.0
 
 ## Development Approach
 
@@ -6,9 +6,9 @@ This project uses a local-first development approach with Supabase. All developm
 
 ### Key Points
 - Local Supabase instance for development
-- No remote schema synchronization required
+- TypeScript support with proper type definitions
 - Complete test data available through seed files
-- All database operations testable locally
+- All database operations are type-safe and testable locally
 
 ## Getting Started
 
@@ -31,8 +31,9 @@ psql -h localhost -p 54322 -U postgres -d postgres -f supabase/seed.sql
 
 ### Database Development
 - All schema changes should be made through local migrations
+- Database operations are fully typed with TypeScript
 - Test data is provided through seed files
-- Database functions are tested locally
+- Database functions and relationships are tested locally
 - RLS policies are implemented and tested locally
 
 ### Code Organization
@@ -40,9 +41,12 @@ psql -h localhost -p 54322 -U postgres -d postgres -f supabase/seed.sql
 - `/supabase/seed.sql` - Test data
 - `/docs/planning` - Development strategy and documentation
 - `/docs/database` - Database documentation
+- `/lib/database` - TypeScript database operations
+- `/types` - TypeScript type definitions
 
 ### Testing
 - Use local database for all testing
+- Type-safe database operations
 - Comprehensive seed data available
 - Database functions can be tested locally
 - API endpoints testable against local instance
@@ -57,7 +61,8 @@ psql -h localhost -p 54322 -U postgres -d postgres -f supabase/seed.sql
 
 1. This project uses local development only - no remote schema synchronization is needed
 2. All database changes should be made through migrations
-3. Test data is provided through the seed file
-4. Development is simplified by focusing on local instance
+3. All database operations are type-safe with TypeScript
+4. Test data is provided through the seed file
+5. Development is simplified by focusing on local instance
 
 For detailed setup and development instructions, see [run.md](run.md). 

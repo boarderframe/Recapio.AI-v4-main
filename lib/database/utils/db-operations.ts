@@ -1,8 +1,10 @@
 import { SupabaseClient } from '@supabase/supabase-js';
-import { Database } from '../types';
+import type { Database } from '@/types/database';
 
 type TableName = keyof Database['public']['Tables'];
 type Row<T extends TableName> = Database['public']['Tables'][T]['Row'];
+type Insert<T extends TableName> = Database['public']['Tables'][T]['Insert'];
+type Update<T extends TableName> = Database['public']['Tables'][T]['Update'];
 
 export interface BaseRecord {
     id: string;
@@ -26,18 +28,18 @@ export interface QueryResponse<T> {
     };
 }
 
-export abstract class DatabaseOperations<T extends Row<TableName> & BaseRecord> {
+export abstract class DatabaseOperations<T extends TableName> {
     protected readonly client: SupabaseClient<Database>;
-    protected readonly table: TableName;
+    protected readonly table: T;
     protected readonly tenantId: string | null;
 
-    constructor(client: SupabaseClient<Database>, table: TableName, tenantId: string | null = null) {
+    constructor(client: SupabaseClient<Database>, table: T, tenantId: string | null = null) {
         this.client = client;
         this.table = table;
         this.tenantId = tenantId;
     }
 
-    protected async list(options: PaginationOptions = {}): Promise<QueryResponse<T>> {
+    protected async list(options: PaginationOptions = {}): Promise<QueryResponse<Row<T>>> {
         const { pageSize = 10, cursor, ascending = true } = options;
         
         let query = this.client.from(this.table)
@@ -59,40 +61,38 @@ export abstract class DatabaseOperations<T extends Row<TableName> & BaseRecord> 
         if (error) throw error;
 
         return {
-            data: data as T[],
+            data: data as Row<T>[],
             metadata: {
                 total: count || 0,
-                returned: data.length,
-                hasMore: (count || 0) > (cursor ? data.length : pageSize)
+                returned: data?.length || 0,
+                hasMore: (count || 0) > (cursor ? (data?.length || 0) : pageSize)
             }
         };
     }
 
-    protected async getById(id: string): Promise<T | null> {
+    protected async getById(id: string): Promise<Row<T> | null> {
         const { data, error } = await this.client.from(this.table)
             .select('*')
             .eq('id', id)
             .single();
 
         if (error) throw error;
-        return data as T;
+        return data as Row<T>;
     }
 
-    protected async create(record: Partial<T>): Promise<T> {
-        if (this.tenantId) {
-            record.tenant_id = this.tenantId;
-        }
+    protected async create<R extends Row<T>>(record: Insert<T>): Promise<R> {
+        const insertData = this.tenantId ? { ...record, tenant_id: this.tenantId } : record;
 
         const { data, error } = await this.client.from(this.table)
-            .insert(record)
+            .insert(insertData)
             .select()
             .single();
 
         if (error) throw error;
-        return data as T;
+        return data as R;
     }
 
-    protected async update(id: string, record: Partial<T>): Promise<T> {
+    protected async update<R extends Row<T>>(id: string, record: Update<T>): Promise<R> {
         const { data, error } = await this.client.from(this.table)
             .update(record)
             .eq('id', id)
@@ -100,7 +100,7 @@ export abstract class DatabaseOperations<T extends Row<TableName> & BaseRecord> 
             .single();
 
         if (error) throw error;
-        return data as T;
+        return data as R;
     }
 
     protected async delete(id: string): Promise<void> {

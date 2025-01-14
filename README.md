@@ -1,5 +1,7 @@
 # Recapio.AI
 
+![Version](https://img.shields.io/badge/version-4.4.0-blue.svg)
+
 A modern web application for transcribing and analyzing audio content using AI.
 
 ## Features
@@ -172,10 +174,13 @@ For support:
 ## Roadmap
 
 Completed:
-- ✅ Migration to Tailwind CSS
-- ✅ Admin interface redesign
-- ✅ Role-based navigation
+- ✅ Migration to Tailwind CSS (v4.4.0)
+- ✅ Admin interface redesign with role-based access (v4.4.0)
+- ✅ Navigation system with grouped items (v4.4.0)
 - ✅ Dark mode support
+- ✅ Command system for development workflow (v4.4.0)
+- ✅ Directory restructure for app routes (v4.4.0)
+- ✅ TypeScript migration complete (v4.4.0)
 
 In Progress:
 - [ ] Email verification

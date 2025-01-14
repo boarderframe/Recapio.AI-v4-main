@@ -14,11 +14,23 @@ import {
     Divider,
     CircularProgress,
     Grid,
+    ToggleButtonGroup,
+    ToggleButton,
 } from '@mui/material';
-import { useAuth } from '../../lib/AuthContext';
+import { useAuth } from '@/lib/AuthContext';
 import { useTheme } from '@mui/material/styles';
-import { Google, GitHub, Visibility, VisibilityOff, EmailOutlined, LockOutlined } from '@mui/icons-material';
-import ContentCard from '../../components/ContentCard';
+import Google from '@mui/icons-material/Google';
+import GitHub from '@mui/icons-material/GitHub';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import EmailOutlined from '@mui/icons-material/EmailOutlined';
+import LockOutlined from '@mui/icons-material/LockOutlined';
+import Person from '@mui/icons-material/Person';
+import Business from '@mui/icons-material/Business';
+import PersonOutlined from '@mui/icons-material/PersonOutlined';
+import { PageLayout } from '@/components/layout/PageLayout';
+import ContentCard from '@/components/ContentCard';
+import { useRouter } from 'next/navigation';
 
 export default function SignUpPage() {
     const [email, setEmail] = useState('');
@@ -123,17 +135,12 @@ export default function SignUpPage() {
     };
 
     return (
-        <>
-            <Box sx={{ mb: 4 }}>
-                <Typography variant="h4" component="h1" gutterBottom>
-                    Create Account
-                </Typography>
-                <Typography variant="subtitle1" color="text.secondary">
-                    Join thousands of users using Recapio.ai
-                    <br />
-                    to transform their conversations into insights
-                </Typography>
-            </Box>
+        <PageLayout
+            layout="auth"
+            title="Create Account"
+            subtitle="Join thousands of users using Recapio.ai to transform their conversations into insights"
+            toolbar={null}
+        >
             <ContentCard>
                 <Grid container spacing={0}>
                     {/* Left Column - Main Sign Up Form */}
@@ -274,11 +281,40 @@ export default function SignUpPage() {
                                 </Grid>
                             </Grid>
 
+                            {accountType === 'business' && (
+                                <TextField
+                                    fullWidth
+                                    label="Company Name"
+                                    variant="outlined"
+                                    required
+                                    value={companyName}
+                                    onChange={(e) => setCompanyName(e.target.value)}
+                                    InputProps={{
+                                        startAdornment: (
+                                            <InputAdornment position="start">
+                                                <Business sx={{ color: theme.palette.text.secondary }} />
+                                            </InputAdornment>
+                                        ),
+                                    }}
+                                    sx={{
+                                        '& .MuiOutlinedInput-root': {
+                                            borderRadius: '10px',
+                                            height: '44px',
+                                            padding: '0 14px',
+                                            paddingLeft: '20px',
+                                            '&.Mui-focused fieldset': {
+                                                borderColor: theme.palette.primary.main,
+                                            },
+                                        },
+                                    }}
+                                />
+                            )}
+
                             <TextField
                                 fullWidth
-                                label={accountType === 'business' ? "Work Email" : "Personal Email"}
-                                variant="outlined"
+                                label="Email"
                                 type="email"
+                                variant="outlined"
                                 required
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
@@ -302,40 +338,11 @@ export default function SignUpPage() {
                                 }}
                             />
 
-                            {accountType === 'business' && (
-                                <TextField
-                                    fullWidth
-                                    label="Company Name"
-                                    variant="outlined"
-                                    required
-                                    value={companyName}
-                                    onChange={(e) => setCompanyName(e.target.value)}
-                                    InputProps={{
-                                        startAdornment: (
-                                            <InputAdornment position="start">
-                                                <BusinessOutlined sx={{ color: theme.palette.text.secondary }} />
-                                            </InputAdornment>
-                                        ),
-                                    }}
-                                    sx={{
-                                        '& .MuiOutlinedInput-root': {
-                                            borderRadius: '10px',
-                                            height: '44px',
-                                            padding: '0 14px',
-                                            paddingLeft: '20px',
-                                            '&.Mui-focused fieldset': {
-                                                borderColor: theme.palette.primary.main,
-                                            },
-                                        },
-                                    }}
-                                />
-                            )}
-
                             <TextField
                                 fullWidth
                                 label="Password"
-                                variant="outlined"
                                 type={showPassword ? 'text' : 'password'}
+                                variant="outlined"
                                 required
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
@@ -350,9 +357,6 @@ export default function SignUpPage() {
                                             <IconButton
                                                 onClick={() => setShowPassword(!showPassword)}
                                                 edge="end"
-                                                sx={{ color: theme.palette.text.secondary }}
-                                                type="button"
-                                                tabIndex="-1"
                                             >
                                                 {showPassword ? <VisibilityOff /> : <Visibility />}
                                             </IconButton>
@@ -375,8 +379,8 @@ export default function SignUpPage() {
                             <TextField
                                 fullWidth
                                 label="Confirm Password"
-                                variant="outlined"
                                 type={showPassword ? 'text' : 'password'}
+                                variant="outlined"
                                 required
                                 value={confirmPassword}
                                 onChange={(e) => setConfirmPassword(e.target.value)}
@@ -400,204 +404,80 @@ export default function SignUpPage() {
                                 }}
                             />
 
-                            <Box sx={{ 
-                                display: 'flex', 
-                                alignItems: 'center',
-                                gap: 4,
-                                mt: 0.5
-                            }}>
-                                <Button
-                                    type="submit"
-                                    variant="contained"
-                                    size="large"
-                                    disabled={isLoading}
-                                    sx={{
-                                        bgcolor: theme.palette.primary.main,
-                                        color: 'white',
-                                        height: '44px',
-                                        width: '180px',
-                                        borderRadius: '10px',
-                                        textTransform: 'none',
-                                        fontSize: '0.9375rem',
-                                        fontWeight: 600,
-                                        flexShrink: 0,
-                                        '&:hover': {
-                                            bgcolor: theme.palette.primary.dark,
-                                        },
-                                    }}
-                                >
-                                    {isLoading ? (
-                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                            <CircularProgress size={16} color="inherit" />
-                                            <span>Creating Account...</span>
-                                        </Box>
-                                    ) : (
-                                        'Create Account'
-                                    )}
-                                </Button>
-
-                                <Typography 
-                                    variant="body2" 
-                                    color="text.secondary" 
-                                    sx={{ 
-                                        fontSize: '0.875rem', 
-                                        flex: 1,
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        justifyContent: 'center',
-                                        minHeight: '44px',
-                                        lineHeight: 1.5,
-                                        '& > span': {
-                                            textAlign: 'right',
-                                            fontSize: '0.875rem'
-                                        }
-                                    }}
-                                >
-                                    <span>By signing up,</span>
-                                    <span>
-                                        you agree to our{' '}
-                                        <Link 
-                                            href="/terms" 
-                                            sx={{ 
-                                                color: theme.palette.primary.main,
-                                                textDecoration: 'none',
-                                                '&:hover': { textDecoration: 'underline' }
-                                            }}
-                                        >
-                                            Terms
-                                        </Link>
-                                        {' '}and{' '}
-                                        <Link 
-                                            href="/privacy" 
-                                            sx={{ 
-                                                color: theme.palette.primary.main,
-                                                textDecoration: 'none',
-                                                '&:hover': { textDecoration: 'underline' }
-                                            }}
-                                        >
-                                            Privacy Policy
-                                        </Link>
-                                        .
-                                    </span>
-                                </Typography>
-                            </Box>
-                        </Box>
-                    </Grid>
-
-                    {/* Right Column - Social Sign Up & Login Link */}
-                    <Grid 
-                        item 
-                        xs={12} 
-                        md={5} 
-                        sx={{ 
-                            display: 'flex',
-                            flexDirection: 'column',
-                            justifyContent: 'center',
-                            py: 4,
-                            pl: { md: 6 },
-                            pr: { md: 4 },
-                            position: 'relative',
-                            '&::after': {
-                                content: '""',
-                                position: 'absolute',
-                                left: 0,
-                                top: '50%',
-                                transform: 'translateY(-50%)',
-                                height: '80%',
-                                width: '1px',
-                                bgcolor: theme.palette.divider,
-                                display: { xs: 'none', md: 'block' }
-                            }
-                        }}
-                    >
-                        <Box>
-                            <Typography 
-                                variant="body1" 
-                                sx={{ 
-                                    mb: 3, 
-                                    color: 'text.secondary',
-                                    fontWeight: 500
+                            <Button
+                                type="submit"
+                                variant="contained"
+                                fullWidth
+                                disabled={isLoading}
+                                sx={{
+                                    py: 1.5,
+                                    borderRadius: 1.5,
+                                    textTransform: 'none',
+                                    fontSize: '1rem',
                                 }}
                             >
-                                Or continue with
-                            </Typography>
-                            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                                <Button
-                                    fullWidth
-                                    variant="outlined"
-                                    startIcon={<Google />}
-                                    disabled={isLoading}
-                                    sx={{
-                                        borderColor: theme.palette.divider,
-                                        color: theme.palette.text.primary,
-                                        height: '44px',
-                                        borderRadius: '10px',
-                                        textTransform: 'none',
-                                        fontSize: '0.9375rem',
-                                        fontWeight: 500,
-                                        justifyContent: 'flex-start',
-                                        pl: 3,
-                                        pr: 5,
-                                        '&:hover': {
-                                            borderColor: theme.palette.primary.main,
-                                            bgcolor: 'transparent',
-                                        },
-                                    }}
-                                >
-                                    Continue with Google
-                                </Button>
-                                <Button
-                                    fullWidth
-                                    variant="outlined"
-                                    startIcon={<GitHub />}
-                                    disabled={isLoading}
-                                    sx={{
-                                        borderColor: theme.palette.divider,
-                                        color: theme.palette.text.primary,
-                                        height: '44px',
-                                        borderRadius: '10px',
-                                        textTransform: 'none',
-                                        fontSize: '0.9375rem',
-                                        fontWeight: 500,
-                                        justifyContent: 'flex-start',
-                                        pl: 3,
-                                        pr: 5,
-                                        '&:hover': {
-                                            borderColor: theme.palette.primary.main,
-                                            bgcolor: 'transparent',
-                                        },
-                                    }}
-                                >
-                                    Continue with GitHub
-                                </Button>
-                            </Box>
-                        </Box>
+                                {isLoading ? (
+                                    <CircularProgress size={24} color="inherit" />
+                                ) : (
+                                    'Create Account'
+                                )}
+                            </Button>
 
-                        <Box sx={{ mt: 4 }}>
-                            <Divider />
-                            <Box sx={{ mt: 2, textAlign: 'center' }}>
+                            <Box sx={{ textAlign: 'center', mt: 2 }}>
                                 <Typography variant="body2" color="text.secondary">
                                     Already have an account?{' '}
-                                    <Link
-                                        href="/login"
-                                        sx={{ 
-                                            color: theme.palette.primary.main, 
-                                            textDecoration: 'none',
-                                            fontWeight: 600,
-                                            '&:hover': {
-                                                textDecoration: 'underline',
-                                            },
-                                        }}
-                                    >
+                                    <Link href="/login" sx={{ textDecoration: 'none' }}>
                                         Sign in
                                     </Link>
                                 </Typography>
                             </Box>
                         </Box>
                     </Grid>
+
+                    {/* Right Column - OAuth Providers */}
+                    <Grid item xs={12} md={5} sx={{ 
+                        borderLeft: { md: `1px solid ${theme.palette.divider}` },
+                        borderTop: { xs: `1px solid ${theme.palette.divider}`, md: 'none' },
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'center',
+                        p: 4
+                    }}>
+                        <Typography variant="h6" gutterBottom align="center">
+                            Or sign up with
+                        </Typography>
+                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 2 }}>
+                            <Button
+                                variant="outlined"
+                                fullWidth
+                                startIcon={<Google />}
+                                sx={{
+                                    py: 1.5,
+                                    borderRadius: 1.5,
+                                    textTransform: 'none',
+                                    fontSize: '1rem',
+                                }}
+                            >
+                                Google
+                            </Button>
+                            <Button
+                                variant="outlined"
+                                fullWidth
+                                startIcon={<GitHub />}
+                                sx={{
+                                    py: 1.5,
+                                    borderRadius: 1.5,
+                                    textTransform: 'none',
+                                    fontSize: '1rem',
+                                }}
+                            >
+                                GitHub
+                            </Button>
+                        </Box>
+                    </Grid>
                 </Grid>
             </ContentCard>
-        </>
+        </PageLayout>
     );
 }
 

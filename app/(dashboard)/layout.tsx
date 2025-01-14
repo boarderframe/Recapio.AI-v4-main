@@ -2,8 +2,9 @@
 
 import React from 'react';
 import { Box } from '@mui/material';
+import { PageLayout } from '@/components/layout/PageLayout';
 import Navigation from '@/components/Navigation';
-import PageLayout from '@/components/PageLayout';
+import Footer from '@/components/Footer';
 import { useAuth } from '@/lib/AuthContext';
 import { useRouter } from 'next/navigation';
 
@@ -42,27 +43,14 @@ export default function DashboardLayout({
     }
 
     return (
-        <PageLayout>
-            <Box
-                sx={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    minHeight: '100vh',
-                    bgcolor: 'background.default',
-                }}
-            >
-                <Navigation />
-                <Box
-                    component="main"
-                    sx={{
-                        flex: 1,
-                        py: 4,
-                        px: { xs: 2, sm: 4 },
-                    }}
-                >
-                    {children}
-                </Box>
-            </Box>
+        <PageLayout
+            layout="dashboard"
+            footer={{
+                content: <Footer minimal />
+            }}
+        >
+            <Navigation />
+            {children}
         </PageLayout>
     );
 } 

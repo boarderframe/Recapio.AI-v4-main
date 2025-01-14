@@ -1,14 +1,16 @@
 "use client";
 
 import { Typography, Box, Grid, Paper } from '@mui/material';
-import PageLayout from '@/components/PageLayout';
+import { PageLayout } from '@/components/layout/PageLayout';
 import ContentCard from '@/components/ContentCard';
 
 export default function ReportingPage() {
     return (
         <PageLayout
+            layout="app"
             title="Reporting"
             subtitle="Analytics and insights from your transcripts"
+            toolbar={null}
         >
             <ContentCard>
                 <Typography variant="h6" gutterBottom>

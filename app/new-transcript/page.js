@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Box, TextField, Button, Select, MenuItem, IconButton, Typography } from '@mui/material';
-import PageLayout from '@/components/PageLayout';
+import { PageLayout } from '@/components/layout/PageLayout';
 import ContentCard from '@/components/ContentCard';
 import { Psychology, RestartAlt } from '@mui/icons-material';
 import { useThemeSettings } from '@/context/ThemeContext';
@@ -93,8 +93,28 @@ export default function NewTranscriptPage() {
 
     return (
         <PageLayout
+            layout="app"
             title="New Transcript"
             subtitle="Create a new transcript by entering text below"
+            toolbar={
+                <Box sx={{ display: 'flex', gap: 2 }}>
+                    <Button
+                        variant="outlined"
+                        startIcon={<RestartAlt />}
+                        onClick={handleReset}
+                    >
+                        Reset
+                    </Button>
+                    <Button
+                        variant="contained"
+                        startIcon={<Psychology />}
+                        onClick={handleSubmit}
+                        disabled={!formData.title || !formData.transcriptText}
+                    >
+                        Process Transcript
+                    </Button>
+                </Box>
+            }
         >
             <ContentCard>
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>

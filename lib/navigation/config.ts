@@ -1,71 +1,58 @@
-import { NavigationItem } from '../routes/types';
-import { routes } from '../routes/config';
+import { NavigationItem } from '@/lib/routes/types';
+import routes from '@/lib/routes/config';
 
-// Main navigation configuration
-export const mainNavigation: NavigationItem[] = [
-    { route: routes.features },
-    { route: routes.pricing },
-    { route: routes.about },
-    { route: routes.contact }
+// Marketing navigation items
+export const marketingNavItems: NavigationItem[] = [
+  { ...routes.features },
+  { ...routes.pricing },
+  { ...routes.about },
+  { ...routes.contact }
 ];
 
-// Dashboard navigation configuration
-export const dashboardNavigation: NavigationItem[] = [
-    { route: routes.dashboard },
-    { route: routes.transcripts },
-    { route: routes.settings }
+// Dashboard navigation items
+export const dashboardNavItems: NavigationItem[] = [
+  { ...routes.dashboard },
+  { ...routes.transcripts },
+  { ...routes.settings }
 ];
 
-// User menu navigation configuration
-export const userMenuNavigation: NavigationItem[] = [
-    { route: routes.profile },
-    { route: routes.account },
-    { route: routes.billing }
+// User menu items
+export const userMenuItems: NavigationItem[] = [
+  { ...routes.profile },
+  { ...routes.account },
+  { ...routes.billing }
 ];
 
-// Admin menu navigation configuration
-export const adminMenuNavigation: NavigationItem[] = [
-    { route: routes.admin },
-    { route: routes.aiModels },
-    { route: routes.users },
-    { route: routes.theme },
-    { route: routes.testing }
+// Admin menu items
+export const adminMenuItems: NavigationItem[] = [
+  { ...routes.admin },
+  { ...routes.aiModels },
+  { ...routes.users },
+  { ...routes.theme },
+  { ...routes.testing }
 ];
 
-// Footer navigation configuration
-export const footerNavigation: NavigationItem[] = [
-    { route: routes.about },
-    { route: routes.contact },
-    { route: routes.pricing },
-    { route: routes.features }
+// Footer navigation items
+export const footerNavItems: NavigationItem[] = [
+  { ...routes.about },
+  { ...routes.contact },
+  { ...routes.pricing },
+  { ...routes.features }
 ];
 
-// Helper function to set active state based on current path
-export const setActiveNavigationItems = (
-    items: NavigationItem[],
-    currentPath: string
-): NavigationItem[] => {
-    return items.map(item => ({
-        ...item,
-        isActive: item.route.path === currentPath,
-        children: item.children 
-            ? setActiveNavigationItems(item.children, currentPath)
-            : undefined
-    }));
+// Helper function to get active navigation item
+export const getActiveNavItem = (items: NavigationItem[], currentPath: string): NavigationItem | undefined => {
+  return items.find(item => item.path === currentPath);
 };
 
-// Helper function to filter navigation items based on user role
-export const filterNavigationItemsByRole = (
-    items: NavigationItem[],
-    isAuthenticated: boolean,
-    isAdmin: boolean
-): NavigationItem[] => {
-    return items.filter(item => {
-        const { requiresAuth, requiresAdmin } = item.route;
-        
-        if (requiresAdmin && !isAdmin) return false;
-        if (requiresAuth && !isAuthenticated) return false;
-        
-        return true;
-    });
+// Helper function to filter visible navigation items
+export const getVisibleNavItems = (items: NavigationItem[]): NavigationItem[] => {
+  return items.filter(item => item.isVisible !== false);
+};
+
+// Helper function to check if navigation item is accessible
+export const isNavItemAccessible = (item: NavigationItem, isAuthenticated: boolean, isAdmin: boolean): boolean => {
+  if (item.requiresAuth && !isAuthenticated) return false;
+  if (item.requiresAdmin && !isAdmin) return false;
+  return true;
 }; 

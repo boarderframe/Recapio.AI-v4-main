@@ -1,9 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { Box, Grid, Typography, Slider, TextField, Button, Alert, Divider } from '@mui/material';
+import { Box, Grid, Typography, Slider, TextField, Button, Alert, Divider, CircularProgress } from '@mui/material';
 import ContentCard from '@/components/ContentCard';
 import { useThemeSettings } from '@/context/ThemeContext';
+import { Save, RestartAlt } from '@mui/icons-material';
 
 const ThemeSection = ({ title, subtitle, children }) => (
     <Box sx={{ mb: 4 }}>
@@ -55,30 +56,18 @@ const PercentageSlider = ({ label, value, onChange, helperText }) => (
 );
 
 export default function ThemePage() {
-    const { 
-        themeSettings, 
-        updateSpacing, 
-        updateHeader, 
-        updateContent,
-        resetToDefaults,
-        saveThemeSettings 
-    } = useThemeSettings();
-
-    const [spacing, setSpacing] = useState(themeSettings.spacing);
-    const [header, setHeader] = useState(themeSettings.header);
-    const [content, setContent] = useState(themeSettings.content);
-    const [navigation, setNavigation] = useState(themeSettings.navigation);
-    const [saveStatus, setSaveStatus] = useState({ show: false, type: 'success', message: '' });
+    const { themeSettings, updateThemeSettings } = useThemeSettings();
+    const [message, setMessage] = useState({ type: '', content: '' });
+    const [loading, setLoading] = useState(false);
 
     const handleSpacingChange = (key) => (event, value) => {
-        const newSpacing = { ...spacing, [key]: value };
-        setSpacing(newSpacing);
-        updateSpacing(newSpacing);
+        const newSpacing = { ...themeSettings.spacing, [key]: value };
+        updateThemeSettings({ spacing: newSpacing });
     };
 
     const handleHeaderChange = (key) => (event, value) => {
         const newValue = value ?? event.target.value;
-        const newHeader = { ...header };
+        const newHeader = { ...themeSettings.header };
         
         if (key.includes('.')) {
             const [parent, child] = key.split('.');
@@ -87,275 +76,250 @@ export default function ThemePage() {
             newHeader[key] = newValue;
         }
         
-        setHeader(newHeader);
-        updateHeader(newHeader);
+        updateThemeSettings({ header: newHeader });
     };
 
     const handleContentChange = (key) => (event, value) => {
-        const newContent = { ...content, [key]: value };
-        setContent(newContent);
-        updateContent(newContent);
+        const newContent = { ...themeSettings.content, [key]: value };
+        updateThemeSettings({ content: newContent });
     };
 
     const handleSave = async () => {
+        setLoading(true);
         try {
-            await saveThemeSettings({
-                spacing,
-                header,
-                content,
-                navigation
+            await updateThemeSettings({
+                spacing: themeSettings.spacing,
+                header: themeSettings.header,
+                content: themeSettings.content,
+                navigation: themeSettings.navigation
             });
-            setSaveStatus({
-                show: true,
+            setMessage({
                 type: 'success',
-                message: 'Theme settings saved successfully!'
+                content: 'Theme settings saved successfully!'
             });
         } catch (error) {
-            setSaveStatus({
-                show: true,
+            setMessage({
                 type: 'error',
-                message: 'Failed to save theme settings. Please try again.'
+                content: 'Failed to save theme settings. Please try again.'
             });
         }
-        setTimeout(() => setSaveStatus({ show: false, type: 'success', message: '' }), 3000);
+        setLoading(false);
+        setTimeout(() => setMessage({ type: '', content: '' }), 3000);
     };
 
     const handleReset = () => {
-        resetToDefaults();
-        setSaveStatus({
-            show: true,
-            type: 'info',
-            message: 'Theme settings reset to defaults.'
+        updateThemeSettings({
+            spacing: {
+                navToHeaderGap: 0,
+                headerToToolbarGap: 0,
+                toolbarToContentGap: 0,
+                contentGap: 0,
+                borderRadius: 0,
+                borderOpacity: 0.05,
+                boxShadowOpacity: 0.05
+            },
+            header: {
+                titleSize: { xs: 1.75, md: 2 },
+                subtitleSize: { xs: 0.95, md: 1 },
+                titleWeight: 700,
+                subtitleWeight: 500,
+                underlineWidth: 0,
+                underlineOpacity: 0.5
+            },
+            content: {
+                borderRadius: 0,
+                borderOpacity: 0.05,
+                boxShadowOpacity: 0.05
+            },
+            navigation: {}
         });
-        setTimeout(() => setSaveStatus({ show: false, type: 'success', message: '' }), 3000);
+        setMessage({
+            type: 'info',
+            content: 'Theme settings reset to defaults.'
+        });
+        setTimeout(() => setMessage({ type: '', content: '' }), 3000);
     };
 
     return (
         <Box>
-            {saveStatus.show && (
-                <Alert 
-                    severity={saveStatus.type}
-                    sx={{ mb: 2 }}
-                    onClose={() => setSaveStatus({ show: false, type: 'success', message: '' })}
-                >
-                    {saveStatus.message}
-                </Alert>
-            )}
-            
-            <Grid container spacing={3}>
-                {/* Layout & Spacing */}
-                <Grid item xs={12} md={6}>
-                    <ContentCard sx={{ height: '100%' }}>
-                        <ThemeSection 
-                            title="Layout & Spacing" 
-                            subtitle="Control the overall layout and spacing of your application"
+            <ContentCard>
+                {message.type && (
+                    <Alert severity={message.type} sx={{ mb: 4 }}>
+                        {message.content}
+                    </Alert>
+                )}
+
+                <Grid container spacing={4}>
+                    <Grid item xs={12} md={6}>
+                        <ThemeSection
+                            title="Spacing & Layout"
+                            subtitle="Adjust the spacing between different elements of the page"
                         >
-                            {/* Navigation & Header Spacing */}
-                            <Box>
-                                <Typography variant="subtitle2" gutterBottom>Page Spacing</Typography>
-                                <SliderControl
-                                    label="Navbar to Page Header Gap"
-                                    value={spacing.navToHeaderGap}
-                                    onChange={handleSpacingChange('navToHeaderGap')}
-                                    min={0}
-                                    max={10}
-                                    step={1}
-                                    unit="px"
-                                    valueLabelFormat={(value) => `${value * 2}px`}
-                                    helperText="Space between navigation bar and page header"
-                                />
-                                <SliderControl
-                                    label="Page Header to Toolbar Gap"
-                                    value={spacing.headerToToolbarGap}
-                                    onChange={handleSpacingChange('headerToToolbarGap')}
-                                    min={0}
-                                    max={10}
-                                    step={1}
-                                    unit="px"
-                                    valueLabelFormat={(value) => `${value * 2}px`}
-                                    helperText="Space between page header and toolbar"
-                                />
-                                <SliderControl
-                                    label="Toolbar to Content Gap"
-                                    value={spacing.toolbarToContentGap}
-                                    onChange={handleSpacingChange('toolbarToContentGap')}
-                                    min={0}
-                                    max={10}
-                                    step={1}
-                                    unit="px"
-                                    valueLabelFormat={(value) => `${value * 2}px`}
-                                    helperText="Space between toolbar and main content"
-                                />
-                                <SliderControl
-                                    label="Content to Content Gap"
-                                    value={spacing.contentGap}
-                                    onChange={handleSpacingChange('contentGap')}
-                                    min={0}
-                                    max={10}
-                                    step={1}
-                                    unit="px"
-                                    valueLabelFormat={(value) => `${value * 2}px`}
-                                    helperText="Space between content elements"
-                                />
-                            </Box>
+                            <SliderControl
+                                label="Navigation to Header Gap"
+                                value={themeSettings.spacing.navToHeaderGap}
+                                onChange={handleSpacingChange('navToHeaderGap')}
+                                helperText="Space between navigation and header section"
+                            />
+                            <SliderControl
+                                label="Content Gap"
+                                value={themeSettings.spacing.contentGap}
+                                onChange={handleSpacingChange('contentGap')}
+                                helperText="Space between content sections"
+                            />
+                            <SliderControl
+                                label="Border Radius"
+                                value={themeSettings.spacing.borderRadius}
+                                onChange={handleSpacingChange('borderRadius')}
+                                helperText="Roundness of corners for cards and containers"
+                            />
+                            <PercentageSlider
+                                label="Border Opacity"
+                                value={themeSettings.spacing.borderOpacity}
+                                onChange={handleSpacingChange('borderOpacity')}
+                                helperText="Visibility of borders around elements"
+                            />
+                            <PercentageSlider
+                                label="Box Shadow Opacity"
+                                value={themeSettings.spacing.boxShadowOpacity}
+                                onChange={handleSpacingChange('boxShadowOpacity')}
+                                helperText="Intensity of shadows under elements"
+                            />
                         </ThemeSection>
-                    </ContentCard>
-                </Grid>
+                    </Grid>
 
-                {/* Typography */}
-                <Grid item xs={12} md={6}>
-                    <ContentCard sx={{ height: '100%' }}>
-                        <ThemeSection 
-                            title="Typography" 
-                            subtitle="Configure text styles for headers and content"
+                    <Grid item xs={12} md={6}>
+                        <ThemeSection
+                            title="Header Styling"
+                            subtitle="Customize the appearance of page headers"
                         >
-                            {/* Title Typography */}
-                            <Box sx={{ mb: 4 }}>
-                                <Typography variant="subtitle2" gutterBottom>Page Title</Typography>
-                                <Box sx={{ display: 'flex', gap: 2, mb: 3 }}>
-                                    <TextField
-                                        label="Mobile Size"
-                                        value={header.titleSize.xs}
-                                        onChange={(e) => handleHeaderChange('titleSize.xs')(e)}
-                                        helperText="Example: 1.75rem"
-                                        size="small"
-                                    />
-                                    <TextField
-                                        label="Desktop Size"
-                                        value={header.titleSize.md}
-                                        onChange={(e) => handleHeaderChange('titleSize.md')(e)}
-                                        helperText="Example: 2rem"
-                                        size="small"
-                                    />
-                                </Box>
-                                <SliderControl
-                                    label="Font Weight"
-                                    value={header.titleWeight}
-                                    onChange={handleHeaderChange('titleWeight')}
-                                    min={300}
-                                    max={900}
-                                    step={100}
-                                    helperText="Font weight of the title"
-                                />
-                            </Box>
-
-                            {/* Subtitle Typography */}
-                            <Box>
-                                <Typography variant="subtitle2" gutterBottom>Page Subtitle</Typography>
-                                <Box sx={{ display: 'flex', gap: 2, mb: 3 }}>
-                                    <TextField
-                                        label="Mobile Size"
-                                        value={header.subtitleSize.xs}
-                                        onChange={(e) => handleHeaderChange('subtitleSize.xs')(e)}
-                                        helperText="Example: 0.95rem"
-                                        size="small"
-                                    />
-                                    <TextField
-                                        label="Desktop Size"
-                                        value={header.subtitleSize.md}
-                                        onChange={(e) => handleHeaderChange('subtitleSize.md')(e)}
-                                        helperText="Example: 1rem"
-                                        size="small"
-                                    />
-                                </Box>
-                                <SliderControl
-                                    label="Font Weight"
-                                    value={header.subtitleWeight}
-                                    onChange={handleHeaderChange('subtitleWeight')}
-                                    min={300}
-                                    max={700}
-                                    step={100}
-                                    helperText="Font weight of the subtitle"
-                                />
-                            </Box>
+                            <SliderControl
+                                label="Title Size (Mobile)"
+                                value={themeSettings.header.titleSize.xs}
+                                onChange={handleHeaderChange('titleSize.xs')}
+                                min={1}
+                                max={3}
+                                step={0.05}
+                                unit="rem"
+                                helperText="Size of page titles on mobile devices"
+                            />
+                            <SliderControl
+                                label="Title Size (Desktop)"
+                                value={themeSettings.header.titleSize.md}
+                                onChange={handleHeaderChange('titleSize.md')}
+                                min={1}
+                                max={3}
+                                step={0.05}
+                                unit="rem"
+                                helperText="Size of page titles on desktop devices"
+                            />
+                            <SliderControl
+                                label="Subtitle Size (Mobile)"
+                                value={themeSettings.header.subtitleSize.xs}
+                                onChange={handleHeaderChange('subtitleSize.xs')}
+                                min={0.8}
+                                max={2}
+                                step={0.05}
+                                unit="rem"
+                                helperText="Size of page subtitles on mobile devices"
+                            />
+                            <SliderControl
+                                label="Subtitle Size (Desktop)"
+                                value={themeSettings.header.subtitleSize.md}
+                                onChange={handleHeaderChange('subtitleSize.md')}
+                                min={0.8}
+                                max={2}
+                                step={0.05}
+                                unit="rem"
+                                helperText="Size of page subtitles on desktop devices"
+                            />
+                            <SliderControl
+                                label="Title Weight"
+                                value={themeSettings.header.titleWeight}
+                                onChange={handleHeaderChange('titleWeight')}
+                                min={400}
+                                max={900}
+                                step={100}
+                                helperText="Font weight of page titles"
+                            />
+                            <SliderControl
+                                label="Subtitle Weight"
+                                value={themeSettings.header.subtitleWeight}
+                                onChange={handleHeaderChange('subtitleWeight')}
+                                min={400}
+                                max={900}
+                                step={100}
+                                helperText="Font weight of page subtitles"
+                            />
                         </ThemeSection>
-                    </ContentCard>
-                </Grid>
+                    </Grid>
 
-                {/* Visual Style */}
-                <Grid item xs={12}>
-                    <ContentCard>
-                        <ThemeSection 
-                            title="Visual Style" 
-                            subtitle="Customize the visual appearance of your interface"
+                    <Grid item xs={12}>
+                        <Divider sx={{ my: 2 }} />
+                        <ThemeSection
+                            title="Content Styling"
+                            subtitle="Adjust the appearance of content containers"
                         >
-                            <Grid container spacing={3}>
-                                {/* Card Styling */}
+                            <Grid container spacing={4}>
                                 <Grid item xs={12} md={6}>
-                                    <Typography variant="subtitle2" gutterBottom>Card Styling</Typography>
                                     <SliderControl
                                         label="Border Radius"
-                                        value={content.borderRadius}
-                                        onChange={(e, value) => {
-                                            handleContentChange('borderRadius')(e, value);
-                                            handleHeaderChange('borderRadius')(e, value);
-                                        }}
-                                        max={20}
-                                        unit="px"
-                                        helperText="Border radius of all cards (header, content, etc.)"
-                                    />
-                                    <PercentageSlider
-                                        label="Border Opacity"
-                                        value={parseFloat((content.borderColor || 'rgba(0, 0, 0, 0.05)').split(',')[3])}
-                                        onChange={(e, value) => {
-                                            const newBorderColor = `rgba(0, 0, 0, ${value})`;
-                                            handleHeaderChange('borderColor')(e, newBorderColor);
-                                            handleContentChange('borderColor')(e, newBorderColor);
-                                        }}
-                                        helperText="Opacity of all card borders"
-                                    />
-                                    <PercentageSlider
-                                        label="Shadow Opacity"
-                                        value={parseFloat((content.boxShadow || '0 2px 8px rgba(0, 0, 0, 0.05)').split('rgba(0, 0, 0, ')[1].split(')')[0])}
-                                        onChange={(e, value) => {
-                                            const newBoxShadow = `0 2px 8px rgba(0, 0, 0, ${value})`;
-                                            handleHeaderChange('boxShadow')(e, newBoxShadow);
-                                            handleContentChange('boxShadow')(e, newBoxShadow);
-                                        }}
-                                        helperText="Opacity of all card shadows"
+                                        value={themeSettings.content.borderRadius}
+                                        onChange={handleContentChange('borderRadius')}
+                                        helperText="Roundness of corners for content containers"
                                     />
                                 </Grid>
-
-                                {/* Header Accents */}
                                 <Grid item xs={12} md={6}>
-                                    <Typography variant="subtitle2" gutterBottom>Header Accents</Typography>
                                     <PercentageSlider
-                                        label="Underline Width"
-                                        value={parseFloat(header.underlineWidth) / 100}
-                                        onChange={(e, value) => handleHeaderChange('underlineWidth')(e, `${value * 100}%`)}
-                                        helperText="Width of the title underline"
-                                    />
-                                    <PercentageSlider
-                                        label="Underline Opacity"
-                                        value={header.underlineOpacity}
-                                        onChange={handleHeaderChange('underlineOpacity')}
-                                        helperText="Opacity of the title underline"
+                                        label="Border Opacity"
+                                        value={themeSettings.content.borderOpacity}
+                                        onChange={handleContentChange('borderOpacity')}
+                                        helperText="Visibility of borders around content"
                                     />
                                 </Grid>
                             </Grid>
                         </ThemeSection>
-
-                        <Divider sx={{ my: 2 }} />
-
-                        <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 3, gap: 2 }}>
-                            <Button
-                                variant="outlined"
-                                color="secondary"
-                                onClick={handleReset}
-                            >
-                                Reset to Defaults
-                            </Button>
-                            <Button
-                                variant="contained"
-                                color="primary"
-                                onClick={handleSave}
-                            >
-                                Save Changes
-                            </Button>
-                        </Box>
-                    </ContentCard>
+                    </Grid>
                 </Grid>
-            </Grid>
+
+                <Box sx={{ 
+                    display: 'flex', 
+                    justifyContent: 'flex-end',
+                    gap: 2,
+                    borderTop: '1px solid',
+                    borderColor: 'divider',
+                    pt: 2,
+                    mt: 3
+                }}>
+                    <Button
+                        variant="outlined"
+                        startIcon={<RestartAlt />}
+                        onClick={handleReset}
+                        sx={{ 
+                            px: 4,
+                            py: 1.5,
+                            fontSize: '0.95rem',
+                            fontWeight: 500
+                        }}
+                    >
+                        Reset to Defaults
+                    </Button>
+                    <Button
+                        variant="contained"
+                        startIcon={loading ? <CircularProgress size={20} color="inherit" /> : <Save />}
+                        onClick={handleSave}
+                        disabled={loading}
+                        sx={{ 
+                            px: 4,
+                            py: 1.5,
+                            fontSize: '0.95rem',
+                            fontWeight: 500
+                        }}
+                    >
+                        {loading ? 'Saving...' : 'Save Changes'}
+                    </Button>
+                </Box>
+            </ContentCard>
         </Box>
     );
 } 

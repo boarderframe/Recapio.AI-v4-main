@@ -15,8 +15,8 @@ import {
     useTheme,
 } from '@mui/material';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
-import PageLayout from '../../components/PageLayout';
-import ContentCard from '../../components/ContentCard';
+import { PageLayout } from '@/components/layout/PageLayout';
+import ContentCard from '@/components/ContentCard';
 
 export default function PricingPage() {
     const theme = useTheme();
@@ -76,6 +76,7 @@ export default function PricingPage() {
 
     return (
         <PageLayout
+            layout="marketing"
             title="Pricing"
             subtitle={
                 <>

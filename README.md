@@ -1,115 +1,89 @@
-# Recapio
+# Recapio.AI v4.3.1
 
-Recapio is a powerful transcription and analysis platform that leverages AI to convert speech to text and provide intelligent insights.
+## Latest Updates
+- Fixed auth system stability issues
+- Improved session management
+- Enhanced UI state handling
+- Better TypeScript type safety
 
-## Table of Contents
-- [Features](#features)
-- [Getting Started](#getting-started)
-- [Documentation](#documentation)
-- [Architecture](#architecture)
-- [Contributing](#contributing)
-- [License](#license)
+## Development Approach
 
-## Features
-- Speech-to-text transcription
-- AI-powered analysis
-- Real-time collaboration
-- Custom theme support
-- Role-based access control
-- Responsive design
+This project uses a local-first development approach with Supabase. All development and testing are done using a local Supabase instance, which simplifies the development process and makes testing more efficient.
+
+### Key Points
+- Local Supabase instance for development
+- TypeScript support with proper type definitions
+- Complete test data available through seed files
+- All database operations are type-safe and testable locally
+- Robust auth system with proper state management
 
 ## Getting Started
 
-### Prerequisites
-- Node.js 18.x or higher
-- npm 9.x or higher
-- Supabase account
-- OpenAI API key
-- Google Cloud account (for speech-to-text)
-
-### Installation
-1. Clone the repository:
+1. Install Supabase CLI:
 ```bash
-git clone https://github.com/yourusername/recapio.git
-cd recapio
+brew install supabase/tap/supabase
 ```
 
-2. Install dependencies:
+2. Start local Supabase:
 ```bash
-npm install
+supabase start
 ```
 
-3. Set up environment variables:
+3. Initialize database:
 ```bash
-cp .env.example .env.local
+psql -h localhost -p 54322 -U postgres -d postgres -f supabase/seed.sql
 ```
-Edit `.env.local` with your configuration.
 
-4. Start the development server:
-```bash
-npm run dev
-```
+## Development Guidelines
+
+### Authentication System
+- Uses Zustand for global state management
+- Session storage for better security
+- Proper cleanup of auth listeners
+- Type-safe auth operations
+- UI state synchronization
+- See [Auth Troubleshooting](docs/troubleshooting/auth-troubleshooting.md) for common issues
+
+### Database Development
+- All schema changes should be made through local migrations
+- Database operations are fully typed with TypeScript
+- Test data is provided through seed files
+- Database functions and relationships are tested locally
+- RLS policies are implemented and tested locally
+
+### Code Organization
+- `/supabase/migrations` - Database migrations
+- `/supabase/seed.sql` - Test data
+- `/docs/planning` - Development strategy and documentation
+- `/docs/database` - Database documentation
+- `/lib/database` - TypeScript database operations
+- `/types` - TypeScript type definitions
+- `/lib/state` - Global state management
+- `/docs/troubleshooting` - Common issues and solutions
+
+### Testing
+- Use local database for all testing
+- Type-safe database operations
+- Comprehensive seed data available
+- Database functions can be tested locally
+- API endpoints testable against local instance
+- UI components tested with proper state management
 
 ## Documentation
 
-### Core Systems
-- [Authentication System](docs/core-systems/authentication.md)
-- [Database System](docs/core-systems/database.md)
-- [Navigation System](docs/core-systems/navigation.md)
-- [Profile Menu System](docs/core-systems/profile-menu.md)
+- [Local Development Strategy](docs/planning/local-development-strategy.md)
+- [Database Layer Strategy](docs/planning/database-layer-strategy.md)
+- [Development Strategy](docs/planning/development-strategy.md)
+- [Auth Troubleshooting](docs/troubleshooting/auth-troubleshooting.md)
 
-### Technical Documentation
-- [Architecture Overview](docs/technical/architecture.md)
-- [State Management](docs/technical/state-management.md)
-- [API Integration](docs/technical/api-integration.md)
-- [Theme System](docs/technical/theme.md)
+## Important Notes
 
-### Deployment
-- [Deployment Guide](docs/deployment/deployment-guide.md)
-- [Environment Configuration](docs/deployment/environment.md)
-- [Security Considerations](docs/deployment/security.md)
+1. This project uses local development only - no remote schema synchronization is needed
+2. All database changes should be made through migrations
+3. All database operations are type-safe with TypeScript
+4. Test data is provided through the seed file
+5. Development is simplified by focusing on local instance
+6. Always check component mount status before state updates
+7. Use proper cleanup for subscriptions and effects
 
-### Planning
-- [Roadmap](docs/planning/roadmap.md)
-- [Feature Planning](docs/planning/features.md)
-- [UI/UX Guidelines](docs/planning/ui-ux.md)
-
-### Testing
-- [Testing Guide](docs/testing/testing-guide.md)
-- [Test Environment](docs/testing/environment.md)
-- [E2E Testing](docs/testing/e2e.md)
-
-### Troubleshooting
-- [Common Issues](docs/troubleshooting/common-issues.md)
-- [Debug Guide](docs/troubleshooting/debug-guide.md)
-- [FAQ](docs/troubleshooting/faq.md)
-
-## Architecture
-
-### Frontend
-- Next.js 14 (App Router)
-- React 18
-- TypeScript
-- Material-UI
-- TailwindCSS
-
-### State Management
-- Redux Toolkit (Global state)
-- Zustand (UI state)
-- React Query (Server state)
-
-### Backend
-- Supabase (Database & Authentication)
-- OpenAI API (AI processing)
-- Google Cloud Speech-to-Text
-
-### Infrastructure
-- Vercel (Hosting)
-- Supabase (Backend)
-- AWS S3 (File storage)
-
-## Contributing
-Please read our [Contributing Guide](CONTRIBUTING.md) for details on our code of conduct and the process for submitting pull requests.
-
-## License
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details. 
+For detailed setup and development instructions, see [run.md](run.md). 

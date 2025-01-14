@@ -22,8 +22,8 @@ import {
 } from '@mui/icons-material';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import PageLayout from '@/components/PageLayout';
-import PageBody from '@/components/PageBody';
+import { PageLayout } from '@/components/layout/PageLayout';
+import ContentCard from '@/components/ContentCard';
 
 export default function LoginPage() {
     const [email, setEmail] = useState('');
@@ -85,139 +85,133 @@ export default function LoginPage() {
     };
 
     return (
-        <PageLayout>
-            <PageBody>
-                <Box sx={{ maxWidth: 'sm', mx: 'auto', py: 8 }}>
-                    <Box sx={{ mb: 4, textAlign: 'center' }}>
-                        <Typography variant="h4" component="h1" gutterBottom>
-                            Welcome Back
-                        </Typography>
-                        <Typography variant="subtitle1" color="text.secondary">
-                            Sign in to your account
-                            <br />
-                            and continue your journey with Recapio.ai
-                        </Typography>
+        <PageLayout
+            layout="auth"
+            title="Welcome Back"
+            subtitle="Sign in to your account and continue your journey with Recapio.ai"
+            toolbar={null}
+        >
+            <ContentCard>
+                <Box
+                    component="form"
+                    onSubmit={handleSubmit}
+                    sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: 2.5,
+                        maxWidth: 'sm',
+                        mx: 'auto',
+                    }}
+                >
+                    {error && (
+                        <Alert
+                            severity="error"
+                            sx={{
+                                '& .MuiAlert-message': {
+                                    fontSize: '0.875rem'
+                                }
+                            }}
+                        >
+                            {error}
+                        </Alert>
+                    )}
+
+                    <TextField
+                        fullWidth
+                        label="Email"
+                        type="email"
+                        required
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        disabled={isLoading}
+                        error={!!error && error.toLowerCase().includes('email')}
+                        name="username"
+                        id="username"
+                        autoComplete="username email"
+                        InputProps={{
+                            startAdornment: (
+                                <InputAdornment position="start">
+                                    <EmailOutlined />
+                                </InputAdornment>
+                            ),
+                        }}
+                    />
+
+                    <TextField
+                        fullWidth
+                        label="Password"
+                        type={showPassword ? 'text' : 'password'}
+                        required
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        disabled={isLoading}
+                        error={!!error && error.toLowerCase().includes('password')}
+                        name="current-password"
+                        id="current-password"
+                        autoComplete="current-password"
+                        InputProps={{
+                            startAdornment: (
+                                <InputAdornment position="start">
+                                    <LockOutlined />
+                                </InputAdornment>
+                            ),
+                            endAdornment: (
+                                <InputAdornment position="end">
+                                    <IconButton
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        edge="end"
+                                        disabled={isLoading}
+                                        tabIndex={-1}
+                                    >
+                                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                                    </IconButton>
+                                </InputAdornment>
+                            ),
+                        }}
+                    />
+
+                    <Box sx={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                    }}>
+                        <Button
+                            type="submit"
+                            variant="contained"
+                            disabled={isLoading}
+                            sx={{ minWidth: 120 }}
+                        >
+                            {isLoading ? (
+                                <CircularProgress size={24} color="inherit" />
+                            ) : (
+                                'Sign In'
+                            )}
+                        </Button>
+
+                        <MuiLink
+                            component={Link}
+                            href="/forgot-password"
+                            variant="body2"
+                            sx={{ textDecoration: 'none' }}
+                        >
+                            Forgot password?
+                        </MuiLink>
                     </Box>
 
-                    <Box
-                        component="form"
-                        onSubmit={handleSubmit}
-                        sx={{
-                            display: 'flex',
-                            flexDirection: 'column',
-                            gap: 2.5,
-                        }}
-                    >
-                        {error && (
-                            <Alert
-                                severity="error"
-                                sx={{
-                                    '& .MuiAlert-message': {
-                                        fontSize: '0.875rem'
-                                    }
-                                }}
-                            >
-                                {error}
-                            </Alert>
-                        )}
-
-                        <TextField
-                            fullWidth
-                            label="Email"
-                            type="email"
-                            required
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            disabled={isLoading}
-                            error={!!error && error.toLowerCase().includes('email')}
-                            name="username"
-                            id="username"
-                            autoComplete="username email"
-                            InputProps={{
-                                startAdornment: (
-                                    <InputAdornment position="start">
-                                        <EmailOutlined />
-                                    </InputAdornment>
-                                ),
-                            }}
-                        />
-
-                        <TextField
-                            fullWidth
-                            label="Password"
-                            type={showPassword ? 'text' : 'password'}
-                            required
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            disabled={isLoading}
-                            error={!!error && error.toLowerCase().includes('password')}
-                            name="current-password"
-                            id="current-password"
-                            autoComplete="current-password"
-                            InputProps={{
-                                startAdornment: (
-                                    <InputAdornment position="start">
-                                        <LockOutlined />
-                                    </InputAdornment>
-                                ),
-                                endAdornment: (
-                                    <InputAdornment position="end">
-                                        <IconButton
-                                            onClick={() => setShowPassword(!showPassword)}
-                                            edge="end"
-                                            disabled={isLoading}
-                                            tabIndex={-1}
-                                        >
-                                            {showPassword ? <VisibilityOff /> : <Visibility />}
-                                        </IconButton>
-                                    </InputAdornment>
-                                ),
-                            }}
-                        />
-
-                        <Box sx={{
-                            display: 'flex',
-                            justifyContent: 'space-between',
-                            alignItems: 'center',
-                        }}>
-                            <Button
-                                type="submit"
-                                variant="contained"
-                                disabled={isLoading}
-                                sx={{ minWidth: 120 }}
-                            >
-                                {isLoading ? (
-                                    <CircularProgress size={24} color="inherit" />
-                                ) : (
-                                    'Sign In'
-                                )}
-                            </Button>
-
+                    <Box sx={{ mt: 2, textAlign: 'center' }}>
+                        <Typography variant="body2" color="text.secondary">
+                            Don't have an account?{' '}
                             <MuiLink
                                 component={Link}
-                                href="/forgot-password"
-                                variant="body2"
+                                href="/signup"
                                 sx={{ textDecoration: 'none' }}
                             >
-                                Forgot password?
+                                Sign up
                             </MuiLink>
-                        </Box>
-
-                        <Box sx={{ mt: 2, textAlign: 'center' }}>
-                            <Typography variant="body2" color="text.secondary">
-                                Don't have an account?{' '}
-                                <MuiLink
-                                    component={Link}
-                                    href="/signup"
-                                    sx={{ textDecoration: 'none' }}
-                                >
-                                    Sign up
-                                </MuiLink>
-                            </Typography>
-                        </Box>
+                        </Typography>
                     </Box>
                 </Box>
-            </PageBody>
+            </ContentCard>
         </PageLayout>
     );
 } 

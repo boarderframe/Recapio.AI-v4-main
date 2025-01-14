@@ -32,8 +32,8 @@ import {
 } from "@mui/icons-material";
 import { debounce } from "lodash";
 
-import PageLayout from "../../components/PageLayout";
-import ContentCard from "../../components/ContentCard";
+import { PageLayout } from "@/components/layout/PageLayout";
+import ContentCard from "@/components/ContentCard";
 import TranscriptList from "../../src/components/Transcripts/TranscriptList";
 import TranscriptGrid from "../../src/components/Transcripts/TranscriptGrid";
 import { useTranscripts } from "../../src/hooks/useTranscripts";
@@ -104,6 +104,7 @@ export default function TranscriptsPage() {
   if (error) {
     return (
       <PageLayout
+        layout="app"
         title="Transcripts"
         subtitle="Manage your transcripts"
       >
@@ -733,8 +734,26 @@ export default function TranscriptsPage() {
 
   return (
     <PageLayout
+      layout="app"
       title="Transcript Library"
-      subtitle="Browse and manage your transcript collection"
+      subtitle="View and manage your transcripts"
+      toolbar={
+        <Box sx={{ display: 'flex', gap: 2 }}>
+          <ToggleButtonGroup
+            value={viewMode}
+            exclusive
+            onChange={(_, value) => value && setViewMode(value)}
+            size="small"
+          >
+            <ToggleButton value="list">
+              <ListIcon />
+            </ToggleButton>
+            <ToggleButton value="grid">
+              <GridIcon />
+            </ToggleButton>
+          </ToggleButtonGroup>
+        </Box>
+      }
     >
       {content}
     </PageLayout>

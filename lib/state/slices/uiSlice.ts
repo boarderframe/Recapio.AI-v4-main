@@ -1,107 +1,110 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { RootState } from '@/types/store';
+
+interface MenuState {
+  open: boolean;
+  anchorId: string | null;
+}
+
+interface ModalsState {
+  settings: boolean;
+  profile: boolean;
+  billing: boolean;
+}
 
 interface UIState {
-    sidebar: {
-        isOpen: boolean;
-        width: number;
-    };
-    header: {
-        height: number;
-        isFixed: boolean;
-    };
-    menus: {
-        userMenu: {
-            isOpen: boolean;
-            anchorEl: HTMLElement | null;
-        };
-        adminMenu: {
-            isOpen: boolean;
-            anchorEl: HTMLElement | null;
-        };
-    };
-    modals: {
-        [key: string]: boolean;
-    };
-    loading: {
-        [key: string]: boolean;
-    };
+  theme: 'light' | 'dark';
+  menus: {
+    userMenu: MenuState;
+    adminMenu: MenuState;
+  };
+  modals: ModalsState;
 }
 
 const initialState: UIState = {
-    sidebar: {
-        isOpen: false,
-        width: 240
+  theme: 'light',
+  menus: {
+    userMenu: {
+      open: false,
+      anchorId: null,
     },
-    header: {
-        height: 64,
-        isFixed: true
+    adminMenu: {
+      open: false,
+      anchorId: null,
     },
-    menus: {
-        userMenu: {
-            isOpen: false,
-            anchorEl: null
-        },
-        adminMenu: {
-            isOpen: false,
-            anchorEl: null
-        }
-    },
-    modals: {},
-    loading: {}
+  },
+  modals: {
+    settings: false,
+    profile: false,
+    billing: false,
+  },
 };
 
 const uiSlice = createSlice({
-    name: 'ui',
-    initialState,
-    reducers: {
-        toggleSidebar: (state) => {
-            state.sidebar.isOpen = !state.sidebar.isOpen;
-        },
-        setSidebarWidth: (state, action: PayloadAction<number>) => {
-            state.sidebar.width = action.payload;
-        },
-        setHeaderHeight: (state, action: PayloadAction<number>) => {
-            state.header.height = action.payload;
-        },
-        setHeaderFixed: (state, action: PayloadAction<boolean>) => {
-            state.header.isFixed = action.payload;
-        },
-        openUserMenu: (state, action: PayloadAction<HTMLElement>) => {
-            state.menus.userMenu.isOpen = true;
-            state.menus.userMenu.anchorEl = action.payload;
-        },
-        closeUserMenu: (state) => {
-            state.menus.userMenu.isOpen = false;
-            state.menus.userMenu.anchorEl = null;
-        },
-        openAdminMenu: (state, action: PayloadAction<HTMLElement>) => {
-            state.menus.adminMenu.isOpen = true;
-            state.menus.adminMenu.anchorEl = action.payload;
-        },
-        closeAdminMenu: (state) => {
-            state.menus.adminMenu.isOpen = false;
-            state.menus.adminMenu.anchorEl = null;
-        },
-        setModalOpen: (state, action: PayloadAction<{ modalId: string; isOpen: boolean }>) => {
-            state.modals[action.payload.modalId] = action.payload.isOpen;
-        },
-        setLoading: (state, action: PayloadAction<{ key: string; isLoading: boolean }>) => {
-            state.loading[action.payload.key] = action.payload.isLoading;
-        }
-    }
+  name: 'ui',
+  initialState,
+  reducers: {
+    setTheme: (state, action: PayloadAction<'light' | 'dark'>) => {
+      state.theme = action.payload;
+    },
+    toggleTheme: (state) => {
+      state.theme = state.theme === 'light' ? 'dark' : 'light';
+    },
+    openUserMenu: (state, action: PayloadAction<string>) => {
+      state.menus.userMenu.open = true;
+      state.menus.userMenu.anchorId = action.payload;
+    },
+    closeUserMenu: (state) => {
+      state.menus.userMenu.open = false;
+      state.menus.userMenu.anchorId = null;
+    },
+    openAdminMenu: (state, action: PayloadAction<string>) => {
+      state.menus.adminMenu.open = true;
+      state.menus.adminMenu.anchorId = action.payload;
+    },
+    closeAdminMenu: (state) => {
+      state.menus.adminMenu.open = false;
+      state.menus.adminMenu.anchorId = null;
+    },
+    openSettingsModal: (state) => {
+      state.modals.settings = true;
+    },
+    closeSettingsModal: (state) => {
+      state.modals.settings = false;
+    },
+    openProfileModal: (state) => {
+      state.modals.profile = true;
+    },
+    closeProfileModal: (state) => {
+      state.modals.profile = false;
+    },
+    openBillingModal: (state) => {
+      state.modals.billing = true;
+    },
+    closeBillingModal: (state) => {
+      state.modals.billing = false;
+    },
+  },
 });
 
 export const {
-    toggleSidebar,
-    setSidebarWidth,
-    setHeaderHeight,
-    setHeaderFixed,
-    openUserMenu,
-    closeUserMenu,
-    openAdminMenu,
-    closeAdminMenu,
-    setModalOpen,
-    setLoading
+  setTheme,
+  toggleTheme,
+  openUserMenu,
+  closeUserMenu,
+  openAdminMenu,
+  closeAdminMenu,
+  openSettingsModal,
+  closeSettingsModal,
+  openProfileModal,
+  closeProfileModal,
+  openBillingModal,
+  closeBillingModal,
 } = uiSlice.actions;
+
+export const selectTheme = (state: RootState) => state.ui.theme;
+export const selectUserMenu = (state: RootState) => state.ui.menus.userMenu;
+export const selectAdminMenu = (state: RootState) => state.ui.menus.adminMenu;
+export const selectModals = (state: RootState) => state.ui.modals;
 
 export default uiSlice.reducer; 

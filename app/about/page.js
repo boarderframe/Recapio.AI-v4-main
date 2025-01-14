@@ -7,8 +7,8 @@ import {
     Avatar,
     useTheme,
 } from '@mui/material';
-import PageLayout from '../../components/PageLayout';
-import ContentCard from '../../components/ContentCard';
+import { PageLayout } from '@/components/layout/PageLayout';
+import ContentCard from '@/components/ContentCard';
 
 export default function AboutPage() {
     const theme = useTheme();
@@ -61,6 +61,7 @@ export default function AboutPage() {
 
     return (
         <PageLayout
+            layout="marketing"
             title="About Us"
             subtitle={
                 <>

@@ -6,6 +6,7 @@ import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import ShowChartIcon from '@mui/icons-material/ShowChart';
+import { PageLayout } from '@/components/layout/PageLayout';
 
 const MetricCard = ({ title, value, trend, icon }) => (
     <ContentCard>
@@ -32,54 +33,61 @@ const MetricCard = ({ title, value, trend, icon }) => (
 
 export default function ProfitPage() {
     return (
-        <Box>
-            <Grid container spacing={2}>
-                <Grid item xs={12} md={3}>
-                    <MetricCard
-                        title="Total Revenue"
-                        value="$124,567"
-                        trend={12.5}
-                        icon={<MonetizationOnIcon sx={{ color: 'primary.main' }} />}
-                    />
-                </Grid>
-                <Grid item xs={12} md={3}>
-                    <MetricCard
-                        title="Net Profit"
-                        value="$98,765"
-                        trend={8.3}
-                        icon={<AccountBalanceWalletIcon sx={{ color: 'success.main' }} />}
-                    />
-                </Grid>
-                <Grid item xs={12} md={3}>
-                    <MetricCard
-                        title="Profit Margin"
-                        value="79.3%"
-                        trend={-2.1}
-                        icon={<ShowChartIcon sx={{ color: 'info.main' }} />}
-                    />
-                </Grid>
-                <Grid item xs={12} md={3}>
-                    <MetricCard
-                        title="Monthly Growth"
-                        value="15.7%"
-                        trend={5.2}
-                        icon={<TrendingUpIcon sx={{ color: 'secondary.main' }} />}
-                    />
-                </Grid>
+        <PageLayout
+            layout="admin"
+            title="Profit & Revenue"
+            subtitle="Track financial performance and metrics"
+            toolbar={null}
+        >
+            <ContentCard>
+                <Grid container spacing={2}>
+                    <Grid item xs={12} md={3}>
+                        <MetricCard
+                            title="Total Revenue"
+                            value="$124,567"
+                            trend={12.5}
+                            icon={<MonetizationOnIcon sx={{ color: 'primary.main' }} />}
+                        />
+                    </Grid>
+                    <Grid item xs={12} md={3}>
+                        <MetricCard
+                            title="Net Profit"
+                            value="$98,765"
+                            trend={8.3}
+                            icon={<AccountBalanceWalletIcon sx={{ color: 'success.main' }} />}
+                        />
+                    </Grid>
+                    <Grid item xs={12} md={3}>
+                        <MetricCard
+                            title="Profit Margin"
+                            value="79.3%"
+                            trend={-2.1}
+                            icon={<ShowChartIcon sx={{ color: 'info.main' }} />}
+                        />
+                    </Grid>
+                    <Grid item xs={12} md={3}>
+                        <MetricCard
+                            title="Monthly Growth"
+                            value="15.7%"
+                            trend={5.2}
+                            icon={<TrendingUpIcon sx={{ color: 'secondary.main' }} />}
+                        />
+                    </Grid>
 
-                <Grid item xs={12}>
-                    <ContentCard>
-                        <Typography variant="h6" gutterBottom>
-                            Revenue Chart
-                        </Typography>
-                        <Box sx={{ height: 300, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                            <Typography color="text.secondary">
-                                Revenue chart will be displayed here
+                    <Grid item xs={12}>
+                        <ContentCard>
+                            <Typography variant="h6" gutterBottom>
+                                Revenue Chart
                             </Typography>
-                        </Box>
-                    </ContentCard>
+                            <Box sx={{ height: 300, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                <Typography color="text.secondary">
+                                    Revenue chart will be displayed here
+                                </Typography>
+                            </Box>
+                        </ContentCard>
+                    </Grid>
                 </Grid>
-            </Grid>
-        </Box>
+            </ContentCard>
+        </PageLayout>
     );
 } 

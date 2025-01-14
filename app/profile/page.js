@@ -14,7 +14,7 @@ import {
     IconButton,
     Alert
 } from '@mui/material';
-import PageLayout from '@/components/PageLayout';
+import { PageLayout } from '@/components/layout/PageLayout';
 import { useAuth } from '@/lib/AuthContext';
 import { Edit as EditIcon, PhotoCamera } from '@mui/icons-material';
 import { useTheme } from '@mui/material/styles';
@@ -45,8 +45,18 @@ export default function ProfilePage() {
 
     return (
         <PageLayout
+            layout="app"
             title="Profile"
             subtitle="Manage your personal information"
+            toolbar={
+                <Button
+                    variant="outlined"
+                    startIcon={<EditIcon />}
+                    onClick={handleEditToggle}
+                >
+                    {isEditing ? 'Cancel' : 'Edit Profile'}
+                </Button>
+            }
         >
             <ContentCard>
                 <Box sx={{ py: 2 }}>

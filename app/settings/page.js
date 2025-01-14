@@ -1,7 +1,7 @@
 "use client";
 
 import { Typography, Box, Divider } from '@mui/material';
-import PageLayout from '@/components/PageLayout';
+import { PageLayout } from '@/components/layout/PageLayout';
 import ContentCard from '@/components/ContentCard';
 import { useAuth } from '@/lib/AuthContext';
 
@@ -10,8 +10,10 @@ export default function SettingsPage() {
 
     return (
         <PageLayout
+            layout="app"
             title="Settings"
             subtitle="Manage your account settings and preferences"
+            toolbar={null}
         >
             <ContentCard>
                 <Typography variant="h6" gutterBottom>

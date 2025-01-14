@@ -4,8 +4,8 @@ import { Box, Typography, TextField, Button, Grid, Paper } from '@mui/material';
 import EmailIcon from '@mui/icons-material/Email';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import PhoneIcon from '@mui/icons-material/Phone';
-import PageLayout from '../../components/PageLayout';
-import ContentCard from '../../components/ContentCard';
+import { PageLayout } from '@/components/layout/PageLayout';
+import ContentCard from '@/components/ContentCard';
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -48,6 +48,7 @@ export default function ContactPage() {
 
   return (
     <PageLayout
+      layout="marketing"
       title="Contact Us"
       subtitle="Have questions? We'd love to hear from you. Send us a message and we'll respond as soon as possible."
     >

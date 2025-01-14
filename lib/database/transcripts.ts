@@ -1,11 +1,13 @@
 import { SupabaseClient } from '@supabase/supabase-js';
-import { DatabaseOperations, PaginationOptions, QueryResponse } from './utils/db-operations';
+import { DatabaseOperations, PaginationOptions, QueryResponse, BaseRecord } from './utils/db-operations';
 import { Database } from './types';
+import { PostgrestFilterBuilder } from '@supabase/postgrest-js';
 
 type TranscriptRow = Database['public']['Tables']['transcripts']['Row'];
+type TranscriptType = 'audio' | 'video' | 'text';
 
-export interface Transcript extends Omit<TranscriptRow, 'type'> {
-    type: 'audio' | 'video' | 'text';
+export interface Transcript extends BaseRecord {
+    type: TranscriptType;
     content: string;
     language: string;
     metadata?: Record<string, any>;
@@ -21,12 +23,21 @@ interface TranscriptStats {
     byType: Record<string, number>;
 }
 
-export class TranscriptsOperations extends DatabaseOperations<Transcript> {
+export interface TranscriptsOperations {
+    createQuery(): PostgrestFilterBuilder<any, any, any>;
+    count(): Promise<number>;
+    getByType(type: TranscriptType): Promise<Transcript[]>;
+    getByStatus(status: string): Promise<Transcript[]>;
+    getAll(): Promise<Transcript[]>;
+    getPaginated(page: number, limit: number): Promise<QueryResponse<Transcript>>;
+}
+
+export class TranscriptsOperations extends DatabaseOperations<TranscriptRow> {
     constructor(client: SupabaseClient<Database>, tenantId: string | null = null) {
         super(client, 'transcripts', tenantId);
     }
 
-    async listWithType(type: string, options: PaginationOptions = {}): Promise<QueryResponse<Transcript>> {
+    async listWithType(type: TranscriptType, options: PaginationOptions = {}): Promise<QueryResponse<Transcript>> {
         const { pageSize = 10, cursor, ascending = true } = options;
         let query = this.createQuery().eq('type', type);
 
@@ -36,14 +47,15 @@ export class TranscriptsOperations extends DatabaseOperations<Transcript> {
                 : query.lt('id', cursor);
         }
 
-        const { data, error } = await query
+        const { data: rawData, error } = await query
             .order('id', { ascending })
             .limit(pageSize);
 
         if (error) throw error;
+        const data = rawData as unknown as Transcript[];
 
         return {
-            data: data as Transcript[],
+            data,
             metadata: {
                 total: data.length,
                 returned: data.length,
@@ -68,14 +80,15 @@ export class TranscriptsOperations extends DatabaseOperations<Transcript> {
                 : query.lt('id', cursor);
         }
 
-        const { data, error } = await query
+        const { data: rawData, error } = await query
             .order('id', { ascending })
             .limit(pageSize);
 
         if (error) throw error;
+        const data = rawData as unknown as Transcript[];
 
         return {
-            data: data as Transcript[],
+            data,
             metadata: {
                 total: data.length,
                 returned: data.length,
@@ -97,14 +110,15 @@ export class TranscriptsOperations extends DatabaseOperations<Transcript> {
                 : query.lt('id', cursor);
         }
 
-        const { data, error } = await query
+        const { data: rawData, error } = await query
             .order('id', { ascending })
             .limit(pageSize);
 
         if (error) throw error;
+        const data = rawData as unknown as Transcript[];
 
         return {
-            data: data as Transcript[],
+            data,
             metadata: {
                 total: data.length,
                 returned: data.length,
@@ -114,11 +128,11 @@ export class TranscriptsOperations extends DatabaseOperations<Transcript> {
     }
 
     async search(query: string, columns: string[] = ['title']): Promise<Transcript[]> {
-        const { data, error } = await this.createQuery()
+        const { data: rawData, error } = await this.createQuery()
             .or(columns.map(col => `${col}.ilike.%${query}%`).join(','));
 
         if (error) throw error;
-        return data as Transcript[];
+        return rawData as unknown as Transcript[];
     }
 
     async getStats(): Promise<TranscriptStats> {
@@ -134,11 +148,12 @@ export class TranscriptsOperations extends DatabaseOperations<Transcript> {
     }
 
     private async getStatsByField(field: string): Promise<Record<string, number>> {
-        const { data, error } = await this.createQuery();
+        const { data: rawData, error } = await this.createQuery();
 
         if (error) throw error;
+        const data = rawData as unknown as Transcript[];
 
-        return (data as Transcript[]).reduce((acc: Record<string, number>, curr: Transcript) => {
+        return data.reduce((acc: Record<string, number>, curr: Transcript) => {
             const value = curr[field as keyof Transcript];
             if (typeof value === 'string') {
                 acc[value] = (acc[value] || 0) + 1;

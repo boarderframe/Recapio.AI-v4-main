@@ -17,13 +17,14 @@ export const PageLayout = ({
 }: PageLayoutProps) => {
   // Create a mock route object for layout configuration
   const mockRoute: Route = {
+    name: title || 'Page',
     path: '/',
     label: title || '',
     requiresAuth: false,
     group: layout,
   };
 
-  const layoutConfig: LayoutConfig = getLayoutConfig(mockRoute);
+  const layoutConfig = getLayoutConfig(layout);
   const showFooter = footer?.show ?? layoutConfig.showFooter;
   const isFooterSticky = footer?.sticky ?? false;
 
@@ -71,7 +72,7 @@ export const PageLayout = ({
         </PageFooter>
       )}
 
-      <LayoutIndicator layout={layoutConfig.type} />
+      <LayoutIndicator layout={layout} />
     </Box>
   );
 }; 

@@ -1,52 +1,31 @@
-// Redux exports
-export { store } from './config';
-export type { RootState, AppDispatch } from './config';
-export { useAppDispatch, useAppSelector } from './config';
-
-// Zustand store exports
-export { useUIStore, useThemeStore, useSettingsStore } from './config';
-
-// Redux slice exports
+// Auth actions
 export {
-    setUser,
-    setLoading,
-    setError,
-    logout
+  signIn,
+  signUp,
+  signInWithProvider,
+  signOut,
+  updateProfile,
+  setUser,
+  clearError,
 } from './slices/authSlice';
 
+// Settings actions
 export {
-    setThemeMode,
-    setThemeColors,
-    setNotifications,
-    setPreferences,
-    resetSettings
+  setTheme,
+  setLanguage,
+  setNotifications,
+  resetSettings,
 } from './slices/settingsSlice';
 
+// UI actions
 export {
-    toggleSidebar,
-    setSidebarWidth,
-    setHeaderHeight,
-    setHeaderFixed,
-    openUserMenu,
-    closeUserMenu,
-    openAdminMenu,
-    closeAdminMenu,
-    setModalOpen,
-    setLoading as setUILoading
+  openUserMenu,
+  closeUserMenu,
+  openAdminMenu,
+  closeAdminMenu,
 } from './slices/uiSlice';
 
-// API hooks exports
-export {
-    useGetUserQuery,
-    useUpdateUserMutation,
-    useGetTranscriptsQuery,
-    useGetTranscriptByIdQuery,
-    useCreateTranscriptMutation,
-    useUpdateTranscriptMutation,
-    useDeleteTranscriptMutation,
-    useGetAIModelsQuery,
-    useGetAIModelByIdQuery,
-    useCreateAIModelMutation,
-    useUpdateAIModelMutation,
-    useDeleteAIModelMutation,
-} from './api'; 
+// Reducers
+export { default as authReducer } from './slices/authSlice';
+export { default as settingsReducer } from './slices/settingsSlice';
+export { default as uiReducer } from './slices/uiSlice'; 

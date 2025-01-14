@@ -20,12 +20,14 @@ interface QueryResponse<T> {
 }
 
 interface TranscriptType {
-    id: string;
-    type: string;
+    id: number;
     category: string;
+    category_color?: string;
+    category_icon?: string;
+    type: string;
     sub_type: string;
-    category_color: string;
-    category_icon: string;
+    created_at: string;
+    updated_at: string;
 }
 
 interface TranscriptStats {

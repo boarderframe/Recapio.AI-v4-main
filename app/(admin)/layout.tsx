@@ -74,7 +74,7 @@ export default async function AdminLayout({
         {/* Sidebar */}
         <div className="hidden w-64 flex-shrink-0 bg-gray-900 shadow-sm md:block">
           <div className="flex h-full flex-col">
-            <div className="flex h-16 flex-shrink-0 items-center px-4">
+            <div className="flex h-16 flex-shrink-0 items-center justify-center px-4">
               <Logo href="/admin/console" variant="white" size="md" />
             </div>
             <AdminNavigation />

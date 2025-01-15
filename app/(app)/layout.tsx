@@ -54,10 +54,10 @@ export default async function AppLayout({
       {/* Sidebar */}
       <div className="hidden w-64 flex-shrink-0 bg-white shadow-sm md:block">
         <div className="flex h-full flex-col">
-          <div className="flex h-16 flex-shrink-0 items-center px-4">
+          <div className="flex h-16 flex-shrink-0 items-center justify-center border-b border-gray-200 px-4">
             <Logo size="md" />
           </div>
-          <AppNavigation />
+          <AppNavigation initialIsAdmin={userRole === 'Admin'} />
           <div className="flex-shrink-0 border-t border-gray-200 p-4">
             <div className="flex items-center">
               <div className="flex-shrink-0">
@@ -78,11 +78,11 @@ export default async function AppLayout({
       <div className="md:hidden">
         <div className="fixed inset-0 z-40 flex">
           <div className="relative flex w-full max-w-xs flex-1 flex-col bg-white">
-            <div className="flex h-16 flex-shrink-0 items-center px-4">
+            <div className="flex h-16 flex-shrink-0 items-center justify-center border-b border-gray-200 px-4">
               <Logo size="md" />
             </div>
             <div className="h-0 flex-1 overflow-y-auto">
-              <AppNavigation />
+              <AppNavigation initialIsAdmin={userRole === 'Admin'} />
             </div>
             <div className="flex-shrink-0 border-t border-gray-200 p-4">
               <div className="flex items-center">

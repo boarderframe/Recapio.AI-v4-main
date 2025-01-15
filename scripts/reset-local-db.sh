@@ -1,14 +1,11 @@
 #!/bin/bash
 
-# Stop any running Supabase containers
 echo "Stopping Supabase containers..."
-docker ps -a | grep 'supabase' | awk '{print $1}' | xargs -I {} docker rm -f {}
+supabase stop
 
-# Remove Supabase volumes
 echo "Removing Supabase volumes..."
-docker volume ls --filter label=com.supabase.cli.project=your-project-id | awk 'NR>1 {print $2}' | xargs -I {} docker volume rm {}
+docker volume rm $(docker volume ls -q | grep supabase) 2>/dev/null || true
 
-# Start Supabase
 echo "Starting Supabase..."
 supabase start
 
@@ -17,8 +14,14 @@ if [ $? -eq 0 ]; then
     echo "✅ Database initialized successfully!"
     echo "🔗 Studio URL: http://127.0.0.1:54323"
     echo "📝 Database URL: postgresql://postgres:postgres@127.0.0.1:54322/postgres"
-    echo "🔑 anon key: $(supabase status | grep 'anon key:' | awk '{print $3}')"
-    echo "🔑 service_role key: $(supabase status | grep 'service_role key:' | awk '{print $3}')"
+
+    echo "🔑 Admin credentials:"
+    echo "Email: cosburn@yahoo.com"
+    echo "Password: Anker5425$a"
+
+    echo "🔑 Test user credentials:"
+    echo "Email: user1@recapio.ai"
+    echo "Password: User123!"
 else
     echo "❌ Failed to initialize database"
     exit 1

@@ -3,109 +3,239 @@
 ## Overview
 This document details the complete database system implementation for Recapio, including Supabase database configuration, table structures, relationships, and data access patterns.
 
+## Local Development Setup
+
+### Prerequisites
+- Supabase CLI
+- Docker
+- For M1/M2 Macs: Colima instead of Docker Desktop
+
+### Installation Steps
+1. Install required tools:
+   ```bash
+   # Install Supabase CLI
+   brew install supabase/tap/supabase
+
+   # For M1/M2 Macs
+   brew install colima docker docker-compose
+   ```
+
+2. Start Docker environment:
+   ```bash
+   # For M1/M2 Macs
+   colima start
+
+   # Verify Docker is running
+   docker ps
+   ```
+
+3. Initialize local development:
+   ```bash
+   # Initialize Supabase project
+   supabase init
+
+   # Link to your Supabase project
+   supabase link --project-ref your-project-ref
+
+   # Start local development
+   supabase start
+   ```
+
+4. Database migrations:
+   ```bash
+   # Create a new migration
+   supabase migration new my_migration_name
+
+   # Apply migrations
+   supabase db reset
+
+   # Check migration status
+   supabase migration list
+   ```
+
 ## File Structure
 ```
+├── supabase/
+│   ├── migrations/           # Database migrations
+│   │   ├── [timestamp]_*.sql
+│   │   └── backup/          # Backup of migrations
+│   └── config.toml          # Supabase configuration
 ├── lib/
-│   ├── supabase/
-│   │   ├── client.ts          # Supabase client configuration
-│   │   ├── types.ts           # Database types and schemas
-│   │   └── queries/           # Database queries and mutations
+│   ├── database/
+│   │   ├── client.ts        # Database client configuration
+│   │   ├── types.ts         # Database types and schemas
+│   │   └── operations/      # Database operations
 │   │       ├── transcripts.ts
-│   │       ├── users.ts
-│   │       └── settings.ts
-├── migrations/                # Database migrations
-│   └── [timestamp]_*.sql
-├── types/
-│   └── database.ts           # Type definitions for database entities
-└── utils/
-    └── db-helpers.ts         # Database utility functions
+│   │       └── users.ts
+└── types/
+    └── database.ts          # Type definitions
 ```
 
 ## Dependencies
 ```json
 {
   "@supabase/supabase-js": "^2.x.x",
+  "@supabase/auth-helpers-nextjs": "^0.8.x",
   "postgres": "^3.x.x",
   "@types/pg": "^8.x.x",
-  "zod": "^3.x.x"  // For runtime type validation
+  "zod": "^3.x.x"
 }
 ```
 
 ## Database Schema
 
-### Tables Structure
+### Core Tables
 
 #### 1. users
 ```sql
-create table public.users (
-  id uuid references auth.users on delete cascade,
-  email text unique not null,
-  display_name text,
-  avatar_url text,
-  created_at timestamp with time zone default timezone('utc'::text, now()) not null,
-  updated_at timestamp with time zone default timezone('utc'::text, now()) not null,
-  primary key (id)
+CREATE TABLE public.users (
+    id uuid NOT NULL PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+    email text NOT NULL UNIQUE,
+    roles text[] DEFAULT '{}'::text[],
+    created_at timestamp with time zone DEFAULT now(),
+    updated_at timestamp with time zone DEFAULT now()
 );
 
 -- RLS Policies
-alter table public.users enable row level security;
+ALTER TABLE public.users ENABLE ROW LEVEL SECURITY;
 
-create policy "Users can view their own data" on users
-  for select using (auth.uid() = id);
+CREATE POLICY "Users can view their own data" ON public.users
+    FOR SELECT TO public
+    USING (auth.uid() = id);
 
-create policy "Users can update their own data" on users
-  for update using (auth.uid() = id);
+CREATE POLICY "Users can update their own data" ON public.users
+    FOR UPDATE TO public
+    USING (auth.uid() = id);
 ```
 
-#### 2. transcripts
+#### 2. transcript_types
 ```sql
-create table public.transcripts (
-  id uuid default uuid_generate_v4() primary key,
-  user_id uuid references public.users(id) on delete cascade,
-  title text not null,
-  content text,
-  audio_url text,
-  duration integer,
-  status text default 'pending',
-  created_at timestamp with time zone default timezone('utc'::text, now()) not null,
-  updated_at timestamp with time zone default timezone('utc'::text, now()) not null
+CREATE TABLE public.transcript_types (
+    id integer NOT NULL,
+    tenant_id uuid NOT NULL REFERENCES public.users(id),
+    name text NOT NULL,
+    description text,
+    settings jsonb DEFAULT '{}'::jsonb,
+    created_at timestamp with time zone DEFAULT now(),
+    updated_at timestamp with time zone DEFAULT now(),
+    deleted_at timestamp with time zone,
+    UNIQUE(tenant_id, name)
 );
 
 -- RLS Policies
-alter table public.transcripts enable row level security;
+ALTER TABLE public.transcript_types ENABLE ROW LEVEL SECURITY;
 
-create policy "Users can view own transcripts" on transcripts
-  for select using (auth.uid() = user_id);
-
-create policy "Users can create own transcripts" on transcripts
-  for insert with check (auth.uid() = user_id);
-
-create policy "Users can update own transcripts" on transcripts
-  for update using (auth.uid() = user_id);
-
-create policy "Users can delete own transcripts" on transcripts
-  for delete using (auth.uid() = user_id);
+CREATE POLICY "Admin full access to transcript types" ON public.transcript_types
+    AS PERMISSIVE FOR ALL
+    TO public
+    USING (EXISTS (
+        SELECT 1 
+        FROM users 
+        WHERE users.id = auth.uid() 
+        AND 'admin' = ANY(users.roles)
+    ));
 ```
 
-#### 3. user_settings
+#### 3. transcripts
 ```sql
-create table public.user_settings (
-  user_id uuid references public.users(id) on delete cascade primary key,
-  theme text default 'light',
-  notifications boolean default true,
-  language text default 'en',
-  created_at timestamp with time zone default timezone('utc'::text, now()) not null,
-  updated_at timestamp with time zone default timezone('utc'::text, now()) not null
+CREATE TABLE public.transcripts (
+    id uuid DEFAULT uuid_generate_v4(),
+    tenant_id uuid NOT NULL REFERENCES public.users(id),
+    title text,
+    content text,
+    metadata jsonb DEFAULT '{}'::jsonb,
+    status text DEFAULT 'pending'::text,
+    created_at timestamp with time zone,
+    updated_at timestamp with time zone,
+    deleted_at timestamp with time zone
 );
 
 -- RLS Policies
-alter table public.user_settings enable row level security;
+ALTER TABLE public.transcripts ENABLE ROW LEVEL SECURITY;
 
-create policy "Users can view own settings" on user_settings
-  for select using (auth.uid() = user_id);
+CREATE POLICY "Users can manage own transcripts" ON public.transcripts
+    AS PERMISSIVE FOR ALL
+    TO public
+    USING (
+        tenant_id = auth.uid() 
+        OR EXISTS (
+            SELECT 1 
+            FROM users 
+            WHERE users.id = auth.uid() 
+            AND 'admin' = ANY(users.roles)
+        )
+    );
+```
 
-create policy "Users can update own settings" on user_settings
-  for update using (auth.uid() = user_id);
+## Security Implementation
+
+### 1. Row Level Security (RLS)
+All tables have RLS enabled with specific policies:
+- Users can only access their own data
+- Admins have full access to all data
+- Tenant-based access control
+
+### 2. Admin Access Function
+```sql
+CREATE OR REPLACE FUNCTION auth.is_admin()
+RETURNS BOOLEAN AS $$
+BEGIN
+    RETURN EXISTS (
+        SELECT 1 
+        FROM public.users 
+        WHERE id = auth.uid() 
+        AND 'admin' = ANY(roles)
+    );
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+```
+
+### 3. Statistics Function
+```sql
+CREATE OR REPLACE FUNCTION public.get_transcript_stats(p_tenant_id uuid)
+RETURNS TABLE (
+    total_count bigint,
+    completed_count bigint,
+    processing_count bigint,
+    failed_count bigint,
+    avg_processing_time numeric
+) 
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+BEGIN
+    -- Check if user has access to the tenant
+    IF NOT EXISTS (
+        SELECT 1 
+        FROM users 
+        WHERE id = auth.uid() 
+        AND (
+            id = p_tenant_id 
+            OR 'admin' = ANY(roles)
+            OR p_tenant_id = '00000000-0000-0000-0000-000000000000'
+        )
+    ) THEN
+        RAISE EXCEPTION 'Access denied to tenant data';
+    END IF;
+
+    RETURN QUERY
+    SELECT 
+        COUNT(*)::BIGINT as total_count,
+        COUNT(CASE WHEN status = 'completed' THEN 1 END)::BIGINT as completed_count,
+        COUNT(CASE WHEN status = 'processing' THEN 1 END)::BIGINT as processing_count,
+        COUNT(CASE WHEN status = 'failed' THEN 1 END)::BIGINT as failed_count,
+        AVG(
+            CASE 
+                WHEN status = 'completed' 
+                THEN EXTRACT(EPOCH FROM (updated_at - created_at)) 
+            END
+        )::NUMERIC as avg_processing_time
+    FROM transcripts
+    WHERE tenant_id = p_tenant_id
+    AND deleted_at IS NULL;
+END;
+$$;
 ```
 
 ## Type Definitions (types/database.ts)
@@ -117,262 +247,110 @@ export interface Database {
         Row: {
           id: string;
           email: string;
-          display_name: string | null;
-          avatar_url: string | null;
+          roles: string[];
           created_at: string;
           updated_at: string;
         };
-        Insert: Omit<Users['Row'], 'id' | 'created_at' | 'updated_at'>;
+        Insert: Omit<Users['Row'], 'created_at' | 'updated_at'>;
         Update: Partial<Users['Insert']>;
+      };
+      transcript_types: {
+        Row: {
+          id: number;
+          tenant_id: string;
+          name: string;
+          description: string | null;
+          settings: Record<string, any>;
+          created_at: string;
+          updated_at: string;
+          deleted_at: string | null;
+        };
+        Insert: Omit<TranscriptTypes['Row'], 'created_at' | 'updated_at'>;
+        Update: Partial<TranscriptTypes['Insert']>;
       };
       transcripts: {
         Row: {
           id: string;
-          user_id: string;
-          title: string;
+          tenant_id: string;
+          title: string | null;
           content: string | null;
-          audio_url: string | null;
-          duration: number | null;
-          status: 'pending' | 'processing' | 'completed' | 'error';
+          metadata: Record<string, any>;
+          status: string;
           created_at: string;
           updated_at: string;
+          deleted_at: string | null;
         };
         Insert: Omit<Transcripts['Row'], 'id' | 'created_at' | 'updated_at'>;
         Update: Partial<Transcripts['Insert']>;
       };
-      user_settings: {
-        Row: {
-          user_id: string;
-          theme: 'light' | 'dark';
-          notifications: boolean;
-          language: string;
-          created_at: string;
-          updated_at: string;
+    };
+    Functions: {
+      get_transcript_stats: {
+        Args: { p_tenant_id: string };
+        Returns: {
+          total_count: number;
+          completed_count: number;
+          processing_count: number;
+          failed_count: number;
+          avg_processing_time: number;
         };
-        Insert: Omit<UserSettings['Row'], 'created_at' | 'updated_at'>;
-        Update: Partial<UserSettings['Insert']>;
+      };
+      is_admin: {
+        Args: Record<string, never>;
+        Returns: boolean;
       };
     };
   };
 }
 ```
 
-## Database Access Implementation
+## Best Practices
 
-### 1. Supabase Client Configuration (lib/supabase/client.ts)
-```typescript
-import { createClient } from '@supabase/supabase-js';
-import type { Database } from '@/types/database';
+### 1. Migration Management
+- Always create new migrations for schema changes
+- Back up migrations before major changes
+- Use `supabase db reset` for local development
+- Test migrations locally before applying to production
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+### 2. Security
+- Always enable RLS on new tables
+- Use security definer functions for privileged operations
+- Implement proper tenant isolation
+- Regular security audits
 
-export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    persistSession: true,
-    autoRefreshToken: true,
-  },
-  db: {
-    schema: 'public',
-  },
-});
-```
+### 3. Performance
+- Use appropriate indexes
+- Implement soft deletes using `deleted_at`
+- Regular database maintenance
+- Monitor query performance
 
-### 2. Query Implementation Examples
+## Troubleshooting
 
-#### Transcripts Queries (lib/supabase/queries/transcripts.ts)
-```typescript
-export const transcriptQueries = {
-  async getTranscripts(userId: string) {
-    const { data, error } = await supabase
-      .from('transcripts')
-      .select('*')
-      .eq('user_id', userId)
-      .order('created_at', { ascending: false });
+### Common Issues
+1. Docker/Colima Setup
+   ```bash
+   # Check Docker status
+   docker ps
+   
+   # Restart Colima
+   colima stop
+   colima start
+   ```
 
-    if (error) throw error;
-    return data;
-  },
+2. Migration Issues
+   ```bash
+   # Reset migration state
+   supabase migration repair --status reverted <migration_id>
+   
+   # Pull fresh schema
+   supabase db pull
+   ```
 
-  async createTranscript(transcript: Database['public']['Tables']['transcripts']['Insert']) {
-    const { data, error } = await supabase
-      .from('transcripts')
-      .insert(transcript)
-      .select()
-      .single();
-
-    if (error) throw error;
-    return data;
-  },
-
-  async updateTranscript(
-    id: string,
-    updates: Database['public']['Tables']['transcripts']['Update']
-  ) {
-    const { data, error } = await supabase
-      .from('transcripts')
-      .update(updates)
-      .eq('id', id)
-      .select()
-      .single();
-
-    if (error) throw error;
-    return data;
-  }
-};
-```
-
-## Security Implementation
-
-### 1. Row Level Security (RLS)
-- Enabled on all tables
-- User-specific policies
-- Role-based access control
-
-### 2. Data Validation
-```typescript
-const transcriptSchema = z.object({
-  title: z.string().min(1).max(255),
-  content: z.string().optional(),
-  audio_url: z.string().url().optional(),
-  duration: z.number().positive().optional(),
-  status: z.enum(['pending', 'processing', 'completed', 'error'])
-});
-```
-
-### 3. Query Security
-- Parameterized queries
-- Input sanitization
-- Error handling
-
-## Performance Optimization
-
-### 1. Indexing Strategy
-```sql
--- Transcript search optimization
-create index transcripts_title_idx on transcripts using gin(to_tsvector('english', title));
-create index transcripts_user_id_idx on transcripts(user_id);
-create index transcripts_created_at_idx on transcripts(created_at desc);
-```
-
-### 2. Query Optimization
-- Efficient joins
-- Pagination implementation
-- Selective column fetching
-
-### 3. Caching Strategy
-- Redis integration (optional)
-- Client-side caching
-- Query result caching
-
-## Error Handling
-
-### 1. Database Errors
-```typescript
-const handleDatabaseError = (error: PostgrestError) => {
-  switch (error.code) {
-    case '23505': // unique violation
-      return 'This record already exists';
-    case '23503': // foreign key violation
-      return 'Referenced record does not exist';
-    default:
-      return 'Database error occurred';
-  }
-};
-```
-
-### 2. Connection Errors
-- Retry mechanisms
-- Fallback strategies
-- Error logging
-
-## Maintenance Guidelines
-
-### 1. Database Migrations
-- Version control
-- Rollback procedures
-- Testing strategy
-
-### 2. Backup Strategy
-- Regular backups
-- Point-in-time recovery
-- Disaster recovery plan
-
-### 3. Monitoring
-- Performance metrics
-- Error tracking
-- Usage statistics
-
-## Testing Guidelines
-
-### 1. Unit Tests
-- Query functions
-- Data validation
-- Error handling
-
-### 2. Integration Tests
-- Database operations
-- Transaction handling
-- RLS policies
-
-### 3. Performance Tests
-- Load testing
-- Query optimization
-- Connection pooling
-
-## Troubleshooting Guide
-
-### 1. Common Issues
-- Connection timeouts
-- Query performance
-- Data consistency
-- RLS policy issues
-
-### 2. Solutions
-- Connection pool management
-- Query optimization
-- Index maintenance
-- Policy verification
-
-## Future Improvements
-
-### 1. Performance
-- Advanced indexing
-- Materialized views
-- Query optimization
-
-### 2. Features
-- Full-text search
-- Real-time subscriptions
-- Audit logging
-
-### 3. Security
-- Enhanced RLS policies
-- Audit trails
-- Data encryption
-
-## Backup and Recovery
-
-### 1. Backup Strategy
-- Daily full backups
-- Continuous WAL archiving
-- Retention policy
-
-### 2. Recovery Procedures
-- Point-in-time recovery
-- Disaster recovery
-- Data verification
-
-## Monitoring and Alerts
-
-### 1. Metrics
-- Query performance
-- Connection pool status
-- Storage usage
-- Error rates
-
-### 2. Alerts
-- Performance degradation
-- Storage thresholds
-- Error spikes
-- Connection issues 
+3. Permission Issues
+   ```bash
+   # Reset permissions
+   supabase db reset
+   
+   # Check RLS policies
+   supabase db dump --schema public
+   ``` 

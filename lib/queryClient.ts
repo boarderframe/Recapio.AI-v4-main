@@ -1,60 +1,45 @@
-import { QueryClient } from '@tanstack/react-query';
+import { QueryClient, DefaultOptions, Query, Mutation } from '@tanstack/react-query';
+import { toast } from 'react-toastify';
+
+const defaultOptions: DefaultOptions = {
+    queries: {
+        retry: 1,
+        staleTime: 5 * 60 * 1000,
+        gcTime: 10 * 60 * 1000,
+        refetchOnWindowFocus: false,
+        refetchOnReconnect: true,
+        refetchOnMount: true,
+    },
+    mutations: {
+        retry: 1,
+    },
+};
 
 // Create a client
 export const queryClient = new QueryClient({
-    defaultOptions: {
-        queries: {
-            staleTime: 1000 * 60 * 5, // 5 minutes
-            gcTime: 1000 * 60 * 30, // 30 minutes (previously cacheTime)
-            retry: 3,
-            retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
-            refetchOnWindowFocus: false,
-            refetchOnReconnect: true,
-        },
-        mutations: {
-            retry: 2,
-            retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
-        },
-    },
+    defaultOptions,
 });
 
-// Error handling configuration
-queryClient.setQueryDefaults(['*'], {
-    onError: (error: any) => {
-        console.error('Query error:', error);
-        // You can add global error handling here
-    },
-});
-
-queryClient.setMutationDefaults(['*'], {
-    onError: (error: any) => {
-        console.error('Mutation error:', error);
-        // You can add global error handling here
-    },
-});
-
-// Add global cache listeners
+// Add error handlers
 queryClient.getQueryCache().subscribe(event => {
-    // Log cache events in development
-    if (process.env.NODE_ENV === 'development') {
-        console.debug('Query Cache event:', event);
+    if (event.type === 'updated' && event.query.state.error instanceof Error) {
+        toast.error(`Query Error: ${event.query.state.error.message}`);
     }
 });
 
-// Add mutation cache listeners
 queryClient.getMutationCache().subscribe(event => {
-    // Log mutation events in development
-    if (process.env.NODE_ENV === 'development') {
-        console.debug('Mutation Cache event:', event);
+    if (event.type === 'updated' && event.mutation.state.error instanceof Error) {
+        toast.error(`Mutation Error: ${event.mutation.state.error.message}`);
     }
 });
 
 // Custom error handler
-export const handleQueryError = (error: any) => {
-    if (error.response?.status === 401) {
+export const handleQueryError = (error: unknown) => {
+    const err = error as { response?: { status: number } };
+    if (err.response?.status === 401) {
         // Handle unauthorized access
         window.location.href = '/login';
-    } else if (error.response?.status === 403) {
+    } else if (err.response?.status === 403) {
         // Handle forbidden access
         console.error('Access forbidden');
     } else {
@@ -66,7 +51,7 @@ export const handleQueryError = (error: any) => {
 // Utility function to invalidate related queries
 export const invalidateRelatedQueries = async (
     queryKey: string | string[],
-    options = {}
+    options: Record<string, unknown> = {}
 ) => {
     const keys = Array.isArray(queryKey) ? queryKey : [queryKey];
     await Promise.all(

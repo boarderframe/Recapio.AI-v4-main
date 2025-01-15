@@ -1,0 +1,78 @@
+import { Box, Container } from '@mui/material';
+import { PageLayoutProps } from './types';
+import PageHeader from './PageHeader';
+import PageFooter from './PageFooter';
+import { getLayoutConfig, LayoutConfig } from '@/lib/layout/config';
+import { Route } from '@/lib/routes/types';
+import clsx from 'clsx';
+import LayoutIndicator from './LayoutIndicator';
+
+export const PageLayout = ({
+  children,
+  title,
+  subtitle,
+  layout = 'marketing',
+  footer,
+  className,
+}: PageLayoutProps) => {
+  // Create a mock route object for layout configuration
+  const mockRoute: Route = {
+    name: title || 'Page',
+    path: '/',
+    label: title || '',
+    requiresAuth: false,
+    group: layout,
+  };
+
+  const layoutConfig = getLayoutConfig(layout);
+  const showFooter = footer?.show ?? layoutConfig.showFooter;
+  const isFooterSticky = footer?.sticky ?? false;
+
+  return (
+    <Box
+      className={clsx('page-layout', `layout-${layout}`, className)}
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        minHeight: '100vh',
+        width: '100%',
+        bgcolor: 'background.default',
+      }}
+    >
+      <Container
+        maxWidth={layoutConfig.maxWidth as any || 'lg'}
+        sx={{
+          px: { xs: 2, sm: 3, md: 4 },
+          py: { xs: 3, sm: 4 },
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+        }}
+      >
+        <PageHeader
+          title={title}
+          subtitle={subtitle}
+        />
+        
+        <Box
+          component="main"
+          sx={{
+            flex: 1,
+            display: 'flex',
+            flexDirection: 'column',
+          }}
+        >
+          {children}
+        </Box>
+      </Container>
+
+      {showFooter && (
+        <PageFooter sticky={isFooterSticky}>
+          {footer?.content}
+        </PageFooter>
+      )}
+
+      <LayoutIndicator layout={layout} />
+    </Box>
+  );
+}; 

@@ -1,16 +1,12 @@
-import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
-import { Providers } from './providers';
-import Navigation from '@/components/Navigation';
-import Footer from '@/components/Footer';
-import { Box } from '@mui/material';
 import './globals.css';
+import { Inter } from 'next/font/google';
+import { AuthProvider } from '@/components/providers/AuthProvider';
 
-const inter = Inter({ subsets: ['latin'] });
+const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 
-export const metadata: Metadata = {
-  title: 'Recapio.AI',
-  description: 'AI-powered transcription and analysis platform',
+export const metadata = {
+  title: 'Recapio - AI-Powered Audio Processing',
+  description: 'Transform your audio content into actionable insights with advanced AI technology.',
 };
 
 export default function RootLayout({
@@ -19,17 +15,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className={inter.className}>
-        <Providers>
-          <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-            <Navigation />
-            <Box component="main" sx={{ flexGrow: 1 }}>
-              {children}
-            </Box>
-            <Footer />
-          </Box>
-        </Providers>
+    <html lang="en" className={inter.variable}>
+      <body className="min-h-screen bg-white font-sans antialiased">
+        <AuthProvider>
+          {children}
+        </AuthProvider>
       </body>
     </html>
   );

@@ -1,40 +1,20 @@
 'use client';
 
-import React from 'react';
-import { Box } from '@mui/material';
-import Navigation from '@/components/Navigation';
-import PageLayout from '@/components/PageLayout';
-
 export default function AuthLayout({
     children,
 }: {
     children: React.ReactNode;
 }) {
     return (
-        <PageLayout>
-            <Box
-                sx={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    minHeight: '100vh',
-                    bgcolor: 'background.default',
-                }}
-            >
-                <Navigation />
-                <Box
-                    component="main"
-                    sx={{
-                        flex: 1,
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        py: 4,
-                    }}
-                >
-                    {children}
-                </Box>
-            </Box>
-        </PageLayout>
+        <div className="flex min-h-screen flex-col items-center justify-center py-12 sm:px-6 lg:px-8">
+            <div className="sm:mx-auto sm:w-full sm:max-w-md">
+                <div className="flex justify-center">
+                    <a href="/" className="text-2xl font-bold text-primary">
+                        Recapio
+                    </a>
+                </div>
+            </div>
+            {children}
+        </div>
     );
 } 

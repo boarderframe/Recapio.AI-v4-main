@@ -1,149 +1,76 @@
-import { SupabaseClient } from '@supabase/supabase-js';
 import { DatabaseOperations, PaginationOptions, QueryResponse } from './utils/db-operations';
-import { Database } from './types';
+import type { Database } from '@/types/database';
+import { supabase } from './client';
 
 type TranscriptRow = Database['public']['Tables']['transcripts']['Row'];
+type TranscriptInsert = Database['public']['Tables']['transcripts']['Insert'];
+type TranscriptUpdate = Database['public']['Tables']['transcripts']['Update'];
 
-export interface Transcript extends Omit<TranscriptRow, 'type'> {
-    type: 'audio' | 'video' | 'text';
-    content: string;
-    language: string;
-    metadata?: Record<string, any>;
-    title: string;
-    date: string;
-    summary?: string;
-    isFavorite?: boolean;
+export interface Transcript extends TranscriptRow {
+    type_details?: Database['public']['Tables']['transcript_types']['Row'];
 }
 
-interface TranscriptStats {
-    total: number;
-    byStatus: Record<string, number>;
-    byType: Record<string, number>;
-}
-
-export class TranscriptsOperations extends DatabaseOperations<Transcript> {
-    constructor(client: SupabaseClient<Database>, tenantId: string | null = null) {
-        super(client, 'transcripts', tenantId);
+export class TranscriptsOperations extends DatabaseOperations<'transcripts'> {
+    constructor(tenantId: string | null = null) {
+        super(supabase, 'transcripts', tenantId);
     }
 
-    async listWithType(type: string, options: PaginationOptions = {}): Promise<QueryResponse<Transcript>> {
-        const { pageSize = 10, cursor, ascending = true } = options;
-        let query = this.createQuery().eq('type', type);
+    async createTranscript(data: TranscriptInsert): Promise<Transcript> {
+        return await super.create<Transcript>(data);
+    }
 
-        if (cursor) {
-            query = ascending
-                ? query.gt('id', cursor)
-                : query.lt('id', cursor);
+    async getById(id: string): Promise<Transcript | null> {
+        const { data, error } = await this.client.from(this.table)
+            .select(`
+                *,
+                type_details:transcript_types(*)
+            `)
+            .eq('id', id)
+            .single();
+
+        if (error) throw error;
+        return data as Transcript;
+    }
+
+    async list(options: PaginationOptions = {}): Promise<QueryResponse<Transcript>> {
+        const { pageSize = 10, cursor, ascending = true } = options;
+        
+        let query = this.client.from(this.table)
+            .select(`
+                *,
+                type_details:transcript_types(*)
+            `, { count: 'exact' })
+            .order('created_at', { ascending });
+
+        if (this.tenantId) {
+            query = query.eq('tenant_id', this.tenantId);
         }
 
-        const { data, error } = await query
-            .order('id', { ascending })
-            .limit(pageSize);
+        if (cursor) {
+            query = query.gt('created_at', cursor);
+        }
+
+        query = query.limit(pageSize);
+
+        const { data, error, count } = await query;
 
         if (error) throw error;
 
         return {
             data: data as Transcript[],
             metadata: {
-                total: data.length,
-                returned: data.length,
-                hasMore: data.length === pageSize
+                total: count || 0,
+                returned: data?.length || 0,
+                hasMore: (count || 0) > (cursor ? (data?.length || 0) : pageSize)
             }
         };
     }
 
-    async listByDateRange(
-        startDate: string,
-        endDate: string,
-        options: PaginationOptions = {}
-    ): Promise<QueryResponse<Transcript>> {
-        const { pageSize = 10, cursor, ascending = true } = options;
-        let query = this.createQuery()
-            .gte('created_at', startDate)
-            .lte('created_at', endDate);
-
-        if (cursor) {
-            query = ascending
-                ? query.gt('id', cursor)
-                : query.lt('id', cursor);
-        }
-
-        const { data, error } = await query
-            .order('id', { ascending })
-            .limit(pageSize);
-
-        if (error) throw error;
-
-        return {
-            data: data as Transcript[],
-            metadata: {
-                total: data.length,
-                returned: data.length,
-                hasMore: data.length === pageSize
-            }
-        };
+    async updateTranscript(id: string, data: TranscriptUpdate): Promise<Transcript> {
+        return await super.update<Transcript>(id, data);
     }
 
-    async listByStatus(
-        status: string,
-        options: PaginationOptions = {}
-    ): Promise<QueryResponse<Transcript>> {
-        const { pageSize = 10, cursor, ascending = true } = options;
-        let query = this.createQuery().eq('status', status);
-
-        if (cursor) {
-            query = ascending
-                ? query.gt('id', cursor)
-                : query.lt('id', cursor);
-        }
-
-        const { data, error } = await query
-            .order('id', { ascending })
-            .limit(pageSize);
-
-        if (error) throw error;
-
-        return {
-            data: data as Transcript[],
-            metadata: {
-                total: data.length,
-                returned: data.length,
-                hasMore: data.length === pageSize
-            }
-        };
-    }
-
-    async search(query: string, columns: string[] = ['title']): Promise<Transcript[]> {
-        const { data, error } = await this.createQuery()
-            .or(columns.map(col => `${col}.ilike.%${query}%`).join(','));
-
-        if (error) throw error;
-        return data as Transcript[];
-    }
-
-    async getStats(): Promise<TranscriptStats> {
-        const total = await this.count();
-        const byStatus = await this.getStatsByField('status');
-        const byType = await this.getStatsByField('type');
-
-        return {
-            total,
-            byStatus,
-            byType
-        };
-    }
-
-    private async getStatsByField(field: string): Promise<Record<string, number>> {
-        const { data, error } = await this.createQuery();
-
-        if (error) throw error;
-
-        return (data as Transcript[]).reduce((acc: Record<string, number>, curr: Transcript) => {
-            const value = curr[field as keyof Transcript];
-            if (typeof value === 'string') {
-                acc[value] = (acc[value] || 0) + 1;
-            }
-            return acc;
-        }, {});
+    async delete(id: string): Promise<void> {
+        await super.delete(id);
     }
 } 

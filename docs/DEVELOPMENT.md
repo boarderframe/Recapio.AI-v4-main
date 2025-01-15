@@ -1,31 +1,136 @@
-# Development Tracker
+# Development Guide
 
-## How We Work Together
+## Git Workflow and Branch Strategy
 
-### Planning Approach
-1. **AI Assistant Role**
-   - Maintain detailed plans to ensure consistency
-   - Track dependencies and potential impacts
-   - Proactively identify related changes
-   - Provide structured recommendations
+### Core Branch Structure
+```
+main              # Production-ready code
+├── core/base     # Base stable version
+│   ├── core/auth # Authentication system
+│   ├── core/ui   # UI components and navigation
+│   ├── core/api  # API and business logic
+│   └── core/db   # Database and data models
+└── develop       # Integration branch
+```
 
-2. **Developer Role**
-   - Drive high-level direction
-   - Make key architectural decisions
-   - Approve or modify suggestions
-   - Set priorities and focus areas
+### Version Tagging
+- `v4.4.0-base` - Base stable version
+- `v4.4.0-auth` - Authentication system
+- `v4.4.0-ui` - UI and navigation
+- `v4.4.0-api` - API layer
+- `v4.4.0-db` - Database schema
 
-3. **Collaboration Rules**
-   - Plans stay in `/plans/active/` for AI reference
-   - Keep `DEVELOPMENT.md` as our shared quick reference
-   - AI handles detail tracking, developer focuses on building
-   - Regular check-ins on progress and direction
+### Working with Features
 
-4. **Communication**
-   - AI will reference specific files/components
-   - Developer can use natural language for intent
-   - Both maintain context through the tracker
-   - Flexibility to adjust plans as needed
+1. **Starting New Feature**
+```bash
+# Example for UI feature
+git checkout core/ui
+git checkout -b feature/mobile-nav
+
+# Example for auth feature
+git checkout core/auth
+git checkout -b feature/email-verification
+```
+
+2. **Completing Feature**
+```bash
+# After testing feature
+git checkout core/ui
+git merge feature/mobile-nav
+git tag v4.4.1-ui  # New stable UI version
+```
+
+3. **Integration Process**
+```bash
+# Test integration
+git checkout develop
+git merge core/auth   # Get latest auth
+git merge core/ui    # Get latest UI
+git merge core/db    # Get latest DB
+
+# Release
+git checkout main
+git merge develop
+git tag v4.5.0
+```
+
+### Recovery Process
+If a feature breaks, you can always return to the last stable version:
+```bash
+# UI breaks
+git checkout v4.4.0-ui
+git checkout -b fix/ui-issue
+
+# Auth breaks
+git checkout v4.4.0-auth
+git checkout -b fix/auth-issue
+```
+
+### Best Practices
+
+1. **Never Commit Directly to Core Branches**
+   - Always create feature branches
+   - Use descriptive branch names
+   - Delete feature branches after merging
+
+2. **Version Tagging**
+   - Tag stable versions of core features
+   - Use semantic versioning
+   - Include feature scope in tag name
+
+3. **Commit Messages**
+```bash
+# Format:
+type(scope): subject
+
+# Types:
+feat: New feature
+fix: Bug fix
+docs: Documentation
+style: Code style
+refactor: Code refactoring
+test: Testing
+chore: Maintenance
+
+# Examples:
+git commit -m "feat(auth): add email verification"
+git commit -m "fix(ui): correct mobile menu alignment"
+```
+
+4. **Branch Naming**
+```
+feature/   # New features
+fix/       # Bug fixes
+docs/      # Documentation
+refactor/  # Code improvements
+test/      # Testing additions
+
+Examples:
+feature/user-profiles
+fix/auth-redirect
+docs/api-documentation
+```
+
+## Development Process
+
+### 1. Starting New Work
+1. Choose appropriate core branch
+2. Create feature branch
+3. Make changes and commit regularly
+4. Test thoroughly
+
+### 2. Completing Work
+1. Merge feature to core branch
+2. Tag new stable version
+3. Delete feature branch
+4. Update documentation
+
+### 3. Integration
+1. Merge to develop
+2. Test all features together
+3. Fix any integration issues
+4. Merge to main when stable
 
 ## Active Work
 - Finishing Tailwind migration (removing MUI)

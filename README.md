@@ -69,6 +69,30 @@ A modern web application for transcribing and analyzing audio content using AI.
 
 Visit `http://localhost:3000` to see the application.
 
+## Development Workflow
+
+### Core Features
+The project maintains separate branches for core features:
+- `core/auth` - Authentication system
+- `core/ui` - UI components and navigation
+- `core/api` - API and business logic
+- `core/db` - Database and data models
+
+### Feature Development
+1. Choose the appropriate core branch
+2. Create a feature branch
+3. Develop and test
+4. Merge back to core branch
+5. Tag stable versions
+
+### Version Control
+- Core features are independently versioned
+- Integration happens in `develop` branch
+- Releases are merged to `main`
+- Recovery is possible through version tags
+
+For detailed development guidelines, see [Development Guide](docs/DEVELOPMENT.md)
+
 ## Project Structure
 
 ```

@@ -65,54 +65,6 @@ INSERT INTO public.transcript_types (
     '#4CAF50', 'medical_services',
     NOW(), NOW());
 
--- Insert transcripts
-INSERT INTO public.transcripts (
-    id, tenant_id, title, status, category, language,
-    source_type, sub_type, type, summary,
-    universal_metadata, user_id,
-    created_at, updated_at
-) VALUES
-    -- Corporate transcript
-    (gen_random_uuid(), 'd0d04ba7-962f-48c0-8bc4-22c3c7937d51',
-    'Q4 Planning Meeting', 'completed', 'Corporate', 'en',
-    'audio', 'meeting', 'business',
-    'Quarterly planning meeting discussing Q4 goals, budget review, and team updates.',
-    jsonb_build_object(
-        'duration', '45:30',
-        'participants', ARRAY['John Smith', 'Sarah Johnson', 'Mike Brown'],
-        'topics', ARRAY['Budget Review', 'Strategy Planning', '2024 Goals']
-    ),
-    'd0d04ba7-962f-48c0-8bc4-22c3c7937d51',
-    NOW() - INTERVAL '7 days', NOW()),
-
-    -- Legal transcript
-    (gen_random_uuid(), 'e4a3cf1d-0f5b-4c5a-9b1a-2c3d4e5f6789',
-    'Smith vs Jones Hearing', 'completed', 'Legal', 'en',
-    'audio', 'hearing', 'legal',
-    'Civil case hearing regarding contract dispute between Smith Enterprises and Jones Corp.',
-    jsonb_build_object(
-        'duration', '120:15',
-        'case_number', 'CV-2024-123',
-        'court', 'Superior Court of California',
-        'judge', 'Hon. Robert Wilson'
-    ),
-    'e4a3cf1d-0f5b-4c5a-9b1a-2c3d4e5f6789',
-    NOW() - INTERVAL '5 days', NOW()),
-
-    -- Medical transcript
-    (gen_random_uuid(), 'f8b2ae9c-1d2e-3f4a-5b6c-7d8e9f012345',
-    'Patient Consultation - John Doe', 'completed', 'Medical', 'en',
-    'audio', 'consultation', 'medical',
-    'Initial consultation for cardiac evaluation and treatment planning.',
-    jsonb_build_object(
-        'duration', '30:00',
-        'patient_id', 'P12345',
-        'department', 'Cardiology',
-        'doctor', 'Dr. Emily White'
-    ),
-    'f8b2ae9c-1d2e-3f4a-5b6c-7d8e9f012345',
-    NOW() - INTERVAL '3 days', NOW());
-
 -- Insert AI providers
 INSERT INTO public.ai_providers (name, description, created_at, updated_at) VALUES
     ('OpenAI', 'Provider of GPT models and APIs', NOW(), NOW()),
@@ -221,17 +173,6 @@ INSERT INTO public.billing_records (
     ('f8b2ae9c-1d2e-3f4a-5b6c-7d8e9f012345', 'f8b2ae9c-1d2e-3f4a-5b6c-7d8e9f012345',
     0.00, 'Free tier usage', NOW(), NOW(), NOW());
 
--- Insert playlists
-INSERT INTO public.playlists (
-    name, user_id, tenant_id, created_at, updated_at
-) VALUES
-    ('Important Meetings', 'd0d04ba7-962f-48c0-8bc4-22c3c7937d51',
-    'd0d04ba7-962f-48c0-8bc4-22c3c7937d51', NOW(), NOW()),
-    ('Legal Cases 2024', 'e4a3cf1d-0f5b-4c5a-9b1a-2c3d4e5f6789',
-    'e4a3cf1d-0f5b-4c5a-9b1a-2c3d4e5f6789', NOW(), NOW()),
-    ('Patient Records', 'f8b2ae9c-1d2e-3f4a-5b6c-7d8e9f012345',
-    'f8b2ae9c-1d2e-3f4a-5b6c-7d8e9f012345', NOW(), NOW());
-
 -- Insert output types
 INSERT INTO public.output_types (
     name, description, component_name,
@@ -243,101 +184,116 @@ INSERT INTO public.output_types (
     jsonb_build_object(
         'stream_interval', '30s',
         'max_context_window', 2000,
-        'min_confidence', 0.85,
-        'model', (SELECT id FROM ai_models WHERE model_name = 'gpt-4')
+        'min_confidence', 0.85
     ),
     jsonb_build_object(
         'theme', 'light',
         'layout', 'sidebar',
-        'animation', true
+        'colors', jsonb_build_object(
+            'primary', '#2196F3',
+            'secondary', '#FFC107',
+            'background', '#FFFFFF'
+        )
     ),
     'd0d04ba7-962f-48c0-8bc4-22c3c7937d51',
     NOW(), NOW()),
     
-    ('one_pager', 'Concise one-page summary with key points',
+    ('one_pager', 'One-page summary with key points',
     'OnePager',
     jsonb_build_object(
-        'max_length', 1500,
-        'include_sections', ARRAY['summary', 'key_points', 'action_items'],
+        'max_length', 1000,
         'format', 'markdown',
-        'model', (SELECT id FROM ai_models WHERE model_name = 'gpt-4')
+        'sections', ARRAY['summary', 'key_points', 'action_items']
     ),
     jsonb_build_object(
-        'theme', 'professional',
-        'font_size', '14px',
-        'spacing', '1.5'
-    ),
-    'd0d04ba7-962f-48c0-8bc4-22c3c7937d51',
-    NOW(), NOW()),
-    
-    ('recapio_slides', 'Automated presentation slides',
-    'RecapioSlides',
-    jsonb_build_object(
-        'slides_count', 10,
-        'template', 'professional',
-        'include_sections', ARRAY['title', 'agenda', 'content', 'summary'],
-        'model', (SELECT id FROM ai_models WHERE model_name = 'claude-2')
-    ),
-    jsonb_build_object(
-        'theme', 'modern',
-        'aspect_ratio', '16:9',
-        'transition', 'slide'
+        'theme', 'light',
+        'layout', 'full',
+        'colors', jsonb_build_object(
+            'primary', '#4CAF50',
+            'secondary', '#FF5722',
+            'background', '#F5F5F5'
+        )
     ),
     'd0d04ba7-962f-48c0-8bc4-22c3c7937d51',
     NOW(), NOW());
 
--- Insert output queue entries
+-- Insert transcripts
+INSERT INTO public.transcripts (
+    id, tenant_id, title, status, category, language,
+    source_type, sub_type, type, summary,
+    universal_metadata, user_id,
+    created_at, updated_at
+) VALUES
+    -- Corporate transcript
+    (gen_random_uuid(), 'd0d04ba7-962f-48c0-8bc4-22c3c7937d51',
+    'Q4 Planning Meeting', 'completed', 'Corporate', 'en',
+    'audio', 'meeting', 'business',
+    'Quarterly planning meeting discussing Q4 goals, budget review, and team updates.',
+    jsonb_build_object(
+        'duration', '45:30',
+        'participants', ARRAY['John Smith', 'Sarah Johnson', 'Mike Brown'],
+        'topics', ARRAY['Budget Review', 'Strategy Planning', '2024 Goals']
+    ),
+    'd0d04ba7-962f-48c0-8bc4-22c3c7937d51',
+    NOW() - INTERVAL '7 days', NOW());
+
+-- Insert output queue items
 INSERT INTO public.output_queue (
-    transcript_id, output_type_id, status, result,
-    tenant_id, created_at, updated_at
+    transcript_id, output_type_id, status, priority,
+    metadata, tenant_id, created_at, updated_at
 ) VALUES
     ((SELECT id FROM transcripts WHERE title = 'Q4 Planning Meeting'),
-    (SELECT id FROM output_types WHERE name = 'one_pager'),
-    'completed',
-    jsonb_build_object('processing_time', '120s', 'word_count', 2500),
-    'd0d04ba7-962f-48c0-8bc4-22c3c7937d51', NOW(), NOW()),
-    ((SELECT id FROM transcripts WHERE title = 'Smith vs Jones Hearing'),
-    (SELECT id FROM output_types WHERE name = 'recapio_slides'),
-    'completed',
-    jsonb_build_object('processing_time', '180s', 'word_count', 5000),
-    'e4a3cf1d-0f5b-4c5a-9b1a-2c3d4e5f6789', NOW(), NOW()),
-    ((SELECT id FROM transcripts WHERE title = 'Patient Consultation - John Doe'),
     (SELECT id FROM output_types WHERE name = 'insights_stream'),
-    'completed',
-    jsonb_build_object('processing_time', '60s', 'word_count', 1500),
-    'f8b2ae9c-1d2e-3f4a-5b6c-7d8e9f012345', NOW(), NOW());
+    'pending', 1,
+    jsonb_build_object(
+        'requested_by', 'd0d04ba7-962f-48c0-8bc4-22c3c7937d51',
+        'notification_email', 'admin@recapio.ai'
+    ),
+    'd0d04ba7-962f-48c0-8bc4-22c3c7937d51',
+    NOW(), NOW());
 
--- Insert output files for playlists
+-- Insert output files
 INSERT INTO public.output_files (
-    output_queue_id, file_url, file_type, file_metadata,
-    tenant_id, created_at, updated_at
+    transcript_id, output_type_id, output_queue_id,
+    file_path, file_url, file_type, file_size, mime_type,
+    metadata, status, tenant_id,
+    created_at, updated_at
 ) VALUES
-    ((SELECT id FROM output_queue WHERE tenant_id = 'd0d04ba7-962f-48c0-8bc4-22c3c7937d51' LIMIT 1),
-    'https://storage.recapio.ai/files/meeting1.mp4', 'video/mp4',
-    jsonb_build_object('duration', '45:30', 'size', '256MB'),
-    'd0d04ba7-962f-48c0-8bc4-22c3c7937d51', NOW(), NOW()),
-    ((SELECT id FROM output_queue WHERE tenant_id = 'e4a3cf1d-0f5b-4c5a-9b1a-2c3d4e5f6789' LIMIT 1),
-    'https://storage.recapio.ai/files/hearing1.mp4', 'video/mp4',
-    jsonb_build_object('duration', '120:15', 'size', '512MB'),
-    'e4a3cf1d-0f5b-4c5a-9b1a-2c3d4e5f6789', NOW(), NOW()),
-    ((SELECT id FROM output_queue WHERE tenant_id = 'f8b2ae9c-1d2e-3f4a-5b6c-7d8e9f012345' LIMIT 1),
-    'https://storage.recapio.ai/files/consultation1.mp4', 'video/mp4',
-    jsonb_build_object('duration', '30:00', 'size', '128MB'),
-    'f8b2ae9c-1d2e-3f4a-5b6c-7d8e9f012345', NOW(), NOW());
+    ((SELECT id FROM transcripts WHERE title = 'Q4 Planning Meeting'),
+    (SELECT id FROM output_types WHERE name = 'insights_stream'),
+    (SELECT id FROM output_queue WHERE transcript_id = (SELECT id FROM transcripts WHERE title = 'Q4 Planning Meeting')),
+    '/outputs/insights/q4-planning.json',
+    'https://storage.recapio.ai/outputs/insights/q4-planning.json',
+    'json',
+    1024,
+    'application/json',
+    jsonb_build_object(
+        'version', '1.0',
+        'generated_by', 'gpt-4',
+        'confidence_score', 0.92
+    ),
+    'completed',
+    'd0d04ba7-962f-48c0-8bc4-22c3c7937d51',
+    NOW(), NOW());
 
--- Insert playlist items (linking playlists to output files)
+-- Insert playlists
+INSERT INTO public.playlists (
+    name, user_id, tenant_id,
+    created_at, updated_at
+) VALUES
+    ('Important Meetings', 'd0d04ba7-962f-48c0-8bc4-22c3c7937d51',
+    'd0d04ba7-962f-48c0-8bc4-22c3c7937d51', NOW(), NOW());
+
+-- Insert playlist items
 INSERT INTO public.playlist_items (
-    playlist_id, output_file_id, order_index,
-    tenant_id, created_at, updated_at
+    playlist_id, transcript_id, output_file_id,
+    position, order_index,
+    created_at, updated_at
 ) VALUES
     ((SELECT id FROM playlists WHERE name = 'Important Meetings'),
-    (SELECT id FROM output_files WHERE file_url LIKE '%meeting1.mp4'),
-    1, 'd0d04ba7-962f-48c0-8bc4-22c3c7937d51', NOW(), NOW()),
-    ((SELECT id FROM playlists WHERE name = 'Legal Cases 2024'),
-    (SELECT id FROM output_files WHERE file_url LIKE '%hearing1.mp4'),
-    1, 'e4a3cf1d-0f5b-4c5a-9b1a-2c3d4e5f6789', NOW(), NOW()),
-    ((SELECT id FROM playlists WHERE name = 'Patient Records'),
-    (SELECT id FROM output_files WHERE file_url LIKE '%consultation1.mp4'),
-    1, 'f8b2ae9c-1d2e-3f4a-5b6c-7d8e9f012345', NOW(), NOW());
+    (SELECT id FROM transcripts WHERE title = 'Q4 Planning Meeting'),
+    (SELECT id FROM output_files WHERE transcript_id = (SELECT id FROM transcripts WHERE title = 'Q4 Planning Meeting')),
+    1, 0,
+    NOW(), NOW());
 
 COMMIT; 

@@ -1,8 +1,9 @@
+'use client';
+
 import { redirect } from 'next/navigation';
 import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
 import { AdminNavigation } from '@/components/layout/AdminNavigation';
-import Link from 'next/link';
 import Logo from '@/components/Logo';
 
 async function isAdmin(userId: string) {
@@ -70,15 +71,15 @@ export default async function AdminLayout({
     }
 
     return (
-      <div className="flex h-screen bg-gray-100">
+      <div className="flex h-screen bg-white">
         {/* Sidebar */}
-        <div className="hidden w-64 flex-shrink-0 bg-gray-900 shadow-sm md:block">
+        <div className="hidden w-64 flex-shrink-0 bg-white border-r border-gray-200 md:block">
           <div className="flex h-full flex-col">
-            <div className="flex h-16 flex-shrink-0 items-center justify-center px-4">
-              <Logo href="/admin/console" variant="white" size="md" />
+            <div className="flex h-16 flex-shrink-0 items-center justify-center border-b border-gray-200 px-4">
+              <Logo size="md" />
             </div>
             <AdminNavigation />
-            <div className="flex-shrink-0 border-t border-gray-800 p-4">
+            <div className="flex-shrink-0 border-t border-gray-200 p-4">
               <div className="flex items-center">
                 <div className="flex-shrink-0">
                   <div className="h-8 w-8 rounded-full bg-primary text-white flex items-center justify-center">
@@ -86,8 +87,35 @@ export default async function AdminLayout({
                   </div>
                 </div>
                 <div className="ml-3">
-                  <p className="text-sm font-medium text-white">{user.email}</p>
-                  <p className="text-xs text-gray-400">Administrator</p>
+                  <p className="text-sm font-medium text-gray-700">{user.email}</p>
+                  <p className="text-xs text-gray-500">Administrator</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Mobile menu */}
+        <div className="md:hidden">
+          <div className="fixed inset-0 z-40 flex">
+            <div className="relative flex w-full max-w-xs flex-1 flex-col bg-white">
+              <div className="flex h-16 flex-shrink-0 items-center justify-center border-b border-gray-200 px-4">
+                <Logo size="md" />
+              </div>
+              <div className="h-0 flex-1 overflow-y-auto">
+                <AdminNavigation />
+              </div>
+              <div className="flex-shrink-0 border-t border-gray-200 p-4">
+                <div className="flex items-center">
+                  <div className="flex-shrink-0">
+                    <div className="h-8 w-8 rounded-full bg-primary text-white flex items-center justify-center">
+                      {user.email?.[0].toUpperCase()}
+                    </div>
+                  </div>
+                  <div className="ml-3">
+                    <p className="text-sm font-medium text-gray-700">{user.email}</p>
+                    <p className="text-xs text-gray-500">Administrator</p>
+                  </div>
                 </div>
               </div>
             </div>

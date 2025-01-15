@@ -132,6 +132,61 @@ docs/api-documentation
 3. Fix any integration issues
 4. Merge to main when stable
 
+## Navigation Development Strategy
+
+### Branch Structure
+```
+main
+├── feature/navigation-improvements  # Stable navigation features
+└── feature/navigation-dev          # Ongoing navigation development
+```
+
+### Version Control
+- `v4.4.1-nav` - Current stable navigation version
+- Future versions will increment (v4.4.2-nav, v4.4.3-nav, etc.)
+
+### Working with Navigation
+
+1. **Making Navigation Changes**
+```bash
+# Always work in navigation-dev branch
+git checkout feature/navigation-dev
+
+# Make and test changes
+git commit -m "feat(nav): description of changes"
+```
+
+2. **Creating Stable Version**
+```bash
+# When changes are stable
+git tag v4.4.x-nav  # Increment x
+```
+
+3. **Recovery Process**
+```bash
+# If navigation breaks
+git checkout v4.4.1-nav
+git checkout -b feature/nav-fix
+```
+
+### Best Practices
+1. **Development Flow**
+   - Make all navigation changes in `feature/navigation-dev`
+   - Test thoroughly before tagging new versions
+   - Keep `feature/navigation-improvements` as stable reference
+
+2. **Version Management**
+   - Tag significant navigation improvements
+   - Document changes in commit messages
+   - Keep track of stable versions
+
+3. **Testing Checklist**
+   - Mobile responsiveness
+   - Admin section visibility
+   - Logo positioning
+   - Navigation group structure
+   - Role-based access
+
 ## Active Work
 - Finishing Tailwind migration (removing MUI)
 - Building out admin console
